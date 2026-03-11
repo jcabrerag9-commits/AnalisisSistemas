@@ -10,14 +10,13 @@ const dbConfig = {
 
 async function initialize() {
     try {
-        // En oracledb 6.0+, el modo "Thin" es el predeterminado y no requiere Instant Client
         console.log('Iniciando conexión a Oracle en modo Thin...');
         const connection = await oracledb.getConnection(dbConfig);
         console.log('Conexión exitosa a Oracle Database');
         await connection.close();
     } catch (err) {
         console.error('Error de conexión a la base de datos:', err);
-        process.exit(1); // Detener el servidor si hay error crítico en la base de datos
+        process.exit(1);
     }
 }
 
