@@ -73,7 +73,7 @@ const CON_TIPO_CAMBIOCrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_TIPO_CAMBIO</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de tipo de cambios</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     
@@ -89,15 +89,15 @@ const CON_TIPO_CAMBIOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TPC_FECHA_TASA</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TASA FECHA</label>
                         <input name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TPC_TASA_COMPRA</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TASA COMPRA</label>
                         <input name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TPC_TASA_VENTA</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TASA DE VENTA</label>
                         <input name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
@@ -117,11 +117,11 @@ const CON_TIPO_CAMBIOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TPC_TIPO_CAMBIO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>MON_MONEDA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TPC_FECHA_TASA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TPC_TASA_COMPRA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TPC_TASA_VENTA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CAMBIO</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>MONEDA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>FECHA DE TASA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TASA DE COMPRA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TASA DE VENTA</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
