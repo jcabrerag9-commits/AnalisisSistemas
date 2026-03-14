@@ -27,7 +27,7 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
         }
     };
 
-    
+
     const fetchCON_ASIENTO_DETALLEData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-asiento-detalle');
@@ -84,43 +84,43 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_IMPUESTO_MOVIMIENTO</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Impuesto Movimiento</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASD_ASIENTO_DETALLE (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Asiento Detalle</label>
                         <select name="ASD_ASIENTO_DETALLE" value={formData.ASD_ASIENTO_DETALLE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_ASIENTO_DETALLEData.map(opt => (
                                 <option key={opt.ASD_ASIENTO_DETALLE} value={opt.ASD_ASIENTO_DETALLE}>
-                                    {opt.ASD_ASIENTO_DETALLE} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.ASD_ASIENTO_DETALLE} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>IMP_IMPUESTO (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Impuesto</label>
                         <select name="IMP_IMPUESTO" value={formData.IMP_IMPUESTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_IMPUESTOData.map(opt => (
                                 <option key={opt.IMP_IMPUESTO} value={opt.IMP_IMPUESTO}>
-                                    {opt.IMP_IMPUESTO} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.IMP_IMPUESTO} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>IMM_BASE_IMPONIBLE</label>
-                        <input name="IMM_BASE_IMPONIBLE" value={formData.IMM_BASE_IMPONIBLE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Base Imponible</label>
+                        <input name="IMM_BASE_IMPONIBLE" value={formData.IMM_BASE_IMPONIBLE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>IMM_MONTO_IMPUESTO</label>
-                        <input name="IMM_MONTO_IMPUESTO" value={formData.IMM_MONTO_IMPUESTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Monto Impuesto</label>
+                        <input name="IMM_MONTO_IMPUESTO" value={formData.IMM_MONTO_IMPUESTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>IMM_TIPO_AFECTACION</label>
-                        <input name="IMM_TIPO_AFECTACION" value={formData.IMM_TIPO_AFECTACION || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo Afectación</label>
+                        <input name="IMM_TIPO_AFECTACION" value={formData.IMM_TIPO_AFECTACION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -139,12 +139,12 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMM_IMPUESTO_MOVIMIENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_ASIENTO_DETALLE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMP_IMPUESTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMM_BASE_IMPONIBLE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMM_MONTO_IMPUESTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMM_TIPO_AFECTACION</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Impuesto Movimiento</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento Detalle</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Impuesto</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Base Imponible</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Monto Impuesto</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tipo Afectación</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
