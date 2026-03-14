@@ -79,7 +79,7 @@ const CON_IMPUESTOCrud = () => {
                     
                     <div>
                         <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_CUENTA (FK)</label>
-                        <select name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <select name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CUENTAData.map(opt => (
                                 <option key={opt.CUE_CUENTA} value={opt.CUE_CUENTA}>
