@@ -79,7 +79,7 @@ const CON_TIPO_CAMBIOCrud = () => {
                     
                     <div>
                         <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>MON_MONEDA (FK)</label>
-                        <select name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <select name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_MONEDAData.map(opt => (
                                 <option key={opt.MON_MONEDA} value={opt.MON_MONEDA}>
