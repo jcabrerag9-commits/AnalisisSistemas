@@ -27,7 +27,7 @@ const CON_CUENTACrud = () => {
         }
     };
 
-    
+
     const fetchCON_CUENTAData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-cuenta');
@@ -84,43 +84,43 @@ const CON_CUENTACrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_CUENTA</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de cuentas</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_CUENTA_PADRE (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Cuenta padre</label>
                         <select name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CUENTAData.map(opt => (
                                 <option key={opt.CUE_CUENTA} value={opt.CUE_CUENTA}>
-                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TCU_TIPO_CUENTA (FK)</label>
-                        <select name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo Cuenta</label>
+                        <select name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#fff' }} required>
                             <option value="">Seleccione...</option>
                             {CON_TIPO_CUENTAData.map(opt => (
                                 <option key={opt.TCU_TIPO_CUENTA} value={opt.TCU_TIPO_CUENTA}>
-                                    {opt.TCU_TIPO_CUENTA} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.TCU_TIPO_CUENTA} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_CODIGO</label>
-                        <input name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Código</label>
+                        <input name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_NOMBRE</label>
-                        <input name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
+                        <input name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_DESCRIPCION</label>
-                        <input name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Descripción</label>
+                        <input name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -139,12 +139,12 @@ const CON_CUENTACrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_CUENTA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_CUENTA_PADRE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TCU_TIPO_CUENTA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_CODIGO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_NOMBRE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_DESCRIPCION</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta padre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tipo Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Descripción</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
