@@ -43,7 +43,7 @@ En la carpeta `/server`, encontrarás un archivo llamado `.env` (o puedes crearl
 PORT=5000
 ORACLE_USER=tu_usuario
 ORACLE_PASSWORD=tu_password
-ORACLE_CONNECTION_STRING=localhost:1521/xe
+ORACLE_CONNECTION_STRING=localhost:1521/orcl
 ```
 
 > [!TIP]
