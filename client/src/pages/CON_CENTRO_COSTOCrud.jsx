@@ -25,7 +25,7 @@ const CON_CENTRO_COSTOCrud = () => {
         }
     };
 
-    
+
     const fetchCON_CENTRO_COSTOData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-centro-costo');
@@ -76,25 +76,25 @@ const CON_CENTRO_COSTOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_CENTRO_COSTO</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CTC_CENTRO_COSTO_PADRE (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Centro Costo Padre</label>
                         <select name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CENTRO_COSTOData.map(opt => (
                                 <option key={opt.CTC_CENTRO_COSTO} value={opt.CTC_CENTRO_COSTO}>
-                                    {opt.CTC_CENTRO_COSTO} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.CTC_CENTRO_COSTO} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CTC_CODIGO_DEPARTAMENTO</label>
-                        <input name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Código Departamento</label>
+                        <input name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CTC_NOMBRE</label>
-                        <input name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
+                        <input name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -113,10 +113,10 @@ const CON_CENTRO_COSTOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_CENTRO_COSTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_CENTRO_COSTO_PADRE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_CODIGO_DEPARTAMENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_NOMBRE</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro Costo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro Costo Padre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código Departamento</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
