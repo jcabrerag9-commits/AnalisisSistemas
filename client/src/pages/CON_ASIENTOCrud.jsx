@@ -106,13 +106,13 @@ const CON_ASIENTOCrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_ASIENTO</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Asiento</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>PER_PERIODO (FK)</label>
-                        <select name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Periodo (FK)</label>
+                        <select name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_PERIODOData.map(opt => (
                                 <option key={opt.PER_PERIODO} value={opt.PER_PERIODO}>
@@ -122,8 +122,8 @@ const CON_ASIENTOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>TPA_TIPO_ASIENTO (FK)</label>
-                        <select name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo de Asiento (FK)</label>
+                        <select name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_TIPO_ASIENTOData.map(opt => (
                                 <option key={opt.TPA_TIPO_ASIENTO} value={opt.TPA_TIPO_ASIENTO}>
@@ -133,8 +133,8 @@ const CON_ASIENTOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ESA_ESTADO_ASIENTO (FK)</label>
-                        <select name="ESA_ESTADO_ASIENTO" value={formData.ESA_ESTADO_ASIENTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Estado (FK)</label>
+                        <select name="ESA_ESTADO_ASIENTO" value={formData.ESA_ESTADO_ASIENTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_ESTADO_ASIENTOData.map(opt => (
                                 <option key={opt.ESA_ESTADO_ASIENTO} value={opt.ESA_ESTADO_ASIENTO}>
@@ -144,8 +144,8 @@ const CON_ASIENTOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>USU_USUARIO (FK)</label>
-                        <select name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Usuario (FK)</label>
+                        <select name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange} style={{ width: '95', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_USUARIOData.map(opt => (
                                 <option key={opt.USU_USUARIO} value={opt.USU_USUARIO}>
@@ -155,12 +155,12 @@ const CON_ASIENTOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASI_FECHA</label>
-                        <input name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Fecha</label>
+                        <input name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASI_GLOSA</label>
-                        <input name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Glosa</label>
+                        <input name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -179,13 +179,13 @@ const CON_ASIENTOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASI_ASIENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>PER_PERIODO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>TPA_TIPO_ASIENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ESA_ESTADO_ASIENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>USU_USUARIO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASI_FECHA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASI_GLOSA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Periodo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tipo de Asiento</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Usuario</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Glosa</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>

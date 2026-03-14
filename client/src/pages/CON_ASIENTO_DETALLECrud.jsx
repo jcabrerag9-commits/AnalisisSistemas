@@ -31,7 +31,7 @@ const CON_ASIENTO_DETALLECrud = () => {
         }
     };
 
-    
+
     const fetchCON_ASIENTOData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-asiento');
@@ -106,73 +106,73 @@ const CON_ASIENTO_DETALLECrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de CON_ASIENTO_DETALLE</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Asiento Detalle</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASI_ASIENTO (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Asiento</label>
                         <select name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_ASIENTOData.map(opt => (
                                 <option key={opt.ASI_ASIENTO} value={opt.ASI_ASIENTO}>
-                                    {opt.ASI_ASIENTO} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.ASI_ASIENTO} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_CUENTA (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Cuenta</label>
                         <select name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CUENTAData.map(opt => (
                                 <option key={opt.CUE_CUENTA} value={opt.CUE_CUENTA}>
-                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CTC_CENTRO_COSTO (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Centro de Costo</label>
                         <select name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CENTRO_COSTOData.map(opt => (
                                 <option key={opt.CTC_CENTRO_COSTO} value={opt.CTC_CENTRO_COSTO}>
-                                    {opt.CTC_CENTRO_COSTO} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.CTC_CENTRO_COSTO} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>MON_MONEDA (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Moneda</label>
                         <select name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_MONEDAData.map(opt => (
                                 <option key={opt.MON_MONEDA} value={opt.MON_MONEDA}>
-                                    {opt.MON_MONEDA} - {opt[Object.keys(opt)[1]]} 
+                                    {opt.MON_MONEDA} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CTC_TASA_CAMBIO</label>
-                        <input name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tasa de Cambio</label>
+                        <input name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASD_DEBE_ORIGEN</label>
-                        <input name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Debe Origen</label>
+                        <input name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASD_HABER_ORIGEN</label>
-                        <input name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Haber Origen</label>
+                        <input name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASD_DEBE_LOCAL</label>
-                        <input name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Debe Local</label>
+                        <input name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ASD_HABER_LOCAL</label>
-                        <input name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Haber Local</label>
+                        <input name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
@@ -191,16 +191,16 @@ const CON_ASIENTO_DETALLECrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_ASIENTO_DETALLE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASI_ASIENTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUE_CUENTA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_CENTRO_COSTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>MON_MONEDA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CTC_TASA_CAMBIO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_DEBE_ORIGEN</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_HABER_ORIGEN</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_DEBE_LOCAL</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ASD_HABER_LOCAL</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento Detalle</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro de Costo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Moneda</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tasa de Cambio</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Debe Origen</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Haber Origen</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Debe Local</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Haber Local</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
