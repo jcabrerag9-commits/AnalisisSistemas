@@ -65,16 +65,16 @@ const CON_TIPO_CUENTACrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuenta</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuentas</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>NOMBRE</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
                         <input name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>DESCRIPCION</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Descripción</label>
                         <input name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
@@ -94,9 +94,9 @@ const CON_TIPO_CUENTACrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUENTA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>NOMBRE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>DESCRIPCION DE CUENTA</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Descripción de Cuenta</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>

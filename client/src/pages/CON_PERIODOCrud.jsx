@@ -73,12 +73,12 @@ const CON_PERIODOCrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodo</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Estado del Periodo (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Estado del Periodo</label>
                         <select name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_ESTADO_PERIODOData.map(opt => (
@@ -89,11 +89,11 @@ const CON_PERIODOCrud = () => {
                         </select>
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>AÑO</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Año</label>
                         <input name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>MES</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Mes</label>
                         <input name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
@@ -113,10 +113,10 @@ const CON_PERIODOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ID PERIODO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ESTADO DE PERIODO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>AÑO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>MES</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ID Periodo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado del Periodo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Año</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Mes</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>

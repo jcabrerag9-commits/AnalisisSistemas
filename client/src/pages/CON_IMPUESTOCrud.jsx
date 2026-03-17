@@ -78,7 +78,7 @@ const CON_IMPUESTOCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>CUE_CUENTA (FK)</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Cuenta Codigo</label>
                         <select name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_CUENTAData.map(opt => (
@@ -93,23 +93,23 @@ const CON_IMPUESTOCrud = () => {
                         <input name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>NOMBRE IMPUESTO</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
                         <input name="IMP_NOMBRE" value={formData.IMP_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>PORCENTAJE</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Porcentaje</label>
                         <input name="IMP_PORCENTAJE" value={formData.IMP_PORCENTAJE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>FECHA INICIO VIGENCIA </label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Fecha Inicial de Vigencia </label>
                         <input name="IMP_FECHA_VIGENCIA_INICIO" value={formData.IMP_FECHA_VIGENCIA_INICIO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>FECHA FINAL DE VIGENCIA</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Fecha Final de Vigencia</label>
                         <input name="IMP_FECHA_VIGENCIA_FIN" value={formData.IMP_FECHA_VIGENCIA_FIN || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>ESTADO</label>
+                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Estado</label>
                         <input name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
                     </div>
                 </div>
@@ -129,14 +129,14 @@ const CON_IMPUESTOCrud = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
                     <thead>
                         <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>IMPUESTO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CUENTA</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>CODIGO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>NOMBRE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>PORCENTAJE</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>FECHA VIGENCIA INICIO</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>FECHA VIGENCIA FINAL</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ESTADO</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Impuesto</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Codigo</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Porcentaje</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Inicial de Vigencia</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Final de Vigencia</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado</th>
                             <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
                         </tr>
                     </thead>
