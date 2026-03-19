@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_TIPO_CAMBIOCrud = () => {
     const [data, setData] = useState([]);
@@ -20,19 +23,14 @@ const CON_TIPO_CAMBIOCrud = () => {
         try {
             const res = await axios.get(API_URL);
             setData(res.data);
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
 
-    
     const fetchCON_MONEDAData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-moneda');
             setCON_MONEDAData(res.data);
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
 
     const handleChange = (e) => {
@@ -50,9 +48,7 @@ const CON_TIPO_CAMBIOCrud = () => {
             setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' });
             setEditingId(null);
             fetchData();
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
 
     const handleEdit = (item) => {
@@ -65,9 +61,7 @@ const CON_TIPO_CAMBIOCrud = () => {
             try {
                 await axios.delete(`${API_URL}/${id}`);
                 fetchData();
-            } catch (err) {
-                console.error(err);
-            }
+            } catch (err) { console.error(err); }
         }
     };
 
@@ -76,39 +70,20 @@ const CON_TIPO_CAMBIOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cambios</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Moneda</label>
-                        <select name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_MONEDAData.map(opt => (
-                                <option key={opt.MON_MONEDA} value={opt.MON_MONEDA}>
-                                    {opt.MON_MONEDA} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tasa Fecha</label>
-                        <input name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tasa de Compra</label>
-                        <input name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tasa de Venta</label>
-                        <input name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
-                    </div>
+                    <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                        options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                        required />
+                    <Input label="Tasa Fecha" name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} required />
+                    <Input label="Tasa de Compra" name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
+                    <Input label="Tasa de Venta" name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                            onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -134,8 +109,8 @@ const CON_TIPO_CAMBIOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_TASA_COMPRA}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_TASA_VENTA}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</Button>
                                 </td>
                             </tr>
                         ))}

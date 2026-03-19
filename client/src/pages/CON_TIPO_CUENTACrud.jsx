@@ -1,31 +1,27 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Button from '../components/Button';
+
 
 const CON_TIPO_CUENTACrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' });
     const [editingId, setEditingId] = useState(null);
 
-    
-
     const API_URL = 'http://localhost:5000/api/con-tipo-cuenta';
 
     useEffect(() => {
         fetchData();
-        
     }, []);
 
     const fetchData = async () => {
         try {
             const res = await axios.get(API_URL);
             setData(res.data);
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
-
-    
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,9 +38,7 @@ const CON_TIPO_CUENTACrud = () => {
             setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' });
             setEditingId(null);
             fetchData();
-        } catch (err) {
-            console.error(err);
-        }
+        } catch (err) { console.error(err); }
     };
 
     const handleEdit = (item) => {
@@ -57,9 +51,7 @@ const CON_TIPO_CUENTACrud = () => {
             try {
                 await axios.delete(`${API_URL}/${id}`);
                 fetchData();
-            } catch (err) {
-                console.error(err);
-            }
+            } catch (err) { console.error(err); }
         }
     };
 
@@ -68,24 +60,16 @@ const CON_TIPO_CUENTACrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuentas</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
-                        <input name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
-                    </div>
-                    <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Descripción</label>
-                        <input name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
-                    </div>
+                    <Input label="Nombre" name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
+                    <Input label="Descripción" name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                            onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -107,8 +91,8 @@ const CON_TIPO_CUENTACrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_NOMBRE}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_DESCRIPCION}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.TCU_TIPO_CUENTA)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.TCU_TIPO_CUENTA)}>Eliminar</Button>
                                 </td>
                             </tr>
                         ))}
