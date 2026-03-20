@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import Select from '../components/Select';
+import Button from '../components/Button';
 const CON_USUARIO_ROLCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ USU_USUARIO: '', ROL_ROL: '' });
@@ -89,36 +90,34 @@ const CON_USUARIO_ROLCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Usuario</label>
-                        <select name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_USUARIOData.map(opt => (
-                                <option key={opt.USU_USUARIO} value={opt.USU_USUARIO}>
-                                    {opt.USU_USUARIO} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Usuario"
+                            name="USU_USUARIO"
+                            value={formData.USU_USUARIO || ''}
+                            onChange={handleChange}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Rol</label>
-                        <select name="ROL_ROL" value={formData.ROL_ROL || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_ROLData.map(opt => (
-                                <option key={opt.ROL_ROL} value={opt.ROL_ROL}>
-                                    {opt.ROL_ROL} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Rol"
+                            name="ROL_ROL"
+                            value={formData.ROL_ROL || ''}
+                            onChange={handleChange}
+                            options={CON_ROLData.map(opt => ({ value: opt.ROL_ROL, label: `${opt.ROL_ROL} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='md'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -140,8 +139,12 @@ const CON_USUARIO_ROLCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USUARIO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ROL_ROL}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.USR_USUARIO_ROL)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.USR_USUARIO_ROL)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
