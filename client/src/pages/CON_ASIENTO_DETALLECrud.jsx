@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_ASIENTO_DETALLECrud = () => {
     const [data, setData] = useState([]);
@@ -36,6 +39,7 @@ const CON_ASIENTO_DETALLECrud = () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-asiento');
             setCON_ASIENTOData(res.data);
+            //setCON_ASIENTOData([{ "ASI_ASIENTO": 1, "ASI_DESCRIPCION": "Asiento 1" }, { "ASI_ASIENTO": 2, "ASI_DESCRIPCION": "Asiento 2" }, { "ASI_ASIENTO": 3, "ASI_DESCRIPCION": "Asiento 3" }]);
         } catch (err) {
             console.error(err);
         }
@@ -111,78 +115,60 @@ const CON_ASIENTO_DETALLECrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Asiento</label>
-                        <select name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_ASIENTOData.map(opt => (
-                                <option key={opt.ASI_ASIENTO} value={opt.ASI_ASIENTO}>
-                                    {opt.ASI_ASIENTO} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Asiento"
+                            name="ASI_ASIENTO"
+                            value={formData.ASI_ASIENTO || ''}
+                            onChange={handleChange}
+                            options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Cuenta</label>
-                        <select name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_CUENTAData.map(opt => (
-                                <option key={opt.CUE_CUENTA} value={opt.CUE_CUENTA}>
-                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
+                            options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Centro de Costo</label>
-                        <select name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_CENTRO_COSTOData.map(opt => (
-                                <option key={opt.CTC_CENTRO_COSTO} value={opt.CTC_CENTRO_COSTO}>
-                                    {opt.CTC_CENTRO_COSTO} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select label="Centro de Costo" name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
+                            options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Moneda</label>
-                        <select name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_MONEDAData.map(opt => (
-                                <option key={opt.MON_MONEDA} value={opt.MON_MONEDA}>
-                                    {opt.MON_MONEDA} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                            options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tasa de Cambio</label>
-                        <input name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Tasa de Cambio" name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
+                            type="number" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Debe Origen</label>
-                        <input name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Debe Origen" name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange}
+                            type="number" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Haber Origen</label>
-                        <input name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Haber Origen" name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange}
+                            type="number" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Debe Local</label>
-                        <input name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Debe Local" name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange}
+                            type="number" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Haber Local</label>
-                        <input name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Haber Local" name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange}
+                            type="number" required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ ASI_ASIENTO: '', CUE_CUENTA: '', CTC_CENTRO_COSTO: '', MON_MONEDA: '', CTC_TASA_CAMBIO: '', ASD_DEBE_ORIGEN: '', ASD_HABER_ORIGEN: '', ASD_DEBE_LOCAL: '', ASD_HABER_LOCAL: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ ASI_ASIENTO: '', CUE_CUENTA: '', CTC_CENTRO_COSTO: '', MON_MONEDA: '', CTC_TASA_CAMBIO: '', ASD_DEBE_ORIGEN: '', ASD_HABER_ORIGEN: '', ASD_DEBE_LOCAL: '', ASD_HABER_LOCAL: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -218,8 +204,12 @@ const CON_ASIENTO_DETALLECrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_DEBE_LOCAL}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_HABER_LOCAL}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.ASD_ASIENTO_DETALLE)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.ASD_ASIENTO_DETALLE)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
