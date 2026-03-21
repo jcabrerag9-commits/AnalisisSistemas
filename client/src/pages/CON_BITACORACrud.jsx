@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_BITACORACrud = () => {
     const [data, setData] = useState([]);
@@ -25,7 +28,7 @@ const CON_BITACORACrud = () => {
         }
     };
 
-    
+
     const fetchCON_USUARIOData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-usuario');
@@ -76,43 +79,41 @@ const CON_BITACORACrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Bitacora</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Usuario (FK)</label>
-                        <select name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_USUARIOData.map(opt => (
-                                <option key={opt.USU_USUARIO} value={opt.USU_USUARIO}>
-                                    {opt.USU_USUARIO} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Usuario"
+                            name="USU_USUARIO"
+                            value={formData.USU_USUARIO || ''}
+                            onChange={handleChange}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tabla Afectada</label>
-                        <input name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Tabla Afectada" name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange}
+                            type="text" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Acción</label>
-                        <input name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Acción" name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange}
+                            type="text" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Fecha</label>
-                        <input name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Fecha" name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange}
+                            type="datetime-local" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Datos Previos</label>
-                        <input name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Datos Previos" name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange}
+                            type="text" required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', BIT_TABLA_AFECTADA: '', BIT_ACCION: '', BIT_FECHA_HORA: '', BIT_DATOS_PREVIOS: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', BIT_TABLA_AFECTADA: '', BIT_ACCION: '', BIT_FECHA_HORA: '', BIT_DATOS_PREVIOS: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -140,8 +141,12 @@ const CON_BITACORACrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_FECHA_HORA}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_DATOS_PREVIOS}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.BIT_BITACORA)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button type='button' size='sm' variant='warning' className='mr-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button type='button' size='sm' variant='danger' onClick={() => handleDelete(item.BIT_BITACORA)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
