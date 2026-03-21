@@ -115,20 +115,14 @@ const CON_ASIENTO_DETALLECrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Select
-                            label="Asiento"
-                            name="ASI_ASIENTO"
-                            value={formData.ASI_ASIENTO || ''}
-                            onChange={handleChange}
+                        <Select label="Asiento" name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
                             options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required
-                        />
+                            required />
                     </div>
                     <div>
                         <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
                             options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required
-                        />
+                            required />
                     </div>
                     <div>
                         <Select label="Centro de Costo" name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
