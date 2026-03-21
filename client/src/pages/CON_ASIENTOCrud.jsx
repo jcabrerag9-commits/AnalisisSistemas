@@ -1,6 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
+
 
 const CON_ASIENTOCrud = () => {
     const [data, setData] = useState([]);
@@ -31,7 +35,7 @@ const CON_ASIENTOCrud = () => {
         }
     };
 
-    
+
     const fetchCON_PERIODOData = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/con-periodo');
@@ -109,68 +113,75 @@ const CON_ASIENTOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Asiento</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Periodo (FK)</label>
-                        <select name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_PERIODOData.map(opt => (
-                                <option key={opt.PER_PERIODO} value={opt.PER_PERIODO}>
-                                    {opt.PER_PERIODO} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Periodo"
+                            name="PER_PERIODO"
+                            value={formData.PER_PERIODO || ''}
+                            onChange={handleChange}
+                            options={CON_PERIODOData.map(opt => ({ value: opt.PER_PERIODO, label: `${opt.PER_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo de Asiento (FK)</label>
-                        <select name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_TIPO_ASIENTOData.map(opt => (
-                                <option key={opt.TPA_TIPO_ASIENTO} value={opt.TPA_TIPO_ASIENTO}>
-                                    {opt.TPA_TIPO_ASIENTO} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Tipo de Asiento"
+                            name="TPA_TIPO_ASIENTO"
+                            value={formData.TPA_TIPO_ASIENTO || ''}
+                            onChange={handleChange}
+                            options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: `${opt.TPA_TIPO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Estado (FK)</label>
-                        <select name="ESA_ESTADO_ASIENTO" value={formData.ESA_ESTADO_ASIENTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_ESTADO_ASIENTOData.map(opt => (
-                                <option key={opt.ESA_ESTADO_ASIENTO} value={opt.ESA_ESTADO_ASIENTO}>
-                                    {opt.ESA_ESTADO_ASIENTO} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Estado"
+                            name="ESA_ESTADO_ASIENTO"
+                            value={formData.ESA_ESTADO_ASIENTO || ''}
+                            onChange={handleChange}
+                            options={CON_ESTADO_ASIENTOData.map(opt => ({ value: opt.ESA_ESTADO_ASIENTO, label: `${opt.ESA_ESTADO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Usuario (FK)</label>
-                        <select name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange} style={{ width: '95', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_USUARIOData.map(opt => (
-                                <option key={opt.USU_USUARIO} value={opt.USU_USUARIO}>
-                                    {opt.USU_USUARIO} - {opt[Object.keys(opt)[1]]} 
-                                </option>
-                            ))}
-                        </select>
+                        <Select
+                            label="Usuario"
+                            name="USU_USUARIO"
+                            value={formData.USU_USUARIO || ''}
+                            onChange={handleChange}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Fecha</label>
-                        <input name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input
+                            label="Fecha"
+                            name="ASI_FECHA"
+                            value={formData.ASI_FECHA || ''}
+                            onChange={handleChange}
+                            type="date"
+                            required
+                        />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Glosa</label>
-                        <input name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input
+                            label="Glosa"
+                            name="ASI_GLOSA"
+                            value={formData.ASI_GLOSA || ''}
+                            onChange={handleChange}
+                            required
+                        />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ PER_PERIODO: '', TPA_TIPO_ASIENTO: '', ESA_ESTADO_ASIENTO: '', USU_USUARIO: '', ASI_FECHA: '', ASI_GLOSA: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ PER_PERIODO: '', TPA_TIPO_ASIENTO: '', ESA_ESTADO_ASIENTO: '', USU_USUARIO: '', ASI_FECHA: '', ASI_GLOSA: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -200,8 +211,12 @@ const CON_ASIENTOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_FECHA}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_GLOSA}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.ASI_ASIENTO)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button type='button' size='sm' variant='warning' className='mr-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button type='button' size='sm' variant='danger' onClick={() => handleDelete(item.ASI_ASIENTO)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
