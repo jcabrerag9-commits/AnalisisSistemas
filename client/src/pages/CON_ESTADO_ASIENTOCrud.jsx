@@ -1,19 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_ESTADO_ASIENTOCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ ESA_NOMBRE: '', ESA_DESCRIPCION: '' });
     const [editingId, setEditingId] = useState(null);
 
-    
+
 
     const API_URL = 'http://localhost:5000/api/con-estado-asiento';
 
     useEffect(() => {
         fetchData();
-        
+
     }, []);
 
     const fetchData = async () => {
@@ -25,7 +28,7 @@ const CON_ESTADO_ASIENTOCrud = () => {
         }
     };
 
-    
+
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,24 +71,24 @@ const CON_ESTADO_ASIENTOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Estado Asiento</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    
+
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
-                        <input name="ESA_NOMBRE" value={formData.ESA_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Nombre" name="ESA_NOMBRE" value={formData.ESA_NOMBRE || ''} onChange={handleChange}
+                            type="text" required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Descripción</label>
-                        <input name="ESA_DESCRIPCION" value={formData.ESA_DESCRIPCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Descripción" name="ESA_DESCRIPCION" value={formData.ESA_DESCRIPCION || ''} onChange={handleChange}
+                            type="text" required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ ESA_NOMBRE: '', ESA_DESCRIPCION: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ ESP_NOMBRE: '', ESP_DESCRIPCION: '' }); }} >
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -107,8 +110,12 @@ const CON_ESTADO_ASIENTOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ESA_NOMBRE}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ESA_DESCRIPCION}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.ESA_ESTADO_ASIENTO)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)} >
+                                        Editar
+                                    </Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.ESA_ESTADO_ASIENTO)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}

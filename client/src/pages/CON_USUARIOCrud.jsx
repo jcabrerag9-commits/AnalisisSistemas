@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import Input from '../components/Input';
+import Button from '../components/Button';
 const CON_USUARIOCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ USU_USER: '', USU_CONTRASEÑA: '' });
@@ -70,22 +71,20 @@ const CON_USUARIOCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Usuario</label>
-                        <input name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Usuario" name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Contraseña</label>
-                        <input name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Contraseña" name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type='submit' size='md'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ USU_USER: '', USU_CONTRASEÑA: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USER: '', USU_CONTRASEÑA: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -107,8 +106,12 @@ const CON_USUARIOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USER}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_CONTRASEÑA}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.USU_USUARIO)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.USU_USUARIO)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}

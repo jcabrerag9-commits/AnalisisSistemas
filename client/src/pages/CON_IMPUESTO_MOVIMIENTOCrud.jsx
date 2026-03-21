@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_IMPUESTO_MOVIMIENTOCrud = () => {
     const [data, setData] = useState([]);
@@ -84,12 +87,15 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Impuesto Movimiento</h2>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Movimientos de Impuestos</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Asiento Detalle</label>
+                        <Select label="Asiento Detalle" name="ASD_ASIENTO_DETALLE" value={formData.ASD_ASIENTO_DETALLE || ''} onChange={handleChange}
+                            options={CON_ASIENTO_DETALLEData.map(opt => ({ value: opt.ASD_ASIENTO_DETALLE, label: `${opt.ASD_ASIENTO_DETALLE} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
+                        {/*<label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Asiento Detalle</label>
                         <select name="ASD_ASIENTO_DETALLE" value={formData.ASD_ASIENTO_DETALLE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_ASIENTO_DETALLEData.map(opt => (
@@ -97,10 +103,13 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
                                     {opt.ASD_ASIENTO_DETALLE} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
-                        </select>
+                        </select>*/}
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Impuesto</label>
+                        <Select label="Impuesto" name="IMP_IMPUESTO" value={formData.IMP_IMPUESTO || ''} onChange={handleChange}
+                            options={CON_IMPUESTOData.map(opt => ({ value: opt.IMP_IMPUESTO, label: `${opt.IMP_IMPUESTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
+                        {/*<label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Impuesto</label>
                         <select name="IMP_IMPUESTO" value={formData.IMP_IMPUESTO || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
                             <option value="">Seleccione...</option>
                             {CON_IMPUESTOData.map(opt => (
@@ -108,29 +117,26 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
                                     {opt.IMP_IMPUESTO} - {opt[Object.keys(opt)[1]]}
                                 </option>
                             ))}
-                        </select>
+                        </select>*/}
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Base Imponible</label>
-                        <input name="IMM_BASE_IMPONIBLE" value={formData.IMM_BASE_IMPONIBLE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Base Imponible" name="IMM_BASE_IMPONIBLE" value={formData.IMM_BASE_IMPONIBLE || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Monto Impuesto</label>
-                        <input name="IMM_MONTO_IMPUESTO" value={formData.IMM_MONTO_IMPUESTO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Monto Impuesto" name="IMM_MONTO_IMPUESTO" value={formData.IMM_MONTO_IMPUESTO || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo Afectación</label>
-                        <input name="IMM_TIPO_AFECTACION" value={formData.IMM_TIPO_AFECTACION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Tipo Afectación" name="IMM_TIPO_AFECTACION" value={formData.IMM_TIPO_AFECTACION || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type="submit" size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ ASD_ASIENTO_DETALLE: '', IMP_IMPUESTO: '', IMM_BASE_IMPONIBLE: '', IMM_MONTO_IMPUESTO: '', IMM_TIPO_AFECTACION: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type="button" size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ ASD_ASIENTO_DETALLE: '', IMP_IMPUESTO: '', IMM_BASE_IMPONIBLE: '', IMM_MONTO_IMPUESTO: '', IMM_TIPO_AFECTACION: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -158,8 +164,12 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.IMM_MONTO_IMPUESTO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.IMM_TIPO_AFECTACION}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.IMM_IMPUESTO_MOVIMIENTO)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button type="button" size='sm' variant='warning' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button type="button" size='sm' variant='danger' onClick={() => handleDelete(item.IMM_IMPUESTO_MOVIMIENTO)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}

@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Input from '../components/Input';
+import Select from '../components/Select';
+import Button from '../components/Button';
 
 const CON_CUENTACrud = () => {
     const [data, setData] = useState([]);
@@ -89,48 +92,33 @@ const CON_CUENTACrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Cuenta padre</label>
-                        <select name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#0f172a' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_CUENTAData.map(opt => (
-                                <option key={opt.CUE_CUENTA} value={opt.CUE_CUENTA}>
-                                    {opt.CUE_CUENTA} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select label="Cuenta padre" name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
+                            options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Tipo Cuenta</label>
-                        <select name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange} style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', background: 'white', color: '#fff' }} required>
-                            <option value="">Seleccione...</option>
-                            {CON_TIPO_CUENTAData.map(opt => (
-                                <option key={opt.TCU_TIPO_CUENTA} value={opt.TCU_TIPO_CUENTA}>
-                                    {opt.TCU_TIPO_CUENTA} - {opt[Object.keys(opt)[1]]}
-                                </option>
-                            ))}
-                        </select>
+                        <Select label="Tipo Cuenta" name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
+                            options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                            required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Código</label>
-                        <input name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Código" name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Nombre</label>
-                        <input name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Nombre" name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <label style={{ display: 'block', fontSize: '13px', color: '#64748b', fontWeight: '500', marginBottom: '6px' }}>Descripción</label>
-                        <input name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} style={{ width: '95%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', color: '#0f172a' }} required />
+                        <Input label="Descripción" name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit" style={{ padding: '10px 20px', background: '#0ea5e9', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                    <Button type="submit" variant='primary' size='lg'>
                         {editingId ? 'Actualizar' : 'Crear'}
-                    </button>
+                    </Button>
                     {editingId && (
-                        <button type="button" onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }} style={{ marginLeft: '10px', padding: '10px 20px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                        <Button type="button" variant='secondary' size='lg' className='ml-2' onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }}>
                             Cancelar
-                        </button>
+                        </Button>
                     )}
                 </div>
             </form>
@@ -158,8 +146,12 @@ const CON_CUENTACrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_NOMBRE}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_DESCRIPCION}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button onClick={() => handleEdit(item)} style={{ marginRight: '8px', padding: '6px 12px', background: '#f59e0b', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Editar</button>
-                                    <button onClick={() => handleDelete(item.CUE_CUENTA)} style={{ padding: '6px 12px', background: '#ef4444', border: 'none', color: 'white', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Eliminar</button>
+                                    <Button type="button" variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
+                                        Editar
+                                    </Button>
+                                    <Button type="button" variant='danger' size='sm' onClick={() => handleDelete(item.CUE_CUENTA)}>
+                                        Eliminar
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
