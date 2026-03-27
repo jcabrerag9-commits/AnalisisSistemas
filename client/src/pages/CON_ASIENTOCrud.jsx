@@ -92,8 +92,17 @@ const CON_ASIENTOCrud = () => {
         }
     };
 
+    const formatDateForInput = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const handleEdit = (item) => {
-        setFormData({ PER_PERIODO: item.PER_PERIODO, TPA_TIPO_ASIENTO: item.TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO: item.ESA_ESTADO_ASIENTO, USU_USUARIO: item.USU_USUARIO, ASI_FECHA: item.ASI_FECHA, ASI_GLOSA: item.ASI_GLOSA });
+        setFormData({ PER_PERIODO: item.PER_PERIODO, TPA_TIPO_ASIENTO: item.TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO: item.ESA_ESTADO_ASIENTO, USU_USUARIO: item.USU_USUARIO, ASI_FECHA: formatDateForInput(item.ASI_FECHA), ASI_GLOSA: item.ASI_GLOSA });
         setEditingId(item.ASI_ASIENTO);
     };
 
@@ -161,6 +170,7 @@ const CON_ASIENTOCrud = () => {
                             value={formData.ASI_FECHA || ''}
                             onChange={handleChange}
                             type="date"
+                            onClick={(e) => e.target.showPicker && e.target.showPicker()}
                             required
                         />
                     </div>
@@ -208,13 +218,13 @@ const CON_ASIENTOCrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.TPA_TIPO_ASIENTO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ESA_ESTADO_ASIENTO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USUARIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_FECHA}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_FECHA ? new Date(item.ASI_FECHA).toLocaleDateString() : ''}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_GLOSA}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <Button type='button' size='sm' variant='warning' className='mr-2' onClick={() => handleEdit(item)}>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
                                         Editar
                                     </Button>
-                                    <Button type='button' size='sm' variant='danger' onClick={() => handleDelete(item.ASI_ASIENTO)}>
+                                    <Button size='sm' variant='danger' onClick={() => handleDelete(item.ASI_ASIENTO)}>
                                         Eliminar
                                     </Button>
                                 </td>

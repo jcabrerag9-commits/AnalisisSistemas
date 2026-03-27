@@ -1,6 +1,9 @@
 const oracledb = require('oracledb');
 require('dotenv').config();
 
+// Evitar errores de parseo circular con columnas CLOB (como BIT_DATOS_PREVIOS)
+oracledb.fetchAsString = [ oracledb.CLOB ];
+
 // Configuración de la base de datos
 const dbConfig = {
     user: process.env.ORACLE_USER,

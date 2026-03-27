@@ -3,7 +3,7 @@ const db = require('../db');
 
 exports.getAll = async (req, res) => {
     try {
-        const result = await db.executeQuery('SELECT * FROM CON_USUARIO');
+        const result = await db.executeQuery('SELECT * FROM CON_USUARIO ORDER BY USU_USUARIO ASC');
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
