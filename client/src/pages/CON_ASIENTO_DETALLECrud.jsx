@@ -4,6 +4,7 @@ import axios from 'axios';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import Card from '../components/Card';
 
 const CON_ASIENTO_DETALLECrud = () => {
     const [data, setData] = useState([]);
@@ -109,109 +110,46 @@ const CON_ASIENTO_DETALLECrud = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Asiento Detalle</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-
-                    <div>
-                        <Select label="Asiento" name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
-                            options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
-                            options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Select label="Centro de Costo" name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
-                            options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
-                            options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Input label="Tasa de Cambio" name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
-                            type="number" required />
-                    </div>
-                    <div>
-                        <Input label="Debe Origen" name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange}
-                            type="number" required />
-                    </div>
-                    <div>
-                        <Input label="Haber Origen" name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange}
-                            type="number" required />
-                    </div>
-                    <div>
-                        <Input label="Debe Local" name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange}
-                            type="number" required />
-                    </div>
-                    <div>
-                        <Input label="Haber Local" name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange}
-                            type="number" required />
-                    </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ ASI_ASIENTO: '', CUE_CUENTA: '', CTC_CENTRO_COSTO: '', MON_MONEDA: '', CTC_TASA_CAMBIO: '', ASD_DEBE_ORIGEN: '', ASD_HABER_ORIGEN: '', ASD_DEBE_LOCAL: '', ASD_HABER_LOCAL: '' }); }}>
-                            Cancelar
-                        </Button>
-                    )}
-                </div>
-            </form>
-
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento Detalle</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Asiento</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro de Costo</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Moneda</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tasa de Cambio</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Debe Origen</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Haber Origen</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Debe Local</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Haber Local</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.ASD_ASIENTO_DETALLE} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_ASIENTO_DETALLE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASI_ASIENTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CUENTA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_CENTRO_COSTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.MON_MONEDA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_TASA_CAMBIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_DEBE_ORIGEN}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_HABER_ORIGEN}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_DEBE_LOCAL}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ASD_HABER_LOCAL}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.ASD_ASIENTO_DETALLE)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
-            </div>
-        </div>
+        <Card title="Gestión de Asiento Detalle" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ ASI_ASIENTO: '', CUE_CUENTA: '', CTC_CENTRO_COSTO: '', MON_MONEDA: '', CTC_TASA_CAMBIO: '', ASD_DEBE_ORIGEN: '', ASD_HABER_ORIGEN: '', ASD_DEBE_LOCAL: '', ASD_HABER_LOCAL: '' }); }}
+            columns={[
+                { header: 'Asiento Detalle', accessor: 'ASD_ASIENTO_DETALLE' },
+                { header: 'Asiento', accessor: 'ASI_ASIENTO' },
+                { header: 'Cuenta', accessor: 'CUE_CUENTA' },
+                { header: 'Centro de Costo', accessor: 'CTC_CENTRO_COSTO' },
+                { header: 'Moneda', accessor: 'MON_MONEDA' },
+                { header: 'Tasa de Cambio', accessor: 'CTC_TASA_CAMBIO' },
+                { header: 'Debe Origen', accessor: 'ASD_DEBE_ORIGEN' },
+                { header: 'Haber Origen', accessor: 'ASD_HABER_ORIGEN' },
+                { header: 'Debe Local', accessor: 'ASD_DEBE_LOCAL' },
+                { header: 'Haber Local', accessor: 'ASD_HABER_LOCAL' },
+            ]}
+            data={data}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+        >
+            <Select label="Asiento" name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
+                options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
+            <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
+            <Select label="Centro de Costo" name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
+            <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
+            <Input label="Tasa de Cambio" name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
+                type="number" required />
+            <Input label="Debe Origen" name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange}
+                type="number" required />
+            <Input label="Haber Origen" name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange}
+                type="number" required />
+            <Input label="Debe Local" name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange}
+                type="number" required />
+            <Input label="Haber Local" name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange}
+                type="number" required />
+        </Card>
     );
 };
 

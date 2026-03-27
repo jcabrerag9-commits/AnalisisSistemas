@@ -47,7 +47,8 @@ const CON_IMPUESTOCrud = () => {
             }
             setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' });
             setEditingId(null);
-            fetchData();
+            fetc
+            hData();
         } catch (err) { console.error(err); }
     };
 
