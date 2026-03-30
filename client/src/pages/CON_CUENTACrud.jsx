@@ -4,6 +4,7 @@ import axios from 'axios';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import Card from '../components/Card';
 
 const CON_CUENTACrud = () => {
     const [data, setData] = useState([]);
@@ -86,80 +87,32 @@ const CON_CUENTACrud = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de cuentas</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <Card title="Gestión de cuentas" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }}
+            columns={[
+                { header: 'Cuenta', accessor: 'CUE_CUENTA' },
+                { header: 'Cuenta padre', accessor: 'CUE_CUENTA_PADRE' },
+                { header: 'Tipo Cuenta', accessor: 'TCU_TIPO_CUENTA' },
+                { header: 'Código', accessor: 'CUE_CODIGO' },
+                { header: 'Nombre', accessor: 'CUE_NOMBRE' },
+                { header: 'Descripción', accessor: 'CUE_DESCRIPCION' },
+            ]}
+            data={data}
+            rowKey="CUE_CUENTA"
+            onEdit={handleEdit}
+            onDelete={handleDelete}>
+            <Select label="Cuenta padre" name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
 
-                    <div>
-                        <Select label="Cuenta padre" name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
-                            options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Select label="Tipo Cuenta" name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
-                            options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Input label="Código" name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Input label="Nombre" name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Input label="Descripción" name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} required />
-                    </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type="submit" variant='primary' size='lg'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type="button" variant='secondary' size='lg' className='ml-2' onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }}>
-                            Cancelar
-                        </Button>
-                    )}
-                </div>
-            </form>
+            <Select label="Tipo Cuenta" name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
+                options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta padre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tipo Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Descripción</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.CUE_CUENTA} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CUENTA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CUENTA_PADRE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_TIPO_CUENTA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CODIGO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_NOMBRE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_DESCRIPCION}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button type="button" variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button type="button" variant='danger' size='sm' onClick={() => handleDelete(item.CUE_CUENTA)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
-            </div>
-        </div>
+            <Input label="Código" name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
+            <Input label="Nombre" name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} required />
+            <Input label="Descripción" name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} required />
+        </Card>
+
     );
 };
 

@@ -4,6 +4,7 @@ import axios from 'axios';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import Card from '../components/Card';
 
 const CON_CENTRO_COSTOCrud = () => {
     const [data, setData] = useState([]);
@@ -75,68 +76,25 @@ const CON_CENTRO_COSTOCrud = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Centro Costo</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <Card title="Gestión de Centro Costo" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CTC_CENTRO_COSTO_PADRE: '', CTC_CODIGO_DEPARTAMENTO: '', CTC_NOMBRE: '' }); }}
+            columns={[
+                { header: 'Centro Costo', accessor: 'CTC_CENTRO_COSTO' },
+                { header: 'Centro Costo Padre', accessor: 'CTC_CENTRO_COSTO_PADRE' },
+                { header: 'Código Departamento', accessor: 'CTC_CODIGO_DEPARTAMENTO' },
+                { header: 'Nombre', accessor: 'CTC_NOMBRE' },
+            ]}
+            data={data}
+            rowKey="CTC_CENTRO_COSTO"
+            onEdit={handleEdit}
+            onDelete={handleDelete}>
+            <Select label="Centro Costo Padre" name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                required />
 
-                    <div>
-                        <Select label="Centro Costo Padre" name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
-                            options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                    </div>
-                    <div>
-                        <Input label="Código Departamento" name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Input label="Nombre" name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} required />
-                    </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type="submit" variant='primary' size='lg'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type="button" variant='secondary' size='lg' className='ml-2' onClick={() => { setEditingId(null); setFormData({ CTC_CENTRO_COSTO_PADRE: '', CTC_CODIGO_DEPARTAMENTO: '', CTC_NOMBRE: '' }); }}>
-                            Cancelar
-                        </Button>
-                    )}
-                </div>
-            </form>
+            <Input label="Código Departamento" name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />
+            <Input label="Nombre" name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} required />
+        </Card>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro Costo</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Centro Costo Padre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código Departamento</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.CTC_CENTRO_COSTO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_CENTRO_COSTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_CENTRO_COSTO_PADRE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_CODIGO_DEPARTAMENTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CTC_NOMBRE}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button type="button" size='sm' variant='warning' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button type="button" size='sm' variant='danger' onClick={() => handleDelete(item.CTC_CENTRO_COSTO)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
-            </div>
-        </div>
     );
 };
 

@@ -1,6 +1,6 @@
 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Layout, Menu, Home, Database } from 'lucide-react';
+import { Home, Database } from 'lucide-react';
 import './index.css';
 
 import CON_USUARIOCrud from './pages/CON_USUARIOCrud';
@@ -21,46 +21,95 @@ import CON_ASIENTO_DETALLECrud from './pages/CON_ASIENTO_DETALLECrud';
 import CON_IMPUESTO_MOVIMIENTOCrud from './pages/CON_IMPUESTO_MOVIMIENTOCrud';
 import CON_BITACORACrud from './pages/CON_BITACORACrud';
 
+const menuItems = [
+  { path: '/con-usuario', label: 'Usuario' },
+  { path: '/con-rol', label: 'Rol' },
+  { path: '/con-usuario-rol', label: 'Rol Usuario' },
+  { path: '/con-moneda', label: 'Moneda' },
+  { path: '/con-estado-periodo', label: 'Estado Periodo' },
+  { path: '/con-estado-asiento', label: 'Estado Asiento' },
+  { path: '/con-tipo-asiento', label: 'Tipo Asiento' },
+  { path: '/con-tipo-cuenta', label: 'Tipo Cuenta' },
+  { path: '/con-centro-costo', label: 'Centro Costo' },
+  { path: '/con-cuenta', label: 'Cuenta' },
+  { path: '/con-tipo-cambio', label: 'Tipo Cambio' },
+  { path: '/con-periodo', label: 'Periodo' },
+  { path: '/con-impuesto', label: 'Impuesto' },
+  { path: '/con-asiento', label: 'Asiento' },
+  { path: '/con-asiento-detalle', label: 'Asiento Detalle' },
+  { path: '/con-impuesto-movimiento', label: 'Impuesto Movimiento' },
+  { path: '/con-bitacora', label: 'Bitácora' },
+];
+
 function App() {
   return (
     <Router>
-      <div style={{ display: 'flex', fontFamily: 'Inter, sans-serif' }}>
-        <nav style={{ width: '250px', padding: '20px', background: '#0f172a', minHeight: '100vh', color: 'white' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            <Database size={24} color="#38bdf8" />
-            <h2 style={{ fontSize: '18px', margin: 0 }}>Menú CRUD</h2>
+      <div className="flex font-[Inter,sans-serif] min-h-screen">
+        {/* Sidebar */}
+        <nav className="w-64 bg-slate-900 min-h-screen p-5 flex flex-col shadow-xl border-r border-slate-800">
+          {/* Logo / Brand */}
+          <div className="flex items-center gap-3 mb-6 px-2">
+            <Database size={26} className="text-sky-400 drop-shadow-lg" />
+            <h2 className="text-lg font-bold text-white tracking-tight">Menú CRUD</h2>
           </div>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li style={{ margin: '15px 0' }}>
-              <Link to="/" style={{ color: '#94a3b8', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Home size={18} /> Inicio
+
+          {/* Divider */}
+          <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-4" />
+
+          {/* Navigation */}
+          <ul className="list-none p-0 m-0 flex flex-col gap-1 overflow-y-auto flex-1">
+            {/* Home link */}
+            <li>
+              <Link
+                to="/"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 no-underline
+                           hover:bg-slate-800 hover:text-white transition-all duration-200 group"
+              >
+                <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
+                <span className="text-sm font-medium">Inicio</span>
               </Link>
             </li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-usuario" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Usuario</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-rol" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Rol</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-usuario-rol" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Rol Usuario</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-moneda" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Moneda</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-estado-periodo" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Estado Periodo</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-estado-asiento" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Estado Asiento</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-tipo-asiento" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Tipo Asiento</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-tipo-cuenta" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Tipo Cuenta</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-centro-costo" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Centro Costo</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-cuenta" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Cuenta</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-tipo-cambio" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Tipo Cambio</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-periodo" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Periodo</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-impuesto" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Impuesto</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-asiento" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Asiento</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-asiento-detalle" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Asiento Detalle</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-impuesto-movimiento" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Impuesto Movimiento</Link></li>
-            <li style={{ margin: '10px 0' }}><Link to="/con-bitacora" style={{ color: '#38bdf8', textDecoration: 'none', fontSize: '14px' }}>Bitacora</Link></li>
+
+            {/* Section label */}
+            <li className="mt-4 mb-1 px-3">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Tablas
+              </span>
+            </li>
+
+            {/* Menu items */}
+            {menuItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className="block px-3 py-2 rounded-lg text-sm text-sky-400 no-underline
+                             hover:bg-sky-400/10 hover:text-sky-300 hover:translate-x-1
+                             active:scale-95
+                             transition-all duration-200"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
+
+          {/* Footer */}
+          <div className="mt-4 pt-4 border-t border-slate-800">
+            <p className="text-[11px] text-slate-600 text-center">Sistema Contable v1.0</p>
+          </div>
         </nav>
-        <main style={{ flex: 1, padding: '40px', background: '#f8fafc' }}>
+
+        {/* Main content */}
+        <main className="flex-1 p-10 bg-slate-50 overflow-y-auto">
           <Routes>
             <Route path="/" element={
-              <div>
-                <h1 style={{ color: '#334155' }}>Bienvenido al Sistema de Contabilidad</h1>
-                <p style={{ color: '#64748b' }}>Seleccione una tabla del menú lateral para gestionar los registros.</p>
+              <div className="max-w-2xl">
+                <h1 className="text-3xl font-extrabold text-slate-700 mb-3">
+                  Bienvenido al Sistema de Contabilidad
+                </h1>
+                <p className="text-slate-500 text-base leading-relaxed">
+                  Seleccione una tabla del menú lateral para gestionar los registros.
+                </p>
               </div>
             } />
             <Route path="/con-usuario" element={<CON_USUARIOCrud />} />
