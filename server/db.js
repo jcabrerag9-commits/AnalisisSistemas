@@ -42,5 +42,6 @@ async function executeQuery(sql, binds = [], opts = { autoCommit: true, outForma
 
 module.exports = {
     initialize,
-    executeQuery
+    executeQuery,
+    dbConfig
 };

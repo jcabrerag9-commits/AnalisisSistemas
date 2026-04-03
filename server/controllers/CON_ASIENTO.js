@@ -1,5 +1,6 @@
 
 const db = require('../db');
+const asientoService = require('../services/asientoService');
 
 exports.getAll = async (req, res) => {
     try {
@@ -23,6 +24,34 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        // Recibimos los campos que ya tenés + un array de detalles
+        const {
+            PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO,
+            USU_USUARIO, ASI_FECHA, ASI_GLOSA,
+            detalles // <--- Esto es lo nuevo que debés mandar desde el front
+        } = req.body;
+
+        // Validamos que vengan movimientos
+        if (!detalles || detalles.length < 2) {
+            return res.status(400).json({ error: "Un asiento contable debe tener al menos dos movimientos." });
+        }
+
+        // Le mandamos todo al Service para que haga la magia
+        const dataAsiento = { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA };
+        const idGenerado = await asientoService.crearAsientoCompleto(dataAsiento, detalles);
+
+        res.status(201).json({
+            message: 'Asiento creado y cuadrado correctamente',
+            id: idGenerado
+        });
+    } catch (err) {
+        // Si el Service tira un error (ej: "No cuadra"), cae aquí
+        res.status(500).json({ error: err.message });
+    }
+};
+
+/*exports.create = async (req, res) => {
+    try {
         const { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA } = req.body;
         const sql = `INSERT INTO CON_ASIENTO (PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA) VALUES (:PER_PERIODO, :TPA_TIPO_ASIENTO, :ESA_ESTADO_ASIENTO, :USU_USUARIO, :ASI_FECHA, :ASI_GLOSA)`;
         await db.executeQuery(sql, { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA });
@@ -30,17 +59,29 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-};
+};*/
 
 exports.update = async (req, res) => {
     try {
         const id = req.params.id;
-        const { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA } = req.body;
-        const sql = `UPDATE CON_ASIENTO SET PER_PERIODO = :PER_PERIODO, TPA_TIPO_ASIENTO = :TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO = :ESA_ESTADO_ASIENTO, USU_USUARIO = :USU_USUARIO, ASI_FECHA = :ASI_FECHA, ASI_GLOSA = :ASI_GLOSA WHERE ASI_ASIENTO = :id`;
-        await db.executeQuery(sql, { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA, id });
-        res.json({ message: 'Updated successfully' });
+        const {
+            PER_PERIODO, TPA_TIPO_ASIENTO,
+            USU_USUARIO, ASI_FECHA, ASI_GLOSA,
+            detalles
+        } = req.body;
+
+        if (!detalles || detalles.length < 2) {
+            return res.status(400).json({ error: "Un asiento contable debe tener al menos dos movimientos." });
+        }
+
+        const dataAsiento = { PER_PERIODO, TPA_TIPO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA };
+        await asientoService.editarAsientoCompleto(id, dataAsiento, detalles);
+
+        res.json({ message: 'Asiento actualizado correctamente' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        // Captura errores del SP (ej: periodo cerrado, descuadre)
+        const status = err.message.includes('ORA-20') ? 400 : 500;
+        res.status(status).json({ error: err.message });
     }
 };
 
