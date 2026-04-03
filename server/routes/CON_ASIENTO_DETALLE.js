@@ -4,6 +4,7 @@ const router = express.Router();
 const controller = require('../controllers/CON_ASIENTO_DETALLE');
 
 router.get('/', controller.getAll);
+router.get('/asiento/:asiAsiento', controller.getByAsiento);
 router.get('/:id', controller.getById);
 router.post('/', controller.create);
 router.put('/:id', controller.update);
