@@ -75,7 +75,7 @@ const CON_TIPO_ASIENTOCrud = () => {
 
                     <div>
                         <Input label="Código" name="TPA_CODIGO" value={formData.TPA_CODIGO || ''} onChange={handleChange}
-                            type="number" required />
+                            type="text" required />
                     </div>
                     <div>
                         <Input label="Descripción" name="TPA_DESCRIPCION" value={formData.TPA_DESCRIPCION || ''} onChange={handleChange}

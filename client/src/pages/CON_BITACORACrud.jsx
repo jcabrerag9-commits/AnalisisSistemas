@@ -58,8 +58,17 @@ const CON_BITACORACrud = () => {
         }
     };
 
+    const formatDateForInput = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const handleEdit = (item) => {
-        setFormData({ USU_USUARIO: item.USU_USUARIO, BIT_TABLA_AFECTADA: item.BIT_TABLA_AFECTADA, BIT_ACCION: item.BIT_ACCION, BIT_FECHA_HORA: item.BIT_FECHA_HORA, BIT_DATOS_PREVIOS: item.BIT_DATOS_PREVIOS });
+        setFormData({ USU_USUARIO: item.USU_USUARIO, BIT_TABLA_AFECTADA: item.BIT_TABLA_AFECTADA, BIT_ACCION: item.BIT_ACCION, BIT_FECHA_HORA: formatDateForInput(item.BIT_FECHA_HORA), BIT_DATOS_PREVIOS: item.BIT_DATOS_PREVIOS });
         setEditingId(item.BIT_BITACORA);
     };
 
@@ -99,7 +108,7 @@ const CON_BITACORACrud = () => {
                     </div>
                     <div>
                         <Input label="Fecha" name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange}
-                            type="datetime-local" required />
+                            type="date" onClick={(e) => e.target.showPicker && e.target.showPicker()} required />
                     </div>
                     <div>
                         <Input label="Datos Previos" name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange}
@@ -138,13 +147,13 @@ const CON_BITACORACrud = () => {
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USUARIO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_TABLA_AFECTADA}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_ACCION}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_FECHA_HORA}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_FECHA_HORA ? new Date(item.BIT_FECHA_HORA).toLocaleDateString() : ''}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{item.BIT_DATOS_PREVIOS}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <Button type='button' size='sm' variant='warning' className='mr-2' onClick={() => handleEdit(item)}>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
                                         Editar
                                     </Button>
-                                    <Button type='button' size='sm' variant='danger' onClick={() => handleDelete(item.BIT_BITACORA)}>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.BIT_BITACORA)}>
                                         Eliminar
                                     </Button>
                                 </td>
