@@ -52,4 +52,7 @@ const CON_IMPUESTO_MOVIMIENTORoute = require('./CON_IMPUESTO_MOVIMIENTO');
 const CON_BITACORARoute = require('./CON_BITACORA');
  router.use('/con-bitacora', CON_BITACORARoute);
 
+const REPORTE_DIARIORoute = require('./REPORTE_DIARIO');
+ router.use('/reportes', REPORTE_DIARIORoute);
+
 module.exports = router;

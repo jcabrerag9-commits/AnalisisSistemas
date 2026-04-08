@@ -53,3 +53,25 @@ exports.delete = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+exports.getAniosDisponibles = async (req, res) => {
+    try {
+        //obtiene los años disponibles
+        const sql = `
+            SELECT DISTINCT PER_AÑO
+            FROM CON_PERIODO 
+            ORDER BY PER_AÑO DESC
+        `;
+        const result = await db.executeQuery(sql);
+        // Mapea para que el frontend reciba el formato { value: '2026', label: '2026' }
+        const aniosFormateados = result.rows.map(row => ({
+            value: String(row.PER_AÑO),
+            label: String(row.PER_AÑO)
+        }));
+
+        res.json(aniosFormateados);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
+    }
+};

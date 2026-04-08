@@ -20,6 +20,7 @@ import CON_ASIENTOCrud from './pages/CON_ASIENTOCrud';
 import CON_ASIENTO_DETALLECrud from './pages/CON_ASIENTO_DETALLECrud';
 import CON_IMPUESTO_MOVIMIENTOCrud from './pages/CON_IMPUESTO_MOVIMIENTOCrud';
 import CON_BITACORACrud from './pages/CON_BITACORACrud';
+import LibroDiarioReporte from './pages/LibroDiarioReporte';
 
 const menuItems = [
   { path: '/con-usuario', label: 'Usuario' },
@@ -39,6 +40,10 @@ const menuItems = [
   { path: '/con-asiento-detalle', label: 'Asiento Detalle' },
   { path: '/con-impuesto-movimiento', label: 'Impuesto Movimiento' },
   { path: '/con-bitacora', label: 'Bitácora' },
+];
+
+const reporteItems = [
+  { path: '/reporte-libro-diario', label: 'Libro Diario' },
 ];
 
 function App() {
@@ -91,6 +96,27 @@ function App() {
                 </Link>
               </li>
             ))}
+
+            {/* Reportes section */}
+            <li className="mt-4 mb-1 px-3">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Reportes
+              </span>
+            </li>
+
+            {reporteItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className="block px-3 py-2 rounded-lg text-sm text-emerald-400 no-underline
+                             hover:bg-emerald-400/10 hover:text-emerald-300 hover:translate-x-1
+                             active:scale-95
+                             transition-all duration-200"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           {/* Footer */}
@@ -129,6 +155,7 @@ function App() {
             <Route path="/con-asiento-detalle" element={<CON_ASIENTO_DETALLECrud />} />
             <Route path="/con-impuesto-movimiento" element={<CON_IMPUESTO_MOVIMIENTOCrud />} />
             <Route path="/con-bitacora" element={<CON_BITACORACrud />} />
+            <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
           </Routes>
         </main>
       </div>
