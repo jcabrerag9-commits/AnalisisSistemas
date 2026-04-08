@@ -25,6 +25,15 @@ const CON_ASIENTOCrud = () => {
     // ── Estado del detalle ──
     const [detalles, setDetalles] = useState([{ ...DETALLE_VACIO }, { ...DETALLE_VACIO }]);
 
+    // ── Estados para Anulación e Historial ──
+    const [modalAnular, setModalAnular] = useState(false);
+    const [asientoSeleccionado, setAsientoSeleccionado] = useState(null);
+    const [motivoAnulacion, setMotivoAnulacion] = useState('');
+    const [procesandoAnulacion, setProcesandoAnulacion] = useState(false);
+
+    const [mostrarHistorial, setMostrarHistorial] = useState(false);
+    const [historial, setHistorial] = useState([]);
+
     // ── Estado de la tabla de asientos existentes ──
     const [data, setData] = useState([]);
     const [editingId, setEditingId] = useState(null);
@@ -212,6 +221,58 @@ const CON_ASIENTOCrud = () => {
 
         // Ocultar mensaje tras 5 s
         setTimeout(() => setMensaje(null), 5000);
+    };
+
+    // ══════════════════════════════════════════
+    //  HANDLERS — ANULACIÓN E HISTORIAL
+    // ══════════════════════════════════════════
+    const handleAbrirModalAnular = (item) => {
+        setAsientoSeleccionado(item);
+        setMotivoAnulacion('');
+        setModalAnular(true);
+    };
+
+    const handleCerrarModal = () => {
+        setModalAnular(false);
+        setAsientoSeleccionado(null);
+        setMotivoAnulacion('');
+    };
+
+    const handleAnularAsiento = async () => {
+        if (!motivoAnulacion.trim()) return setMensaje({ tipo: 'error', texto: 'Ingrese un motivo.' });
+        if (motivoAnulacion.trim().length < 10) return setMensaje({ tipo: 'error', texto: 'El motivo debe tener al menos 10 caracteres.' });
+        if (!window.confirm(`¿Está seguro de anular el asiento #${asientoSeleccionado.ASI_ASIENTO}?`)) return;
+
+        setProcesandoAnulacion(true);
+        try {
+            const response = await axios.post(`${API_URL}/anular`, {
+                asi_asiento: asientoSeleccionado.ASI_ASIENTO,
+                usuarioId: asientoSeleccionado.USU_USUARIO || 1,
+                motivo: motivoAnulacion
+            });
+            const data = response.data;
+            setMensaje({ tipo: 'success', texto: `${data.message}. Asiento anulado: #${data.data?.asientoAnulado}. Reversión: #${data.data?.asientoReversion}` });
+            handleCerrarModal();
+            fetchData();
+        } catch (err) {
+            const msg = err.response?.data?.error || err.message;
+            setMensaje({ tipo: 'error', texto: `Error: ${msg}` });
+        } finally {
+            setProcesandoAnulacion(false);
+            window.scrollTo(0, 0);
+        }
+    };
+
+    const handleVerHistorial = async () => {
+        try {
+            const res = await axios.get('http://localhost:5000/api/con-bitacora');
+            const dataFilter = res.data.filter(b => b.BIT_TABLA_AFECTADA === 'CON_ASIENTO' && b.BIT_ACCION === 'ANULACION');
+            setHistorial(dataFilter.sort((a, b) => new Date(b.BIT_FECHA_HORA) - new Date(a.BIT_FECHA_HORA)));
+            setMostrarHistorial(true);
+        } catch (err) {
+            console.error(err);
+            setMensaje({ tipo: 'error', texto: 'Error cargando historial. Asegúrate que la ruta exista.' });
+        }
     };
 
     // ══════════════════════════════════════════
@@ -457,7 +518,12 @@ const CON_ASIENTOCrud = () => {
                 TABLA DE ASIENTOS EXISTENTES
                ══════════════════════════════════════ */}
             <div className="px-8 pb-8 overflow-x-auto">
-                <h3 className="text-lg font-semibold text-slate-700 mb-4">Asientos Registrados</h3>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-slate-700">Asientos Registrados</h3>
+                    <Button type="button" variant="secondary" size="sm" onClick={handleVerHistorial}>
+                        Ver Historial de Anulaciones
+                    </Button>
+                </div>
                 <table className="w-full border-collapse text-sm">
                     <thead>
                         <tr className="bg-slate-100 text-left text-slate-700">
@@ -492,11 +558,14 @@ const CON_ASIENTOCrud = () => {
                                                 </Button>
                                             ) : (
                                                 <>
-                                                    <Button variant="warning" size="sm" onClick={() => handleEdit(item)}>
+                                                    <Button type="button" variant="warning" size="sm" onClick={() => handleEdit(item)}>
                                                         Editar
                                                     </Button>
-                                                    <Button variant="danger" size="sm" onClick={() => handleDelete(item.ASI_ASIENTO)}>
+                                                    <Button type="button" variant="danger" size="sm" onClick={() => handleDelete(item.ASI_ASIENTO)}>
                                                         Eliminar
+                                                    </Button>
+                                                    <Button type="button" variant="secondary" size="sm" onClick={() => handleAbrirModalAnular(item)}>
+                                                        Anular
                                                     </Button>
                                                 </>
                                             );
@@ -511,6 +580,86 @@ const CON_ASIENTOCrud = () => {
                     <p className="text-center py-8 text-slate-400 text-sm">No hay asientos registrados.</p>
                 )}
             </div>
+
+            {/* ══════════════════════════════════════
+                MODALES ANULACIÓN E HISTORIAL
+               ══════════════════════════════════════ */}
+            {modalAnular && asientoSeleccionado && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleCerrarModal}>
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+                            <h2 className="text-xl font-bold text-red-600">⚠️ Anular Asiento #{asientoSeleccionado.ASI_ASIENTO}</h2>
+                            <button onClick={handleCerrarModal} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+                        </div>
+                        <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            <div className="bg-slate-50 p-3 rounded mb-4 text-sm whitespace-pre-wrap">
+                                <strong>Glosa:</strong> {asientoSeleccionado.ASI_GLOSA}
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="txtMotivo">Motivo (mínimo 10 caracteres) *</label>
+                                <textarea id="txtMotivo" className="w-full border border-slate-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-200 text-slate-900" rows="3" required defaultValue={motivoAnulacion} onChange={e => setMotivoAnulacion(e.target.value)} placeholder="Ingrese el motivo detallado de la anulación..."></textarea>
+                                <div className="text-xs text-slate-500 mt-1">{motivoAnulacion.length} / 10 caracteres mínimos</div>
+                            </div>
+                            <div className="bg-red-50 border border-red-200 p-3 rounded text-sm text-red-800">
+                                <strong>⚠️ ADVERTENCIA:</strong> Esta acción cambiará el estado a ANULADO, creará un asiento de REVERSIÓN, y quedará registrada. No se puede deshacer.
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-200 bg-slate-50">
+                            <Button type="button" variant="secondary" onClick={handleCerrarModal} disabled={procesandoAnulacion}>Cancelar</Button>
+                            <Button type="button" variant="danger" disabled={procesandoAnulacion || motivoAnulacion.trim().length < 10} onClick={handleAnularAsiento}>
+                                {procesandoAnulacion ? 'Procesando...' : 'Confirmar Anulación'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {mostrarHistorial && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setMostrarHistorial(false)}>
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+                            <h2 className="text-xl font-bold text-slate-800">📋 Historial de Anulaciones</h2>
+                            <button onClick={() => setMostrarHistorial(false)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+                        </div>
+                        <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            {historial.length === 0 ? (
+                                <p className="text-center text-slate-500">No hay anulaciones registradas.</p>
+                            ) : (
+                                <table className="w-full border-collapse text-sm text-left text-slate-800">
+                                    <thead>
+                                        <tr className="bg-slate-100 text-slate-700">
+                                            <th className="p-2 border-b">Fecha Date</th>
+                                            <th className="p-2 border-b">Usuario</th>
+                                            <th className="p-2 border-b">Asientos</th>
+                                            <th className="p-2 border-b">Glosa Anterior / Motivo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {historial.map((h, i) => {
+                                            let previos = {};
+                                            try { previos = JSON.parse(h.BIT_DATOS_PREVIOS || '{}'); } catch (e) { }
+                                            return (
+                                                <tr key={i} className="border-b hover:bg-slate-50">
+                                                    <td className="p-2">{new Date(h.BIT_FECHA_HORA).toLocaleString()}</td>
+                                                    <td className="p-2">{h.USU_USUARIO}</td>
+                                                    <td className="p-2">
+                                                        Anulado: #{previos.asiento_anulado}<br />
+                                                        Reversión: #{previos.asiento_reversion}
+                                                    </td>
+                                                    <td className="p-2">
+                                                        <span className="text-xs text-slate-500 font-semibold">Motivo:</span> {previos.motivo}<br />
+                                                        <span className="text-xs text-slate-500 font-semibold">Glosa:</span> {previos.glosa_original}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
