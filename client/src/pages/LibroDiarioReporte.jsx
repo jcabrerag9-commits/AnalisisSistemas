@@ -30,7 +30,7 @@ const LibroDiarioReporte = () => {
     useEffect(() => {
         const fetchAnios = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/con-periodo/anios');
+                const res = await axios.get('http://localhost:5000/api/reportes/libro-diario/anios');
                 setAnios(res.data);
             } catch (err) {
                 console.error('Error al obtener los años:', err);
@@ -72,24 +72,24 @@ const LibroDiarioReporte = () => {
     // ── Agrupación por Partida (NUMERO_POLIZA) ──
     const partidas = data
         ? Object.values(
-              data.reduce((acc, row) => {
-                  const key = row.NUMERO_POLIZA;
-                  if (!acc[key]) {
-                      acc[key] = {
-                          numero: key,
-                          fecha: row.FECHA_POLIZA,
-                          descripcion: row.DESCRIPCION,
-                          detalles: [],
-                          totalDebe: 0,
-                          totalHaber: 0,
-                      };
-                  }
-                  acc[key].detalles.push(row);
-                  acc[key].totalDebe += parseFloat(row.DEBE) || 0;
-                  acc[key].totalHaber += parseFloat(row.HABER) || 0;
-                  return acc;
-              }, {})
-          )
+            data.reduce((acc, row) => {
+                const key = row.NUMERO_POLIZA;
+                if (!acc[key]) {
+                    acc[key] = {
+                        numero: key,
+                        fecha: row.FECHA_POLIZA,
+                        descripcion: row.DESCRIPCION,
+                        detalles: [],
+                        totalDebe: 0,
+                        totalHaber: 0,
+                    };
+                }
+                acc[key].detalles.push(row);
+                acc[key].totalDebe += parseFloat(row.DEBE) || 0;
+                acc[key].totalHaber += parseFloat(row.HABER) || 0;
+                return acc;
+            }, {})
+        )
         : [];
 
     // ── Gran Total del mes ──

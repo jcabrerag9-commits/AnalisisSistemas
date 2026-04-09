@@ -66,7 +66,7 @@ exports.update = async (req, res) => {
     try {
         const id = req.params.id;
         const {
-            PER_PERIODO, TPA_TIPO_ASIENTO,
+            PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO,
             USU_USUARIO, ASI_FECHA, ASI_GLOSA,
             detalles
         } = req.body;
@@ -75,7 +75,7 @@ exports.update = async (req, res) => {
             return res.status(400).json({ error: "Un asiento contable debe tener al menos dos movimientos." });
         }
 
-        const dataAsiento = { PER_PERIODO, TPA_TIPO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA };
+        const dataAsiento = { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA };
         await asientoService.editarAsientoCompleto(id, dataAsiento, detalles);
 
         res.json({ message: 'Asiento actualizado correctamente' });
