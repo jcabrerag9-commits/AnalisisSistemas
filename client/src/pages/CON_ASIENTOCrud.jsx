@@ -54,6 +54,7 @@ const CON_ASIENTOCrud = () => {
     const [CON_USUARIOData, setCON_USUARIOData] = useState([]);
     const [CON_CUENTAData, setCON_CUENTAData] = useState([]);
     const [CON_CENTRO_COSTOData, setCON_CENTRO_COSTOData] = useState([]);
+    const [CON_ESTADO_PERIODOData, setCON_ESTADO_PERIODOData] = useState([]);
     const [CON_TIPO_CAMBIOData, setCON_TIPO_CAMBIOData] = useState([]);
     const [CON_MONEDAData, setCON_MONEDAData] = useState([]);
 
@@ -73,6 +74,7 @@ const CON_ASIENTOCrud = () => {
         fetchCatalogo('http://localhost:5000/api/con-cuenta', setCON_CUENTAData);
         fetchCatalogo('http://localhost:5000/api/con-centro-costo', setCON_CENTRO_COSTOData);
         fetchCatalogo('http://localhost:5000/api/con-tipo-cambio', setCON_TIPO_CAMBIOData);
+        fetchCatalogo('http://localhost:5000/api/con-estado-periodo', setCON_ESTADO_PERIODOData);
         fetchCatalogo('http://localhost:5000/api/con-moneda', setCON_MONEDAData);
     }, []);
 
@@ -131,7 +133,15 @@ const CON_ASIENTOCrud = () => {
     //  HANDLERS — ENCABEZADO
     // ══════════════════════════════════════════
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+        // Si cambia el periodo, verificar si está cerrado (Modo solo lectura)
+        if (name === 'PER_PERIODO') {
+            const idCerrado = CON_ESTADO_PERIODOData.find(st => st.ESP_NOMBRE?.toUpperCase() === 'CERRADO')?.ESP_ESTADO_PERIODO;
+            const periodoSel = CON_PERIODOData.find(p => p.PER_PERIODO === Number(value));
+            setIsPeriodoCerrado(periodoSel?.ESP_ESTADO_PERIODO === idCerrado);
+        }
     };
 
     // ══════════════════════════════════════════
@@ -293,10 +303,12 @@ const CON_ASIENTOCrud = () => {
         });
         setEditingId(item.ASI_ASIENTO);
 
-        // Verificar si el periodo está cerrado (estado 4 = CERRADO)
+        // Verificar si el periodo está cerrado. Buscamos el ID dinámico de "CERRADO"
+        const idCerrado = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'CERRADO')?.ESP_ESTADO_PERIODO;
+        
         const periodoDelAsiento = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
-        const cerrado = periodoDelAsiento?.ESP_ESTADO_PERIODO === 4
-            || item.ESP_ESTADO_PERIODO === 4;
+        const cerrado = periodoDelAsiento?.ESP_ESTADO_PERIODO === idCerrado
+            || item.ESP_ESTADO_PERIODO === idCerrado;
         setIsPeriodoCerrado(cerrado);
 
         // Cargar los detalles relacionados con este asiento
@@ -373,7 +385,15 @@ const CON_ASIENTOCrud = () => {
                     <h3 className="text-lg font-semibold text-slate-700 mb-4">Encabezado del Asiento</h3>
                     <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                         <Select label="Periodo" name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange}
-                            options={CON_PERIODOData.filter(opt => opt.ESP_ESTADO_PERIODO === 3 || opt.PER_PERIODO === formData.PER_PERIODO).map(opt => ({ value: opt.PER_PERIODO, label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}` }))}
+                            options={(() => {
+                                const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
+                                return CON_PERIODOData
+                                    .filter(opt => opt.ESP_ESTADO_PERIODO === idAbierto || opt.PER_PERIODO === formData.PER_PERIODO)
+                                    .map(opt => ({ 
+                                        value: opt.PER_PERIODO, 
+                                        label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}` 
+                                    }));
+                            })()}
                             required disabled={isPeriodoCerrado} />
                         <Select label="Tipo de Asiento" name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange}
                             options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: `${opt.TPA_TIPO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
@@ -581,9 +601,9 @@ const CON_ASIENTOCrud = () => {
                                     <td className="px-3 py-3 whitespace-nowrap">
                                         <div className="flex items-center gap-2">
                                             {(() => {
-                                                // 3 es ABIERTO. Si es 3, muestra todos los botones.
-                                                const abierto = periodoObj ? periodoObj.ESP_ESTADO_PERIODO === 3 : false;
-                                                
+                                                const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
+                                                const abierto = periodoObj ? periodoObj.ESP_ESTADO_PERIODO === idAbierto : false;
+
                                                 return abierto ? (
                                                     <>
                                                         <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
