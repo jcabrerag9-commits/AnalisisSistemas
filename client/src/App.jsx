@@ -61,7 +61,7 @@ function App() {
     <Router>
       <div className="flex font-[Inter,sans-serif] min-h-screen">
         {/* Sidebar */}
-        <nav className="w-64 bg-slate-900 min-h-screen p-5 flex flex-col shadow-xl border-r border-slate-800">
+        <nav className="w-64 bg-slate-900 min-h-screen p-5 flex flex-col shadow-xl border-r border-slate-800 print:hidden">
           {/* Logo / Brand */}
           <div className="flex items-center gap-3 mb-6 px-2">
             <Database size={26} className="text-sky-400 drop-shadow-lg" />
@@ -175,7 +175,7 @@ function App() {
         </nav>
 
         {/* Main content */}
-        <main className="flex-1 p-10 bg-slate-50 overflow-y-auto">
+        <main className="flex-1 p-10 bg-slate-50 overflow-y-auto print:p-0 print:bg-white print:overflow-visible">
           <Routes>
             <Route path="/" element={
               <div className="max-w-2xl">

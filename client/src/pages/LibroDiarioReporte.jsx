@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Select from '../components/Select';
 import Button from '../components/Button';
-import { useReactToPrint } from 'react-to-print';
 
 const MESES = [
     { value: '1', label: 'Enero' },
@@ -29,21 +28,9 @@ const LibroDiarioReporte = () => {
     const [anios, setAnios] = useState([]);
 
     const contentRef = useRef(null);
-    const handlePrint = useReactToPrint({
-        contentRef,
-        documentTitle: `Libro_Diario_${mes}_${anio}`,
-        pageStyle: `
-        @page {
-            size: auto;
-            margin: 0mm; /* Aniquila el espacio donde el navegador mete sus textos */
-        }
-        @media print {
-            body {
-                padding: 1.5cm; /* Le devuelve un margen blanco, limpio y elegante a tu hoja */
-            }
-        }
-        `,
-    });
+    const handlePrint = () => {
+        window.print();
+    };
 
     useEffect(() => {
         const fetchAnios = async () => {
