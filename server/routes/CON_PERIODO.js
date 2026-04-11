@@ -10,4 +10,8 @@ router.post('/', controller.create);
 router.put('/:id', controller.update);
 router.delete('/:id', controller.delete);
 
+router.post('/abrir', controller.abrirPeriodo);
+router.post('/cerrar-mensual', controller.cerrarPeriodoMensual);
+router.post('/cierre-anual', controller.cierreEjercicioAnual);
+
 module.exports = router;
