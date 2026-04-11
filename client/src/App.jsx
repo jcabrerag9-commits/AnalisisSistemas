@@ -19,6 +19,7 @@ import CON_ASIENTOCrud from './pages/CON_ASIENTOCrud';
 import CON_ASIENTO_DETALLECrud from './pages/CON_ASIENTO_DETALLECrud';
 import CON_IMPUESTO_MOVIMIENTOCrud from './pages/CON_IMPUESTO_MOVIMIENTOCrud';
 import CON_BITACORACrud from './pages/CON_BITACORACrud';
+import LibroDiarioReporte from './pages/LibroDiarioReporte';
 
 // ← NUEVA IMPORTACIÓN
 import CON_REPROCESO_PERIODO from './pages/CON_REPROCESO_PERIODO';
@@ -46,6 +47,8 @@ const menuItems = [
 // ← NUEVA SECCIÓN DE OPERACIONES
 const operacionesItems = [
   { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
+const reporteItems = [
+  { path: '/reporte-libro-diario', label: 'Libro Diario' },
 ];
 
 function App() {
@@ -116,6 +119,27 @@ function App() {
                 </Link>
               </li>
             ))}
+
+            {/* Reportes section */}
+            <li className="mt-4 mb-1 px-3">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Reportes
+              </span>
+            </li>
+
+            {reporteItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className="block px-3 py-2 rounded-lg text-sm text-emerald-400 no-underline
+                             hover:bg-emerald-400/10 hover:text-emerald-300 hover:translate-x-1
+                             active:scale-95
+                             transition-all duration-200"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
 
           {/* Footer */}
@@ -154,9 +178,8 @@ function App() {
             <Route path="/con-asiento-detalle" element={<CON_ASIENTO_DETALLECrud />} />
             <Route path="/con-impuesto-movimiento" element={<CON_IMPUESTO_MOVIMIENTOCrud />} />
             <Route path="/con-bitacora" element={<CON_BITACORACrud />} />
-
-            {/* ← NUEVA RUTA */}
             <Route path="/con-reproceso-periodo" element={<CON_REPROCESO_PERIODO />} />
+            <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
           </Routes>
         </main>
       </div>

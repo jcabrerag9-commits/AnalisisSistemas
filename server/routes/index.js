@@ -54,5 +54,7 @@ const CON_BITACORARoute = require('./CON_BITACORA');
 
  const CON_REPROCESO_PERIODORoute = require('./CON_REPROCESO_PERIODO');
  router.use('/con-reproceso-periodo', CON_REPROCESO_PERIODORoute);
+const REPORTE_DIARIORoute = require('./REPORTE_DIARIO');
+ router.use('/reportes', REPORTE_DIARIORoute);
 
 module.exports = router;
