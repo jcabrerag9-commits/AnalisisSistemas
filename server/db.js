@@ -1,6 +1,8 @@
 const oracledb = require('oracledb');
 require('dotenv').config();
 
+oracledb.fetchAsString = [oracledb.CLOB];
+
 // Configuración de la base de datos
 const dbConfig = {
     user: process.env.ORACLE_USER,
@@ -42,5 +44,6 @@ async function executeQuery(sql, binds = [], opts = { autoCommit: true, outForma
 
 module.exports = {
     initialize,
-    executeQuery
+    executeQuery,
+    dbConfig
 };

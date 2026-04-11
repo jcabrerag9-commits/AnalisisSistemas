@@ -10,6 +10,16 @@ exports.getAll = async (req, res) => {
     }
 };
 
+exports.getByAsiento = async (req, res) => {
+    try {
+        const asiAsiento = req.params.asiAsiento;
+        const result = await db.executeQuery('SELECT * FROM CON_ASIENTO_DETALLE WHERE ASI_ASIENTO = :asiAsiento', [asiAsiento]);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 exports.getById = async (req, res) => {
     try {
         const id = req.params.id;

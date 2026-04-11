@@ -26,10 +26,9 @@ body {
 
 #root {
   width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .card {
@@ -128,4 +127,64 @@ button:active {
   margin: 0.5rem 0 0;
   color: #94a3b8;
   font-size: 0.9rem;
+}
+
+/* ═══════════════════════════════════════════════
+   Estilos para impresión / exportar a PDF
+   ═══════════════════════════════════════════════ */
+@media print {
+
+  /* ── Fondo blanco en toda la página ── */
+  :root,
+  html,
+  body,
+  #root {
+    background: #fff !important;
+    background-color: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── Eliminar márgenes del layout para usar toda la página ── */
+  body {
+    margin: 0 !important;
+    padding: 1.5cm !important;
+    min-height: auto !important;
+    display: block !important;
+  }
+
+  #root {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ── Configuración de página ── */
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+
+  /* ── Evitar cortes dentro de filas de tabla ── */
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ── Mantener grupos de partida juntos cuando es posible ── */
+  tbody {
+    break-inside: auto;
+  }
+
+  /* ── Remover sombras y bordes decorativos ── */
+  .shadow-md,
+  .shadow-lg,
+  .hover\:shadow-lg {
+    box-shadow: none !important;
+  }
+
+  /* ── Tabla ocupa todo el ancho disponible ── */
+  table {
+    width: 100% !important;
+  }
 }
