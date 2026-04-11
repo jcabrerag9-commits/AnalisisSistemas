@@ -51,17 +51,6 @@ exports.create = async (req, res) => {
     }
 };
 
-/*exports.create = async (req, res) => {
-    try {
-        const { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA } = req.body;
-        const sql = `INSERT INTO CON_ASIENTO (PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA) VALUES (:PER_PERIODO, :TPA_TIPO_ASIENTO, :ESA_ESTADO_ASIENTO, :USU_USUARIO, :ASI_FECHA, :ASI_GLOSA)`;
-        await db.executeQuery(sql, { PER_PERIODO, TPA_TIPO_ASIENTO, ESA_ESTADO_ASIENTO, USU_USUARIO, ASI_FECHA, ASI_GLOSA });
-        res.status(201).json({ message: 'Created successfully' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
-
 exports.update = async (req, res) => {
     try {
         const id = req.params.id;

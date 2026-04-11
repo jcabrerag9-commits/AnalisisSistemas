@@ -15,6 +15,12 @@ const DETALLE_VACIO = {
     MON_MONEDA: '',
 };
 
+const NOMBRES_MESES = {
+    1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+    5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+    9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+};
+
 const CON_ASIENTOCrud = () => {
     // ── Estado del encabezado (maestro) ──
     const [formData, setFormData] = useState({
@@ -257,6 +263,7 @@ const CON_ASIENTOCrud = () => {
         } catch (err) {
             const msg = err.response?.data?.error || err.message;
             setMensaje({ tipo: 'error', texto: `Error: ${msg}` });
+            handleCerrarModal();
         } finally {
             setProcesandoAnulacion(false);
             window.scrollTo(0, 0);
@@ -286,10 +293,10 @@ const CON_ASIENTOCrud = () => {
         });
         setEditingId(item.ASI_ASIENTO);
 
-        // Verificar si el periodo está cerrado (estado 2)
+        // Verificar si el periodo está cerrado (estado 4 = CERRADO)
         const periodoDelAsiento = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
-        const cerrado = periodoDelAsiento?.ESP_ESTADO_PERIODO === 2
-            || item.ESP_ESTADO_PERIODO === 2;
+        const cerrado = periodoDelAsiento?.ESP_ESTADO_PERIODO === 4
+            || item.ESP_ESTADO_PERIODO === 4;
         setIsPeriodoCerrado(cerrado);
 
         // Cargar los detalles relacionados con este asiento
@@ -366,7 +373,7 @@ const CON_ASIENTOCrud = () => {
                     <h3 className="text-lg font-semibold text-slate-700 mb-4">Encabezado del Asiento</h3>
                     <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                         <Select label="Periodo" name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange}
-                            options={CON_PERIODOData.map(opt => ({ value: opt.PER_PERIODO, label: `${opt.PER_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_PERIODOData.filter(opt => opt.ESP_ESTADO_PERIODO === 3 || opt.PER_PERIODO === formData.PER_PERIODO).map(opt => ({ value: opt.PER_PERIODO, label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}` }))}
                             required disabled={isPeriodoCerrado} />
                         <Select label="Tipo de Asiento" name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange}
                             options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: `${opt.TPA_TIPO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
@@ -439,7 +446,7 @@ const CON_ASIENTOCrud = () => {
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Select name="CTC_CENTRO_COSTO" value={det.CTC_CENTRO_COSTO || ''} onChange={(e) => handleDetalleChange(idx, e)}
-                                                    options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                                                    options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt.CTC_NOMBRE}` }))}
                                                     disabled={isPeriodoCerrado}
                                                 />
                                             </td>
@@ -538,42 +545,68 @@ const CON_ASIENTOCrud = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map(item => (
-                            <tr key={item.ASI_ASIENTO} className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150">
-                                <td className="px-3 py-3 text-slate-500">{item.ASI_ASIENTO}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.PER_PERIODO}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.TPA_TIPO_ASIENTO}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.ESA_ESTADO_ASIENTO}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.USU_USUARIO}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.ASI_FECHA}</td>
-                                <td className="px-3 py-3 text-slate-500">{item.ASI_GLOSA}</td>
-                                <td className="px-3 py-3 whitespace-nowrap">
-                                    <div className="flex items-center gap-2">
-                                        {(() => {
-                                            const periodo = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
-                                            const cerrado = periodo?.ESP_ESTADO_PERIODO === 2;
-                                            return cerrado ? (
-                                                <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
-                                                    Ver
-                                                </Button>
-                                            ) : (
-                                                <>
-                                                    <Button type="button" variant="warning" size="sm" onClick={() => handleEdit(item)}>
-                                                        Editar
+                        {[...data].sort((a, b) => b.ASI_ASIENTO - a.ASI_ASIENTO).map(item => {
+                            const periodoObj = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
+                            const periodoStr = periodoObj ? `${NOMBRES_MESES[periodoObj.PER_MES]} - ${periodoObj.PER_AÑO}` : item.PER_PERIODO;
+
+                            const tipoObj = CON_TIPO_ASIENTOData.find(t => t.TPA_TIPO_ASIENTO === item.TPA_TIPO_ASIENTO);
+                            const tipoStr = tipoObj ? tipoObj[Object.keys(tipoObj)[1]] : item.TPA_TIPO_ASIENTO;
+
+                            const estadoObj = CON_ESTADO_ASIENTOData.find(e => e.ESA_ESTADO_ASIENTO === item.ESA_ESTADO_ASIENTO);
+                            const estadoStr = estadoObj ? estadoObj[Object.keys(estadoObj)[1]] : item.ESA_ESTADO_ASIENTO;
+
+                            const usuarioObj = CON_USUARIOData.find(u => u.USU_USUARIO === item.USU_USUARIO);
+                            const usuarioStr = usuarioObj ? usuarioObj[Object.keys(usuarioObj)[1]] : item.USU_USUARIO;
+
+                            let fechaStr = item.ASI_FECHA;
+                            if (fechaStr) {
+                                // Evita problemas de zona horaria usando split si viene de la DB (ej. "2026-04-10T00:00:00.000Z")
+                                const d = new Date(fechaStr);
+                                // Para forzar local agregamos timezone offset si es necesario, pero Date funciona bien.
+                                // Usaremos Date en local:
+                                if (!isNaN(d.getTime())) {
+                                    fechaStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                                }
+                            }
+
+                            return (
+                                <tr key={item.ASI_ASIENTO} className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150">
+                                    <td className="px-3 py-3 text-slate-500">{item.ASI_ASIENTO}</td>
+                                    <td className="px-3 py-3 text-slate-500">{periodoStr}</td>
+                                    <td className="px-3 py-3 text-slate-500">{tipoStr}</td>
+                                    <td className="px-3 py-3 text-slate-500">{estadoStr}</td>
+                                    <td className="px-3 py-3 text-slate-500">{usuarioStr}</td>
+                                    <td className="px-3 py-3 text-slate-500">{fechaStr}</td>
+                                    <td className="px-3 py-3 text-slate-500">{item.ASI_GLOSA}</td>
+                                    <td className="px-3 py-3 whitespace-nowrap">
+                                        <div className="flex items-center gap-2">
+                                            {(() => {
+                                                // 3 es ABIERTO. Si es 3, muestra todos los botones.
+                                                const abierto = periodoObj ? periodoObj.ESP_ESTADO_PERIODO === 3 : false;
+                                                
+                                                return abierto ? (
+                                                    <>
+                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
+                                                            Ver
+                                                        </Button>
+                                                        <Button type="button" variant="warning" size="sm" onClick={() => handleEdit(item)}>
+                                                            Editar
+                                                        </Button>
+                                                        <Button type="button" variant="danger" size="sm" onClick={() => handleAbrirModalAnular(item)}>
+                                                            Anular
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
+                                                        Ver
                                                     </Button>
-                                                    <Button type="button" variant="danger" size="sm" onClick={() => handleDelete(item.ASI_ASIENTO)}>
-                                                        Eliminar
-                                                    </Button>
-                                                    <Button type="button" variant="secondary" size="sm" onClick={() => handleAbrirModalAnular(item)}>
-                                                        Anular
-                                                    </Button>
-                                                </>
-                                            );
-                                        })()}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                                                );
+                                            })()}
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 {data.length === 0 && (

@@ -4,12 +4,25 @@ import Button from '../components/Button';
 import Input from '../components/Input';
 import Select from '../components/Select';
 
+const NOMBRES_MESES = {
+    1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril', 5: 'Mayo', 6: 'Junio',
+    7: 'Julio', 8: 'Agosto', 9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+};
+
 const GestionPeriodos = () => {
     const [periodos, setPeriodos] = useState([]);
     const [estados, setEstados] = useState([]);
     const [cuentas, setCuentas] = useState([]);
     const [monedas, setMonedas] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
+    
+    // ── Feedback ──
+    const [mensaje, setMensaje] = useState(null);
+
+    const mostrarMensaje = (tipo, texto) => {
+        setMensaje({ tipo, texto });
+        setTimeout(() => setMensaje(null), 8000);
+    };
     
     // Formularios
     const [formAbrir, setFormAbrir] = useState({ p_anio: new Date().getFullYear(), p_mes: new Date().getMonth() + 1 });
@@ -70,44 +83,56 @@ const GestionPeriodos = () => {
         e.preventDefault();
         try {
             const res = await axios.post(`${API_URL_PERIODO}/abrir`, formAbrir);
-            alert(res.data.message);
-            fetchPeriodos();
+            await fetchPeriodos();
+            mostrarMensaje('success', res.data.message);
         } catch (err) {
-            alert(err.response?.data?.error || err.message);
+            mostrarMensaje('error', err.response?.data?.error || err.message);
         }
     };
 
     const handleCerrarPeriodoMensual = async (e) => {
         e.preventDefault();
-        if(!formCerrarMes.p_periodo_id) { alert('Seleccione un periodo'); return; }
+        if(!formCerrarMes.p_periodo_id) { mostrarMensaje('error', 'Seleccione un periodo'); return; }
         try {
             const res = await axios.post(`${API_URL_PERIODO}/cerrar-mensual`, formCerrarMes);
-            alert(res.data.message);
-            fetchPeriodos();
+            await fetchPeriodos();
             setFormCerrarMes({ p_periodo_id: '' });
+            mostrarMensaje('success', res.data.message);
         } catch (err) {
-            alert(err.response?.data?.error || err.message);
+            mostrarMensaje('error', err.response?.data?.error || err.message);
         }
     };
 
     const handleCierreEjercicioAnual = async (e) => {
         e.preventDefault();
         if(!formCierreAnual.p_cuenta_utilidad_id || !formCierreAnual.p_moneda_id) {
-            alert('Seleccione la cuenta de utilidad y la moneda');
+            mostrarMensaje('error', 'Seleccione la cuenta de utilidad y la moneda');
             return;
         }
         try {
             const res = await axios.post(`${API_URL_PERIODO}/cierre-anual`, formCierreAnual);
-            alert(res.data.message);
-            fetchPeriodos();
+            await fetchPeriodos();
+            mostrarMensaje('success', res.data.message);
         } catch (err) {
-            alert(err.response?.data?.error || err.message);
+            mostrarMensaje('error', err.response?.data?.error || err.message);
         }
     };
 
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos Contables</h2>
+            
+            {/* ── Mensaje de feedback ── */}
+            {mensaje && (
+                <div style={{
+                    padding: '12px 16px', marginBottom: '20px', borderRadius: '8px', fontSize: '14px', fontWeight: '500',
+                    backgroundColor: mensaje.tipo === 'success' ? '#f0fdf4' : '#fef2f2',
+                    color: mensaje.tipo === 'success' ? '#15803d' : '#b91c1c',
+                    border: `1px solid ${mensaje.tipo === 'success' ? '#bbf7d0' : '#fecaca'}`
+                }}>
+                    {mensaje.texto}
+                </div>
+            )}
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '30px' }}>
                 
@@ -130,7 +155,7 @@ const GestionPeriodos = () => {
                         <Select label="Periodo a Cerrar" 
                             value={formCerrarMes.p_periodo_id} onChange={(e) => setFormCerrarMes({ p_periodo_id: e.target.value })} required
                             options={periodos.filter(p => p.ESP_ESTADO_PERIODO === estados.find(e=> e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO).map(p => ({
-                                value: p.PER_PERIODO, label: `${p.PER_AÑO} - Mes ${p.PER_MES}`
+                                value: p.PER_PERIODO, label: `${NOMBRES_MESES[p.PER_MES]} ${p.PER_AÑO}`
                             }))}
                         />
                         <Button type="submit" variant="warning">Cerrar Periodo</Button>
@@ -182,11 +207,11 @@ const GestionPeriodos = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {periodos.sort((a,b) => b.PER_AÑO - a.PER_AÑO || b.PER_MES - a.PER_MES).map(p => (
+                        {[...periodos].sort((a,b) => b.PER_AÑO - a.PER_AÑO || b.PER_MES - a.PER_MES).map(p => (
                             <tr key={p.PER_PERIODO} style={{ borderBottom: '1px solid #e2e8f0' }}>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{p.PER_PERIODO}</td>
                                 <td style={{ padding: '12px', color: '#64748b' }}>{p.PER_AÑO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{p.PER_MES}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{NOMBRES_MESES[p.PER_MES] || p.PER_MES}</td>
                                 <td style={{ padding: '12px', color: '#64748b', fontWeight: 'bold' }}>
                                     {getEstadoNombre(p.ESP_ESTADO_PERIODO)}
                                 </td>
