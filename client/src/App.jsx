@@ -21,6 +21,7 @@ import CON_ASIENTO_DETALLECrud from './pages/CON_ASIENTO_DETALLECrud';
 import CON_IMPUESTO_MOVIMIENTOCrud from './pages/CON_IMPUESTO_MOVIMIENTOCrud';
 import CON_BITACORACrud from './pages/CON_BITACORACrud';
 import LibroDiarioReporte from './pages/LibroDiarioReporte';
+import GestionPeriodos from './pages/GestionPeriodos';
 
 const menuItems = [
   { path: '/con-usuario', label: 'Usuario' },
@@ -34,7 +35,6 @@ const menuItems = [
   { path: '/con-centro-costo', label: 'Centro Costo' },
   { path: '/con-cuenta', label: 'Cuenta' },
   { path: '/con-tipo-cambio', label: 'Tipo Cambio' },
-  { path: '/con-periodo', label: 'Periodo' },
   { path: '/con-impuesto', label: 'Impuesto' },
   { path: '/con-asiento', label: 'Asiento' },
   { path: '/con-asiento-detalle', label: 'Asiento Detalle' },
@@ -44,6 +44,10 @@ const menuItems = [
 
 const reporteItems = [
   { path: '/reporte-libro-diario', label: 'Libro Diario' },
+];
+
+const operacionItems = [
+  { path: '/gestion-periodos', label: 'Gestión Periodos' },
 ];
 
 function App() {
@@ -89,6 +93,27 @@ function App() {
                   to={item.path}
                   className="block px-3 py-2 rounded-lg text-sm text-sky-400 no-underline
                              hover:bg-sky-400/10 hover:text-sky-300 hover:translate-x-1
+                             active:scale-95
+                             transition-all duration-200"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+
+            {/* Operaciones section */}
+            <li className="mt-4 mb-1 px-3">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Operaciones
+              </span>
+            </li>
+
+            {operacionItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className="block px-3 py-2 rounded-lg text-sm text-purple-400 no-underline
+                             hover:bg-purple-400/10 hover:text-purple-300 hover:translate-x-1
                              active:scale-95
                              transition-all duration-200"
                 >
@@ -149,13 +174,13 @@ function App() {
             <Route path="/con-centro-costo" element={<CON_CENTRO_COSTOCrud />} />
             <Route path="/con-cuenta" element={<CON_CUENTACrud />} />
             <Route path="/con-tipo-cambio" element={<CON_TIPO_CAMBIOCrud />} />
-            <Route path="/con-periodo" element={<CON_PERIODOCrud />} />
             <Route path="/con-impuesto" element={<CON_IMPUESTOCrud />} />
             <Route path="/con-asiento" element={<CON_ASIENTOCrud />} />
             <Route path="/con-asiento-detalle" element={<CON_ASIENTO_DETALLECrud />} />
             <Route path="/con-impuesto-movimiento" element={<CON_IMPUESTO_MOVIMIENTOCrud />} />
             <Route path="/con-bitacora" element={<CON_BITACORACrud />} />
             <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
+            <Route path="/gestion-periodos" element={<GestionPeriodos />} />
           </Routes>
         </main>
       </div>
