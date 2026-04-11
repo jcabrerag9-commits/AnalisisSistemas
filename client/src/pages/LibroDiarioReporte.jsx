@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { useReactToPrint } from 'react-to-print';
 
 const MESES = [
     { value: '1', label: 'Enero' },
@@ -26,6 +27,23 @@ const LibroDiarioReporte = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [anios, setAnios] = useState([]);
+
+    const contentRef = useRef(null);
+    const handlePrint = useReactToPrint({
+        contentRef,
+        documentTitle: `Libro_Diario_${mes}_${anio}`,
+        pageStyle: `
+        @page {
+            size: auto;
+            margin: 0mm; /* Aniquila el espacio donde el navegador mete sus textos */
+        }
+        @media print {
+            body {
+                padding: 1.5cm; /* Le devuelve un margen blanco, limpio y elegante a tu hoja */
+            }
+        }
+        `,
+    });
 
     useEffect(() => {
         const fetchAnios = async () => {
@@ -97,16 +115,16 @@ const LibroDiarioReporte = () => {
     const granTotalHaber = partidas.reduce((acc, p) => acc + p.totalHaber, 0);
 
     return (
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 print:shadow-none print:rounded-none print:bg-white">
             {/* ── Header ── */}
-            <div className="px-8 pt-8 pb-4 border-b border-slate-100">
+            <div className="px-8 pt-8 pb-4 border-b border-slate-100 print:hidden">
                 <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
                     Reporte de Libro Diario
                 </h2>
             </div>
 
             {/* ── Filtros ── */}
-            <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 mb-3">
+            <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 mb-3 print:hidden">
                 <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de consulta</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
                     <Select
@@ -124,23 +142,28 @@ const LibroDiarioReporte = () => {
                         options={MESES}
                     />
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-3">
                     <Button className="" onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar Libro Diario'}
                     </Button>
+                    {data && data.length > 0 && (
+                        <Button variant="secondary" onClick={handlePrint}>
+                            Exportar a PDF / Imprimir
+                        </Button>
+                    )}
                 </div>
             </div>
 
             {/* ── Error ── */}
             {error && (
-                <div className="mx-8 mb-4 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200">
+                <div className="mx-8 mb-4 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200 print:hidden">
                     {error}
                 </div>
             )}
 
             {/* ── Loading spinner ── */}
             {isLoading && (
-                <div className="flex justify-center py-12">
+                <div className="flex justify-center py-12 print:hidden">
                     <svg className="animate-spin h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
@@ -150,7 +173,7 @@ const LibroDiarioReporte = () => {
 
             {/* ── Mensaje vacío ── */}
             {!isLoading && data !== null && data.length === 0 && (
-                <div className="mx-8 mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-2">
+                <div className="mx-8 mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-2 print:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.518 11.6c.75 1.334-.213 2.99-1.742 2.99H3.481c-1.53 0-2.493-1.656-1.742-2.99l6.518-11.6zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-2a1 1 0 01-1-1V8a1 1 0 112 0v2a1 1 0 01-1 1z" clipRule="evenodd" />
                     </svg>
@@ -160,8 +183,15 @@ const LibroDiarioReporte = () => {
 
             {/* ── Tabla de resultados agrupada por Partida ── */}
             {!isLoading && data !== null && data.length > 0 && (
-                <div className="px-8 pb-8 overflow-x-auto">
-                    <table className="w-full border-collapse text-sm">
+                <div ref={contentRef} className="px-8 pb-8 print:px-0 print:pb-0 overflow-x-auto print:shadow-none print:bg-white">
+                    {/* ── Encabezado visible solo al imprimir ── */}
+                    <div className="hidden print:block text-center mb-6 pt-4">
+                        <h2 className="text-xl font-bold text-slate-900">Reporte de Libro Diario</h2>
+                        <p className="text-sm text-slate-600">
+                            Periodo: {MESES.find(m => m.value === mes)?.label || mes} - {anio}
+                        </p>
+                    </div>
+                    <table className="w-full border-collapse text-sm print:text-black">
                         <thead>
                             <tr className="bg-slate-100 text-left text-slate-700">
                                 <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Código</th>
@@ -173,8 +203,8 @@ const LibroDiarioReporte = () => {
                         <tbody>
                             {partidas.map((partida) => (
                                 <React.Fragment key={partida.numero}>
-                                    {/* ── Fila de Cabecera de Partida ── */}
-                                    <tr className="bg-slate-50 border-b border-slate-200">
+                                    {/* ── Fila de Cabecera de Partida (break-inside-avoid para no cortar entre páginas) ── */}
+                                    <tr className="bg-slate-50 border-b border-slate-200 break-inside-avoid print:break-inside-avoid">
                                         <td colSpan={4} className="px-3 py-3">
                                             <div className="flex justify-between items-center">
                                                 <span className="font-bold text-slate-800">
@@ -193,12 +223,12 @@ const LibroDiarioReporte = () => {
                                         return (
                                             <tr
                                                 key={`${partida.numero}-${idx}`}
-                                                className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-150"
+                                                className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-150 break-inside-avoid print:break-inside-avoid"
                                             >
                                                 <td className="px-3 py-2 text-slate-500 font-mono text-xs">
                                                     {det.CODIGO_CUENTA}
                                                 </td>
-                                                <td className={`px-3 py-2 text-slate-600 ${esAbono ? 'pl-8' : ''}`}>
+                                                <td className={`px-3 py-2 text-slate-600`}>{/* ${esAbono ? 'pl-8' : ''}*/}
                                                     {det.NOMBRE_CUENTA}
                                                 </td>
                                                 <td className="px-3 py-2 text-right font-mono text-slate-600">
@@ -216,7 +246,7 @@ const LibroDiarioReporte = () => {
                                     })}
 
                                     {/* ── Fila de Cierre: Glosa + Sumas de la Partida ── */}
-                                    <tr className="border-b-2 border-slate-300">
+                                    <tr className="border-b-2 border-slate-300 break-inside-avoid print:break-inside-avoid">
                                         <td colSpan={2} className="px-3 py-2 text-slate-500 italic text-xs">
                                             {partida.descripcion}
                                         </td>
