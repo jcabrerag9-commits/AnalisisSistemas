@@ -47,6 +47,7 @@ const menuItems = [
 // ← NUEVA SECCIÓN DE OPERACIONES
 const operacionesItems = [
   { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
+]
 const reporteItems = [
   { path: '/reporte-libro-diario', label: 'Libro Diario' },
 ];
