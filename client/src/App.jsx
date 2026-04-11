@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Home, Database } from 'lucide-react';
 import './index.css';
@@ -22,6 +21,9 @@ import CON_IMPUESTO_MOVIMIENTOCrud from './pages/CON_IMPUESTO_MOVIMIENTOCrud';
 import CON_BITACORACrud from './pages/CON_BITACORACrud';
 import LibroDiarioReporte from './pages/LibroDiarioReporte';
 
+// ← NUEVA IMPORTACIÓN
+import CON_REPROCESO_PERIODO from './pages/CON_REPROCESO_PERIODO';
+
 const menuItems = [
   { path: '/con-usuario', label: 'Usuario' },
   { path: '/con-rol', label: 'Rol' },
@@ -42,6 +44,9 @@ const menuItems = [
   { path: '/con-bitacora', label: 'Bitácora' },
 ];
 
+// ← NUEVA SECCIÓN DE OPERACIONES
+const operacionesItems = [
+  { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
 const reporteItems = [
   { path: '/reporte-libro-diario', label: 'Libro Diario' },
 ];
@@ -75,22 +80,40 @@ function App() {
               </Link>
             </li>
 
-            {/* Section label */}
+            {/* Section label: Tablas */}
             <li className="mt-4 mb-1 px-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
                 Tablas
               </span>
             </li>
 
-            {/* Menu items */}
             {menuItems.map((item) => (
               <li key={item.path}>
                 <Link
                   to={item.path}
                   className="block px-3 py-2 rounded-lg text-sm text-sky-400 no-underline
                              hover:bg-sky-400/10 hover:text-sky-300 hover:translate-x-1
-                             active:scale-95
-                             transition-all duration-200"
+                             active:scale-95 transition-all duration-200"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+
+            {/* ← NUEVA SECCIÓN: Operaciones */}
+            <li className="mt-4 mb-1 px-3">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                Operaciones
+              </span>
+            </li>
+
+            {operacionesItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className="block px-3 py-2 rounded-lg text-sm text-amber-400 no-underline
+                             hover:bg-amber-400/10 hover:text-amber-300 hover:translate-x-1
+                             active:scale-95 transition-all duration-200"
                 >
                   {item.label}
                 </Link>
@@ -155,6 +178,7 @@ function App() {
             <Route path="/con-asiento-detalle" element={<CON_ASIENTO_DETALLECrud />} />
             <Route path="/con-impuesto-movimiento" element={<CON_IMPUESTO_MOVIMIENTOCrud />} />
             <Route path="/con-bitacora" element={<CON_BITACORACrud />} />
+            <Route path="/con-reproceso-periodo" element={<CON_REPROCESO_PERIODO />} />
             <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
           </Routes>
         </main>

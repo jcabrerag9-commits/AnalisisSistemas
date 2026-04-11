@@ -1,4 +1,3 @@
-
 const db = require('../db');
 
 exports.getAll = async (req, res) => {
@@ -24,7 +23,8 @@ exports.getById = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         const { MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA } = req.body;
-        const sql = `INSERT INTO CON_TIPO_CAMBIO (MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA) VALUES (:MON_MONEDA, :TPC_FECHA_TASA, :TPC_TASA_COMPRA, :TPC_TASA_VENTA)`;
+        const sql = `INSERT INTO CON_TIPO_CAMBIO (MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA) 
+                     VALUES (:MON_MONEDA, TO_DATE(:TPC_FECHA_TASA, 'YYYY-MM-DD'), :TPC_TASA_COMPRA, :TPC_TASA_VENTA)`;
         await db.executeQuery(sql, { MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA });
         res.status(201).json({ message: 'Created successfully' });
     } catch (err) {
@@ -36,7 +36,10 @@ exports.update = async (req, res) => {
     try {
         const id = req.params.id;
         const { MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA } = req.body;
-        const sql = `UPDATE CON_TIPO_CAMBIO SET MON_MONEDA = :MON_MONEDA, TPC_FECHA_TASA = :TPC_FECHA_TASA, TPC_TASA_COMPRA = :TPC_TASA_COMPRA, TPC_TASA_VENTA = :TPC_TASA_VENTA WHERE TPC_TIPO_CAMBIO = :id`;
+        const sql = `UPDATE CON_TIPO_CAMBIO SET MON_MONEDA = :MON_MONEDA, 
+                     TPC_FECHA_TASA = TO_DATE(:TPC_FECHA_TASA, 'YYYY-MM-DD'), 
+                     TPC_TASA_COMPRA = :TPC_TASA_COMPRA, TPC_TASA_VENTA = :TPC_TASA_VENTA 
+                     WHERE TPC_TIPO_CAMBIO = :id`;
         await db.executeQuery(sql, { MON_MONEDA, TPC_FECHA_TASA, TPC_TASA_COMPRA, TPC_TASA_VENTA, id });
         res.json({ message: 'Updated successfully' });
     } catch (err) {

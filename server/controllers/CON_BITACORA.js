@@ -1,9 +1,19 @@
-
 const db = require('../db');
 
 exports.getAll = async (req, res) => {
     try {
-        const result = await db.executeQuery('SELECT * FROM CON_BITACORA ORDER BY BIT_BITACORA DESC');
+        const sql = `
+            SELECT 
+                BIT_BITACORA,
+                USU_USUARIO,
+                BIT_TABLA_AFECTADA,
+                BIT_ACCION,
+                BIT_FECHA_HORA,
+                DBMS_LOB.SUBSTR(BIT_DATOS_PREVIOS, 2000, 1) AS BIT_DATOS_PREVIOS
+            FROM CON_BITACORA
+            ORDER BY BIT_BITACORA DESC
+        `;
+        const result = await db.executeQuery(sql);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -13,7 +23,18 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
     try {
         const id = req.params.id;
-        const result = await db.executeQuery('SELECT * FROM CON_BITACORA WHERE BIT_BITACORA = :id', [id]);
+        const sql = `
+            SELECT 
+                BIT_BITACORA,
+                USU_USUARIO,
+                BIT_TABLA_AFECTADA,
+                BIT_ACCION,
+                BIT_FECHA_HORA,
+                DBMS_LOB.SUBSTR(BIT_DATOS_PREVIOS, 2000, 1) AS BIT_DATOS_PREVIOS
+            FROM CON_BITACORA
+            WHERE BIT_BITACORA = :id
+        `;
+        const result = await db.executeQuery(sql, [id]);
         if (result.rows.length === 0) return res.status(404).json({ message: 'Not found' });
         res.json(result.rows[0]);
     } catch (err) {
@@ -33,7 +54,7 @@ exports.create = async (req, res) => {
         await db.executeQuery(sql, { USU_USUARIO, BIT_TABLA_AFECTADA, BIT_ACCION, fechaHora, BIT_DATOS_PREVIOS });
         res.status(201).json({ message: 'Created successfully' });
     } catch (err) {
-        console.error("Error en create CON_BITACORA:", err);
+        console.error('Error en create CON_BITACORA:', err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -51,7 +72,7 @@ exports.update = async (req, res) => {
         await db.executeQuery(sql, { USU_USUARIO, BIT_TABLA_AFECTADA, BIT_ACCION, fechaHora, BIT_DATOS_PREVIOS, id });
         res.json({ message: 'Updated successfully' });
     } catch (err) {
-        console.error("Error en update CON_BITACORA:", err);
+        console.error('Error en update CON_BITACORA:', err);
         res.status(500).json({ error: err.message });
     }
 };
