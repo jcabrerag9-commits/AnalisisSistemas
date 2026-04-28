@@ -305,7 +305,7 @@ const CON_ASIENTOCrud = () => {
 
         // Verificar si el periodo está cerrado. Buscamos el ID dinámico de "CERRADO"
         const idCerrado = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'CERRADO')?.ESP_ESTADO_PERIODO;
-        
+
         const periodoDelAsiento = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
         const cerrado = periodoDelAsiento?.ESP_ESTADO_PERIODO === idCerrado
             || item.ESP_ESTADO_PERIODO === idCerrado;
@@ -343,6 +343,17 @@ const CON_ASIENTOCrud = () => {
                 console.error(err);
             }
         }
+    };
+
+    // ══════════════════════════════════════════
+    //  PROTECCIÓN: Asientos anulados / de reversión → solo lectura
+    // ══════════════════════════════════════════
+    const esAsientoProtegido = (item) => {
+        const estadoObj = CON_ESTADO_ASIENTOData.find(
+            e => e.ESA_ESTADO_ASIENTO === item.ESA_ESTADO_ASIENTO
+        );
+        const nombreEstado = estadoObj?.ESA_NOMBRE?.toUpperCase() || '';
+        return ['ANULADO', 'REVERTIDO', 'REVERSION', 'REVERSIÓN'].includes(nombreEstado);
     };
 
     // ══════════════════════════════════════════
@@ -389,9 +400,9 @@ const CON_ASIENTOCrud = () => {
                                 const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
                                 return CON_PERIODOData
                                     .filter(opt => opt.ESP_ESTADO_PERIODO === idAbierto || opt.PER_PERIODO === formData.PER_PERIODO)
-                                    .map(opt => ({ 
-                                        value: opt.PER_PERIODO, 
-                                        label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}` 
+                                    .map(opt => ({
+                                        value: opt.PER_PERIODO,
+                                        label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}`
                                     }));
                             })()}
                             required disabled={isPeriodoCerrado} />
@@ -603,8 +614,9 @@ const CON_ASIENTOCrud = () => {
                                             {(() => {
                                                 const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
                                                 const abierto = periodoObj ? periodoObj.ESP_ESTADO_PERIODO === idAbierto : false;
+                                                const protegido = esAsientoProtegido(item);
 
-                                                return abierto ? (
+                                                return abierto && !protegido ? (
                                                     <>
                                                         <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
                                                             Ver
@@ -617,9 +629,16 @@ const CON_ASIENTOCrud = () => {
                                                         </Button>
                                                     </>
                                                 ) : (
-                                                    <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
-                                                        Ver
-                                                    </Button>
+                                                    <>
+                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
+                                                            Ver
+                                                        </Button>
+                                                        {protegido && (
+                                                            <span className="text-xs px-2 py-1 rounded-full bg-slate-200 text-slate-600 font-medium">
+                                                                {estadoStr}
+                                                            </span>
+                                                        )}
+                                                    </>
                                                 );
                                             })()}
                                         </div>
@@ -641,7 +660,7 @@ const CON_ASIENTOCrud = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleCerrarModal}>
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
-                            <h2 className="text-xl font-bold text-red-600">⚠️ Anular Asiento #{asientoSeleccionado.ASI_ASIENTO}</h2>
+                            <h2 className="text-xl font-bold text-red-600"> Anular Asiento #{asientoSeleccionado.ASI_ASIENTO}</h2>
                             <button onClick={handleCerrarModal} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
                         </div>
                         <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
@@ -654,7 +673,7 @@ const CON_ASIENTOCrud = () => {
                                 <div className="text-xs text-slate-500 mt-1">{motivoAnulacion.length} / 10 caracteres mínimos</div>
                             </div>
                             <div className="bg-red-50 border border-red-200 p-3 rounded text-sm text-red-800">
-                                <strong>⚠️ ADVERTENCIA:</strong> Esta acción cambiará el estado a ANULADO, creará un asiento de REVERSIÓN, y quedará registrada. No se puede deshacer.
+                                <strong>ADVERTENCIA:</strong> Esta acción cambiará el estado a ANULADO, creará un asiento de REVERSIÓN, y quedará registrada. No se puede deshacer.
                             </div>
                         </div>
                         <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-200 bg-slate-50">
@@ -671,7 +690,7 @@ const CON_ASIENTOCrud = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setMostrarHistorial(false)}>
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between p-4 border-b border-slate-200">
-                            <h2 className="text-xl font-bold text-slate-800">📋 Historial de Anulaciones</h2>
+                            <h2 className="text-xl font-bold text-slate-800">Historial de Anulaciones</h2>
                             <button onClick={() => setMostrarHistorial(false)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
                         </div>
                         <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
