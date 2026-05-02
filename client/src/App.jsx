@@ -22,6 +22,9 @@ import CON_BITACORACrud from './pages/CON_BITACORACrud';
 import LibroDiarioReporte from './pages/LibroDiarioReporte';
 import LibroMayorReporte from './pages/LibroMayorReporte';
 import GestionPeriodos from './pages/GestionPeriodos';
+import EstadoResultadosReporte from './pages/EstadoResultadosReporte';
+
+// ← NUEVA IMPORTACIÓN
 import CON_REPROCESO_PERIODO from './pages/CON_REPROCESO_PERIODO';
 // ← NUEVA IMPORTACIÓN
 import BalanceGeneralReporte from './pages/BalanceGeneralReporte';
@@ -47,6 +50,12 @@ const menuItems = [
 
 const operacionesItems = [
   { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
+]
+
+const reporteItems = [
+  { path: '/reporte-libro-diario', label: 'Libro Diario' },
+  { path: '/reporte-libro-mayor', label: 'Libro Mayor' },
+  { path: '/reporte-estado-resultados', label: 'Estado de Resultados' },
 ];
 
 const operacionItems = [
