@@ -48,25 +48,21 @@ const menuItems = [
   { path: '/con-bitacora', label: 'Bitácora' },
 ];
 
-const operacionesItems = [
-  { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
-]
-
-const reporteItems = [
-  { path: '/reporte-libro-diario', label: 'Libro Diario' },
-  { path: '/reporte-libro-mayor', label: 'Libro Mayor' },
-  { path: '/reporte-estado-resultados', label: 'Estado de Resultados' },
-];
-
 const operacionItems = [
   { path: '/gestion-periodos', label: 'Gestión Periodos' },
+  { path: '/con-reproceso-periodo', label: 'Reproceso Período' },
 ];
 
 const reporteItems = [
   { path: '/reporte-libro-diario',    label: 'Libro Diario' },
   { path: '/reporte-libro-mayor',     label: 'Libro Mayor' },
-  { path: '/reporte-balance-general', label: 'Balance General' }, // ← NUEVO
+  { path: '/reporte-estado-resultados', label: 'Estado de Resultados' },
+  { path: '/reporte-balance-general', label: 'Balance General' },
 ];
+
+
+
+
 
 function App() {
   return (
@@ -100,7 +96,7 @@ function App() {
             <li className="mt-4 mb-1 px-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Operaciones</span>
             </li>
-            {operacionesItems.map((item) => (
+            {operacionItems.map((item) => (
               <li key={item.path}>
                 <Link to={item.path} className="block px-3 py-2 rounded-lg text-sm text-amber-400 no-underline hover:bg-amber-400/10 hover:text-amber-300 hover:translate-x-1 active:scale-95 transition-all duration-200">
                   {item.label}
@@ -108,16 +104,6 @@ function App() {
               </li>
             ))}
 
-            <li className="mt-4 mb-1 px-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Operaciones</span>
-            </li>
-            {operacionItems.map((item) => (
-              <li key={item.path}>
-                <Link to={item.path} className="block px-3 py-2 rounded-lg text-sm text-purple-400 no-underline hover:bg-purple-400/10 hover:text-purple-300 hover:translate-x-1 active:scale-95 transition-all duration-200">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
 
             <li className="mt-4 mb-1 px-3">
               <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Reportes</span>
@@ -162,9 +148,11 @@ function App() {
             <Route path="/con-reproceso-periodo"   element={<CON_REPROCESO_PERIODO />} />
             <Route path="/reporte-libro-diario"    element={<LibroDiarioReporte />} />
             <Route path="/reporte-libro-mayor"     element={<LibroMayorReporte />} />
+            <Route path="/reporte-estado-resultados" element={<EstadoResultadosReporte />} />
             <Route path="/gestion-periodos"        element={<GestionPeriodos />} />
             {/* ← NUEVA RUTA */}
             <Route path="/reporte-balance-general" element={<BalanceGeneralReporte />} />
+
           </Routes>
         </main>
       </div>
