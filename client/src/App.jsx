@@ -22,6 +22,7 @@ import CON_BITACORACrud from './pages/CON_BITACORACrud';
 import LibroDiarioReporte from './pages/LibroDiarioReporte';
 import LibroMayorReporte from './pages/LibroMayorReporte';
 import GestionPeriodos from './pages/GestionPeriodos';
+import EstadoResultadosReporte from './pages/EstadoResultadosReporte';
 
 // ← NUEVA IMPORTACIÓN
 import CON_REPROCESO_PERIODO from './pages/CON_REPROCESO_PERIODO';
@@ -52,6 +53,7 @@ const operacionesItems = [
 const reporteItems = [
   { path: '/reporte-libro-diario', label: 'Libro Diario' },
   { path: '/reporte-libro-mayor', label: 'Libro Mayor' },
+  { path: '/reporte-estado-resultados', label: 'Estado de Resultados' },
 ];
 
 const operacionItems = [
@@ -208,6 +210,7 @@ function App() {
             <Route path="/con-reproceso-periodo" element={<CON_REPROCESO_PERIODO />} />
             <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
             <Route path="/reporte-libro-mayor" element={<LibroMayorReporte />} />
+            <Route path="/reporte-estado-resultados" element={<EstadoResultadosReporte />} />
             <Route path="/gestion-periodos" element={<GestionPeriodos />} />
           </Routes>
         </main>
