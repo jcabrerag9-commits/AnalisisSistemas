@@ -57,4 +57,7 @@ const CON_BITACORARoute = require('./CON_BITACORA');
 const REPORTE_DIARIORoute = require('./REPORTE_DIARIO');
  router.use('/reportes', REPORTE_DIARIORoute);
 
+const REPORTE_BALANCERoute = require('./REPORTE_BALANCE');
+router.use('/reportes', REPORTE_BALANCERoute);
+
 module.exports = router;
