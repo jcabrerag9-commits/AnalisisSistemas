@@ -177,7 +177,9 @@ const LibroDiarioReporte = () => {
                         <p className="text-sm text-slate-600">
                             Periodo: {MESES.find(m => m.value === mes)?.label || mes} - {anio}
                         </p>
+                        <p className="text-xs italic text-slate-500">(Cifras expresadas en Quetzales)</p>
                     </div>
+
                     <table className="w-full border-collapse text-sm print:text-black">
                         <thead>
                             <tr className="bg-slate-100 text-left text-slate-700">
@@ -220,12 +222,12 @@ const LibroDiarioReporte = () => {
                                                 </td>
                                                 <td className="px-3 py-2 text-right font-mono text-slate-600">
                                                     {parseFloat(det.DEBE || 0) > 0
-                                                        ? parseFloat(det.DEBE).toFixed(2)
+                                                        ? 'Q ' + parseFloat(det.DEBE).toFixed(2)
                                                         : ''}
                                                 </td>
                                                 <td className="px-3 py-2 text-right font-mono text-slate-600">
                                                     {parseFloat(det.HABER || 0) > 0
-                                                        ? parseFloat(det.HABER).toFixed(2)
+                                                        ? 'Q ' + parseFloat(det.HABER).toFixed(2)
                                                         : ''}
                                                 </td>
                                             </tr>
@@ -241,13 +243,13 @@ const LibroDiarioReporte = () => {
                                             className="px-3 py-2 text-right font-mono font-semibold text-slate-700"
                                             style={{ borderTop: '3px double #94a3b8' }}
                                         >
-                                            {partida.totalDebe.toFixed(2)}
+                                            Q {partida.totalDebe.toFixed(2)}
                                         </td>
                                         <td
                                             className="px-3 py-2 text-right font-mono font-semibold text-slate-700"
                                             style={{ borderTop: '3px double #94a3b8' }}
                                         >
-                                            {partida.totalHaber.toFixed(2)}
+                                            Q {partida.totalHaber.toFixed(2)}
                                         </td>
                                     </tr>
                                 </React.Fragment>
@@ -264,16 +266,17 @@ const LibroDiarioReporte = () => {
                                     className="px-3 py-3 text-right font-mono text-base"
                                     style={{ borderTop: '3px double #334155' }}
                                 >
-                                    {granTotalDebe.toFixed(2)}
+                                    Q {granTotalDebe.toFixed(2)}
                                 </td>
                                 <td
                                     className="px-3 py-3 text-right font-mono text-base"
                                     style={{ borderTop: '3px double #334155' }}
                                 >
-                                    {granTotalHaber.toFixed(2)}
+                                    Q {granTotalHaber.toFixed(2)}
                                 </td>
                             </tr>
                         </tfoot>
+
                     </table>
                 </div>
             )}

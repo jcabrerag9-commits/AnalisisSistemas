@@ -73,12 +73,14 @@ exports.getEstadoResultados = async (req, res) => {
             JOIN CON_ASIENTO_DETALLE ad ON a.ASI_ASIENTO = ad.ASI_ASIENTO
             JOIN CON_CUENTA c ON ad.CUE_CUENTA = c.CUE_CUENTA
             JOIN CON_PERIODO p ON a.PER_PERIODO = p.PER_PERIODO
+            JOIN CON_ESTADO_ASIENTO ea ON a.ESA_ESTADO_ASIENTO = ea.ESA_ESTADO_ASIENTO
             WHERE p.PER_AÑO = :anio 
               AND p.PER_MES = :mes
-              AND a.ESA_ESTADO_ASIENTO = 2
+              AND UPPER(ea.ESA_NOMBRE) = 'VALIDADO'
               AND (c.CUE_CODIGO LIKE '4%' OR c.CUE_CODIGO LIKE '5%')
             GROUP BY c.CUE_CODIGO, c.CUE_NOMBRE, SUBSTR(c.CUE_CODIGO, 1, 1)
             ORDER BY c.CUE_CODIGO
+
         `;
 
         const result = await db.executeQuery(sql, { anio: Number(anio), mes: Number(mes) });

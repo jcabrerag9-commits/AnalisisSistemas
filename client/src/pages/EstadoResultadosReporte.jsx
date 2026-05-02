@@ -62,7 +62,7 @@ const EstadoResultadosReporte = () => {
     const formatCurrency = (valor) => {
         const number = parseFloat(valor);
         if (isNaN(number)) return '0.00';
-        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return 'Q ' + number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
     const handlePrint = () => {
@@ -121,50 +121,55 @@ const EstadoResultadosReporte = () => {
                 <div className="max-w-4xl mx-auto border border-slate-200 p-10 print:border-none print:p-0">
                     {/* Encabezado del Reporte */}
                     <div className="text-center mb-10 border-b-2 border-slate-900 pb-6">
-                        <h1 className="text-2xl font-bold uppercase">Nombre de la Empresa</h1>
-                        <h2 className="text-xl font-semibold uppercase">Estado de Resultados</h2>
+                        <h1 className="text-2xl font-bold uppercase">Contabilidad</h1>
+                        <h2 className="text-xl font-semibold uppercase text-slate-900">Estado de Resultados</h2>
                         <p className="text-slate-600">
                             Del 01 al {new Date(anio, mes, 0).getDate()} de {MESES.find(m => m.value === mes)?.label} de {anio}
                         </p>
-                        <p className="text-sm italic">(Cifras expresadas en Moneda Local)</p>
+                        <p className="text-sm italic text-slate-500">(Cifras expresadas en Quetzales)</p>
                     </div>
+
 
                     {/* Sección de Ingresos */}
                     <div className="mb-8">
-                        <h3 className="text-lg font-bold border-b border-slate-300 mb-4 uppercase">Ingresos</h3>
+                        <h3 className="text-lg font-bold border-b border-slate-300 mb-4 uppercase text-slate-800">Ingresos</h3>
+
                         <div className="space-y-2">
                             {ingresos.map((item) => (
                                 <div key={item.CODIGO_CUENTA} className="flex justify-between items-center px-2">
                                     <span className="text-slate-700">{item.NOMBRE_CUENTA}</span>
-                                    <span className="font-mono">{formatCurrency(item.TOTAL_HABER - item.TOTAL_DEBE)}</span>
+                                    <span className="font-mono text-slate-900">{formatCurrency(item.TOTAL_HABER - item.TOTAL_DEBE)}</span>
                                 </div>
                             ))}
-                            <div className="flex justify-between items-center border-t border-slate-900 pt-2 font-bold mt-4 px-2">
+                            <div className="flex justify-between items-center border-t border-slate-900 pt-2 font-bold mt-4 px-2 text-slate-900">
                                 <span>TOTAL INGRESOS</span>
                                 <span className="border-b-2 border-slate-900">{formatCurrency(totalIngresos)}</span>
                             </div>
+
                         </div>
                     </div>
 
                     {/* Sección de Gastos */}
                     <div className="mb-10">
-                        <h3 className="text-lg font-bold border-b border-slate-300 mb-4 uppercase">Gastos y Costos</h3>
+                        <h3 className="text-lg font-bold border-b border-slate-300 mb-4 uppercase text-slate-800">Gastos y Costos</h3>
+
                         <div className="space-y-2">
                             {gastos.map((item) => (
                                 <div key={item.CODIGO_CUENTA} className="flex justify-between items-center px-2">
                                     <span className="text-slate-700">{item.NOMBRE_CUENTA}</span>
-                                    <span className="font-mono">{formatCurrency(item.TOTAL_DEBE - item.TOTAL_HABER)}</span>
+                                    <span className="font-mono text-slate-900">{formatCurrency(item.TOTAL_DEBE - item.TOTAL_HABER)}</span>
                                 </div>
                             ))}
-                            <div className="flex justify-between items-center border-t border-slate-900 pt-2 font-bold mt-4 px-2">
+                            <div className="flex justify-between items-center border-t border-slate-900 pt-2 font-bold mt-4 px-2 text-slate-900">
                                 <span>TOTAL GASTOS Y COSTOS</span>
                                 <span className="border-b-2 border-slate-900">{formatCurrency(totalGastos)}</span>
                             </div>
+
                         </div>
                     </div>
 
                     {/* Resultado Final */}
-                    <div className={`p-4 rounded-lg flex justify-between items-center ${utilidadNeta >= 0 ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+                    <div className={`p-4 rounded-lg flex justify-between items-center ${utilidadNeta >= 0 ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-red-50 border border-red-200 text-red-900'}`}>
                         <span className="text-xl font-bold uppercase">
                             {utilidadNeta >= 0 ? 'Utilidad del Ejercicio' : 'Pérdida del Ejercicio'}
                         </span>
@@ -173,8 +178,9 @@ const EstadoResultadosReporte = () => {
                         </span>
                     </div>
 
+
                     {/* Firmas */}
-                    <div className="mt-20 grid grid-cols-2 gap-20 text-center">
+                    <div className="mt-20 grid grid-cols-2 gap-20 text-center text-slate-900">
                         <div className="border-t border-slate-900 pt-2">
                             <p className="font-bold">Contador General</p>
                             <p className="text-xs text-slate-500">Firma y Sello</p>
@@ -184,6 +190,7 @@ const EstadoResultadosReporte = () => {
                             <p className="text-xs text-slate-500">Firma y Sello</p>
                         </div>
                     </div>
+
                 </div>
             )}
 

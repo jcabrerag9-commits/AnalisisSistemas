@@ -185,7 +185,9 @@ const BalanceGeneralReporte = () => {
                     <div className="hidden print:block text-center mb-8 pt-4">
                         <h2 className="text-xl font-bold text-slate-900">Balance General</h2>
                         <p className="text-sm text-slate-600">Período: {labelPeriodo}</p>
+                        <p className="text-xs italic text-slate-500">(Cifras expresadas en Quetzales)</p>
                     </div>
+
 
                     {/* Indicador de cuadre */}
                     <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 print:hidden ${
@@ -219,9 +221,10 @@ const BalanceGeneralReporte = () => {
                             <div className="border-2 border-slate-800 rounded-lg p-4 bg-slate-50">
                                 <div className="flex justify-between items-center font-bold text-slate-900 text-base">
                                     <span>TOTAL PASIVO + PATRIMONIO</span>
-                                    <span className="font-mono">Q {fmt(totalPasivoPatrimonio)}</span>
+                                    <span className="font-mono text-slate-900">Q {fmt(totalPasivoPatrimonio)}</span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -230,9 +233,10 @@ const BalanceGeneralReporte = () => {
                         <div className="border-2 border-blue-800 rounded-lg p-4 bg-blue-50">
                             <div className="flex justify-between items-center font-bold text-blue-900 text-base">
                                 <span>TOTAL ACTIVO</span>
-                                <span className="font-mono">Q {fmt(totalActivo)}</span>
+                                <span className="font-mono text-blue-900">Q {fmt(totalActivo)}</span>
                             </div>
                         </div>
+
                         <div className={`rounded-lg p-4 text-center font-bold text-sm ${
                             cuadra ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>

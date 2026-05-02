@@ -77,16 +77,17 @@ const LibroMayorReporte = () => {
     const formatCurrency = (valor) => {
         const number = parseFloat(valor);
         if (isNaN(number) || number === 0) return '';
-        return number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return 'Q ' + number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
     const formatSaldo = (saldo) => {
-        if (saldo === 0) return '0.00';
+        if (saldo === 0) return 'Q 0.00';
         if (saldo < 0) {
-            return `(${Math.abs(saldo).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
+            return `Q (${Math.abs(saldo).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
         }
-        return saldo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return 'Q ' + saldo.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
+
 
     // ── Agrupación por Cuenta (CODIGO_CUENTA) ──
     const cuentas = data
@@ -213,11 +214,12 @@ const LibroMayorReporte = () => {
             {!isLoading && data !== null && data.length > 0 && (
                 <div ref={contentRef} className="px-8 pb-8 print:px-0 print:pb-0 overflow-x-auto print:shadow-none print:bg-white flex flex-col gap-6">
                     {/* ── Encabezado visible solo al imprimir ── */}
-                    <div className="hidden print:block text-center mb-6 pt-4">
+                            <div className="hidden print:block text-center mb-6 pt-4">
                         <h2 className="text-xl font-bold text-slate-900">Reporte de Libro Mayor</h2>
                         <p className="text-sm text-slate-600">
                             Periodo: {MESES.find(m => m.value === mes)?.label || mes} - {anio}
                         </p>
+                        <p className="text-xs italic text-slate-500">(Cifras expresadas en Quetzales)</p>
                     </div>
                     {cuentas.map((cuenta) => (
                         <div key={cuenta.codigo} className="border border-slate-200 rounded-lg overflow-hidden bg-white print:border-none print:mb-8">
@@ -266,11 +268,12 @@ const LibroMayorReporte = () => {
                                             Totales de la cuenta:
                                         </td>
                                         <td className="px-3 py-3 text-right font-mono font-bold text-slate-800">
-                                            {(cuenta.totalDebe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            Q {(cuenta.totalDebe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </td>
                                         <td className="px-3 py-3 text-right font-mono font-bold text-slate-800">
-                                            {(cuenta.totalHaber || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            Q {(cuenta.totalHaber || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                         </td>
+
                                         <td className="px-3 py-3 text-right">
                                             {/* Saldo Final */}
                                         </td>
