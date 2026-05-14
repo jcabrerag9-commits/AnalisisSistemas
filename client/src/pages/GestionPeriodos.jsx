@@ -15,7 +15,7 @@ const GestionPeriodos = () => {
     const [cuentas, setCuentas] = useState([]);
     const [monedas, setMonedas] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
-    
+
     // ── Feedback ──
     const [mensaje, setMensaje] = useState(null);
 
@@ -23,7 +23,7 @@ const GestionPeriodos = () => {
         setMensaje({ tipo, texto });
         setTimeout(() => setMensaje(null), 8000);
     };
-    
+
     // Formularios
     const [formAbrir, setFormAbrir] = useState({ p_anio: new Date().getFullYear(), p_mes: new Date().getMonth() + 1 });
     const [formCerrarMes, setFormCerrarMes] = useState({ p_periodo_id: '' });
@@ -119,106 +119,129 @@ const GestionPeriodos = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos Contables</h2>
-            
+        <div className="min-h-screen bg-zinc-50 p-8">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-2">Gestión de Periodos Contables</h2>
+            <p className="text-sm text-zinc-500 mb-6">Apertura, cierre mensual y cierre de ejercicio anual.</p>
+
             {/* ── Mensaje de feedback ── */}
             {mensaje && (
-                <div style={{
-                    padding: '12px 16px', marginBottom: '20px', borderRadius: '8px', fontSize: '14px', fontWeight: '500',
-                    backgroundColor: mensaje.tipo === 'success' ? '#f0fdf4' : '#fef2f2',
-                    color: mensaje.tipo === 'success' ? '#15803d' : '#b91c1c',
-                    border: `1px solid ${mensaje.tipo === 'success' ? '#bbf7d0' : '#fecaca'}`
-                }}>
+                <div className={
+                    mensaje.tipo === 'success'
+                        ? 'px-4 py-3 rounded border border-green-200 bg-green-50 text-green-800 text-sm mb-6'
+                        : 'px-4 py-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm mb-6'
+                }>
                     {mensaje.texto}
                 </div>
             )}
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-                
+
+            {/* Formularios de operaciones */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
                 {/* 1. Abrir Periodo */}
-                <form onSubmit={handleAbrirPeriodo} style={{ padding: '20px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                    <h3 style={{ marginBottom: '15px', color: '#166534' }}>Abrir Periodo</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <Input label="Año" type="number" 
-                            value={formAbrir.p_anio} onChange={(e) => setFormAbrir({...formAbrir, p_anio: e.target.value})} required />
-                        <Input label="Mes" type="number" min="1" max="12"
-                            value={formAbrir.p_mes} onChange={(e) => setFormAbrir({...formAbrir, p_mes: e.target.value})} required />
-                        <Button type="submit" variant="success">Abrir Periodo</Button>
+                <div className="bg-white border border-zinc-200 rounded-lg">
+                    <div className="px-6 py-4 border-b border-zinc-200">
+                        <span className="text-sm font-semibold text-zinc-700">Abrir Periodo</span>
                     </div>
-                </form>
+                    <form onSubmit={handleAbrirPeriodo} className="p-6">
+                        <div className="flex flex-col gap-4">
+                            <Input label="Año" type="number"
+                                value={formAbrir.p_anio} onChange={(e) => setFormAbrir({...formAbrir, p_anio: e.target.value})} required />
+                            <Input label="Mes" type="number" min="1" max="12"
+                                value={formAbrir.p_mes} onChange={(e) => setFormAbrir({...formAbrir, p_mes: e.target.value})} required />
+                            <Button type="submit" variant="success">Abrir Periodo</Button>
+                        </div>
+                    </form>
+                </div>
 
                 {/* 2. Cerrar Periodo Mensual */}
-                <form onSubmit={handleCerrarPeriodoMensual} style={{ padding: '20px', background: '#fffbeb', borderRadius: '8px', border: '1px solid #fde68a' }}>
-                    <h3 style={{ marginBottom: '15px', color: '#92400e' }}>Cerrar Periodo Mensual</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <Select label="Periodo a Cerrar" 
-                            value={formCerrarMes.p_periodo_id} onChange={(e) => setFormCerrarMes({ p_periodo_id: e.target.value })} required
-                            options={periodos.filter(p => p.ESP_ESTADO_PERIODO === estados.find(e=> e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO).map(p => ({
-                                value: p.PER_PERIODO, label: `${NOMBRES_MESES[p.PER_MES]} ${p.PER_AÑO}`
-                            }))}
-                        />
-                        <Button type="submit" variant="warning">Cerrar Periodo</Button>
+                <div className="bg-white border border-zinc-200 rounded-lg">
+                    <div className="px-6 py-4 border-b border-zinc-200">
+                        <span className="text-sm font-semibold text-zinc-700">Cerrar Periodo Mensual</span>
                     </div>
-                </form>
+                    <form onSubmit={handleCerrarPeriodoMensual} className="p-6">
+                        <div className="flex flex-col gap-4">
+                            <Select label="Periodo a Cerrar"
+                                value={formCerrarMes.p_periodo_id} onChange={(e) => setFormCerrarMes({ p_periodo_id: e.target.value })} required
+                                options={periodos.filter(p => p.ESP_ESTADO_PERIODO === estados.find(e=> e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO).map(p => ({
+                                    value: p.PER_PERIODO, label: `${NOMBRES_MESES[p.PER_MES]} ${p.PER_AÑO}`
+                                }))}
+                            />
+                            <Button type="submit" variant="warning">Cerrar Periodo</Button>
+                        </div>
+                    </form>
+                </div>
 
                 {/* 3. Cierre Ejercicio Anual */}
-                <form onSubmit={handleCierreEjercicioAnual} style={{ padding: '20px', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca' }}>
-                    <h3 style={{ marginBottom: '15px', color: '#991b1b' }}>Cierre de Ejercicio Anual</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        <Input label="Año a Cerrar" type="number" 
-                            value={formCierreAnual.p_anio} onChange={(e) => setFormCierreAnual({...formCierreAnual, p_anio: e.target.value})} required />
-                        
-                        <Select label="Cuenta Utilidad/Pérdida" 
-                            value={formCierreAnual.p_cuenta_utilidad_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_cuenta_utilidad_id: e.target.value })} required
-                            options={cuentas.map(c => ({
-                                value: c.CUE_CUENTA, label: `${c.CUE_CODIGO} - ${c.CUE_NOMBRE}`
-                            }))}
-                        />
-                        
-                        <Select label="Moneda" 
-                            value={formCierreAnual.p_moneda_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_moneda_id: e.target.value })} required
-                            options={monedas.map(m => ({
-                                value: m.MON_MONEDA, label: m.MON_NOMBRE
-                            }))}
-                        />
-
-                        <Select label="Usuario" 
-                            value={formCierreAnual.p_usuario_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_usuario_id: e.target.value })} required
-                            options={usuarios.map(u => ({
-                                value: u.USU_USUARIO, label: u.USU_USER
-                            }))}
-                        />                        
-                        <Button type="submit" variant="danger">Ejecutar Cierre Anual</Button>
+                <div className="bg-white border border-zinc-200 rounded-lg">
+                    <div className="px-6 py-4 border-b border-zinc-200">
+                        <span className="text-sm font-semibold text-zinc-700">Cierre de Ejercicio Anual</span>
                     </div>
-                </form>
+                    <form onSubmit={handleCierreEjercicioAnual} className="p-6">
+                        <div className="flex flex-col gap-4">
+                            <Input label="Año a Cerrar" type="number"
+                                value={formCierreAnual.p_anio} onChange={(e) => setFormCierreAnual({...formCierreAnual, p_anio: e.target.value})} required />
+
+                            <Select label="Cuenta Utilidad/Pérdida"
+                                value={formCierreAnual.p_cuenta_utilidad_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_cuenta_utilidad_id: e.target.value })} required
+                                options={cuentas.map(c => ({
+                                    value: c.CUE_CUENTA, label: `${c.CUE_CODIGO} - ${c.CUE_NOMBRE}`
+                                }))}
+                            />
+
+                            <Select label="Moneda"
+                                value={formCierreAnual.p_moneda_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_moneda_id: e.target.value })} required
+                                options={monedas.map(m => ({
+                                    value: m.MON_MONEDA, label: m.MON_NOMBRE
+                                }))}
+                            />
+
+                            <Select label="Usuario"
+                                value={formCierreAnual.p_usuario_id} onChange={(e) => setFormCierreAnual({ ...formCierreAnual, p_usuario_id: e.target.value })} required
+                                options={usuarios.map(u => ({
+                                    value: u.USU_USUARIO, label: u.USU_USER
+                                }))}
+                            />
+                            <Button type="submit" variant="danger">Ejecutar Cierre Anual</Button>
+                        </div>
+                    </form>
+                </div>
 
             </div>
 
-            <h3 style={{ color: '#0f172a', marginBottom: '15px', marginTop: '20px' }}>Periodos Existentes</h3>
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f8fafc', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #e2e8f0' }}>ID</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #e2e8f0' }}>Año</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #e2e8f0' }}>Mes</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #e2e8f0' }}>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {[...periodos].sort((a,b) => b.PER_AÑO - a.PER_AÑO || b.PER_MES - a.PER_MES).map(p => (
-                            <tr key={p.PER_PERIODO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{p.PER_PERIODO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{p.PER_AÑO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{NOMBRES_MESES[p.PER_MES] || p.PER_MES}</td>
-                                <td style={{ padding: '12px', color: '#64748b', fontWeight: 'bold' }}>
-                                    {getEstadoNombre(p.ESP_ESTADO_PERIODO)}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* Tabla de periodos */}
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <div className="px-6 py-4 border-b border-zinc-200">
+                    <span className="text-sm font-semibold text-zinc-700">Periodos Existentes</span>
+                </div>
+                <div className="p-6">
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse text-sm">
+                            <thead>
+                                <tr className="bg-zinc-50 border-b border-zinc-200">
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">ID</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Año</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Mes</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100">
+                                {[...periodos].sort((a,b) => b.PER_AÑO - a.PER_AÑO || b.PER_MES - a.PER_MES).map(p => (
+                                    <tr key={p.PER_PERIODO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{p.PER_PERIODO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{p.PER_AÑO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{NOMBRES_MESES[p.PER_MES] || p.PER_MES}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">
+                                            {getEstadoNombre(p.ESP_ESTADO_PERIODO)}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {periodos.length === 0 && (
+                        <div className="px-4 py-10 text-center text-zinc-400 text-sm">No hay periodos registrados.</div>
+                    )}
+                </div>
             </div>
         </div>
     );

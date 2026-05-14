@@ -65,59 +65,61 @@ const CON_USUARIOCrud = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Usuarios</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="min-h-screen bg-zinc-50 p-8">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Usuarios</h2>
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <form onSubmit={handleSubmit} className="p-6 border-b border-zinc-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
 
-                    <div>
-                        <Input label="Usuario" name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} required />
+                        <div>
+                            <Input label="Usuario" name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} required />
+                        </div>
+                        <div>
+                            <Input label="Contraseña" name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} required />
+                        </div>
                     </div>
-                    <div>
-                        <Input label="Contraseña" name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} required />
-                    </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='md'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USER: '', USU_CONTRASEÑA: '' }); }}>
-                            Cancelar
+                    <div className="flex items-center gap-2 pt-2">
+                        <Button type='submit' size='md'>
+                            {editingId ? 'Actualizar' : 'Crear'}
                         </Button>
-                    )}
-                </div>
-            </form>
+                        {editingId && (
+                            <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USER: '', USU_CONTRASEÑA: '' }); }}>
+                                Cancelar
+                            </Button>
+                        )}
+                    </div>
+                </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ID</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Usuario</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Contraseña</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.USU_USUARIO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USUARIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USER}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_CONTRASEÑA}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.USU_USUARIO)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-sm">
+                        <thead className="bg-zinc-50 border-b border-zinc-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">ID</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Usuario</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {data.map(item => (
+                                <tr key={item.USU_USUARIO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USUARIO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USER}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>
+                                                Editar
+                                            </button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.USU_USUARIO)}>
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {data.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                </div>
             </div>
         </div>
     );

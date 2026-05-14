@@ -18,13 +18,6 @@ const nombreMes = (numMes) => {
     return m ? m.label : numMes;
 };
 
-const colorMensaje = {
-    success: { bg: '#f0fdf4', border: '#86efac', text: '#166534' },
-    error:   { bg: '#fef2f2', border: '#fca5a5', text: '#991b1b' },
-    warning: { bg: '#fffbeb', border: '#fcd34d', text: '#92400e' },
-    info:    { bg: '#eff6ff', border: '#93c5fd', text: '#1e40af' },
-};
-
 const CON_REPROCESO_PERIODO = () => {
     const [anio, setAnio]   = useState('');
     const [mes, setMes]     = useState('');
@@ -151,194 +144,170 @@ const CON_REPROCESO_PERIODO = () => {
     };
 
     return (
-        <div style={{ maxWidth: '900px' }}>
-            {/* Encabezado */}
-            <div style={{ marginBottom: '24px' }}>
-                <h2 style={{ color: '#0f172a', fontSize: '22px', fontWeight: '700', margin: 0 }}>
-                    Reproceso de Períodos Cerrados
-                </h2>
-                <p style={{ color: '#64748b', fontSize: '14px', marginTop: '6px' }}>
-                    Permite reabrir un período contable cerrado para realizar correcciones.
-                    Esta operación queda registrada en Bitácora.
-                </p>
-            </div>
+        <div className="min-h-screen bg-zinc-50 p-8">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-2">Reproceso de Períodos Cerrados</h2>
+            <p className="text-sm text-zinc-500 mb-6">
+                Permite reabrir un período contable cerrado para realizar correcciones.
+                Esta operación queda registrada en Bitácora.
+            </p>
 
             {/* Advertencia */}
-            <div style={{
-                background: '#fffbeb', border: '1px solid #f59e0b',
-                borderLeft: '4px solid #f59e0b', borderRadius: '8px',
-                padding: '12px 16px', marginBottom: '24px', fontSize: '13px', color: '#92400e'
-            }}>
+            <div className="px-4 py-3 rounded border border-amber-200 bg-amber-50 text-amber-700 text-sm mb-6">
                 ⚠️ <strong>Advertencia:</strong> El reproceso de un período cerrado es una operación sensible.
                 Asegúrese de contar con la autorización correspondiente antes de proceder.
             </div>
 
-            {/* Paso 1: Búsqueda */}
-            <div style={{
-                background: 'white', padding: '24px', borderRadius: '12px',
-                boxShadow: '0 1px 3px rgb(0 0 0 / 0.1)', marginBottom: '20px',
-                border: '1px solid #e2e8f0'
-            }}>
-                <h3 style={{ color: '#334155', fontSize: '15px', fontWeight: '600', marginBottom: '4px', marginTop: 0 }}>
-                    📅 Paso 1 — Buscar períodos cerrados
-                </h3>
-                <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '16px', marginTop: 0 }}>
-                    Puede buscar usando solo el año, solo el mes, o ambos a la vez.
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '16px', alignItems: 'end' }}>
-                    <Input
-                        label="Año (opcional)"
-                        name="PER_AÑO"
-                        type="number"
-                        value={anio}
-                        onChange={e => { setAnio(e.target.value); limpiarBusqueda(); }}
-                        placeholder="Ej: 2025"
-                        min="2000" max="2099"
-                    />
-                    <Select
-                        label="Mes (opcional)"
-                        name="PER_MES"
-                        value={mes}
-                        onChange={e => { setMes(e.target.value); limpiarBusqueda(); }}
-                        options={MESES.map(m => ({ value: m.value, label: m.label }))}
-                    />
-                    <div style={{ marginBottom: '16px' }}>
-                        <Button onClick={handleBuscar} disabled={buscando} variant="primary" size="md">
-                            {buscando ? 'Buscando...' : '🔍 Buscar'}
-                        </Button>
-                    </div>
+            {/* Mensaje de feedback */}
+            {mensaje && (
+                <div className={
+                    mensaje.tipo === 'success' ? 'px-4 py-3 rounded border border-green-200 bg-green-50 text-green-800 text-sm mb-6'
+                    : mensaje.tipo === 'error'   ? 'px-4 py-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm mb-6'
+                    : mensaje.tipo === 'info'    ? 'px-4 py-3 rounded border border-blue-200 bg-blue-50 text-blue-800 text-sm mb-6'
+                    : 'px-4 py-3 rounded border border-amber-200 bg-amber-50 text-amber-700 text-sm mb-6'
+                }>
+                    {mensaje.texto}
                 </div>
+            )}
 
-                {/* Tabla de resultados */}
-                {buscado && resultados.length > 0 && (
-                    <div style={{ marginTop: '16px' }}>
-                        <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>
-                            Seleccione el período que desea reprocesar:
-                        </p>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead>
-                                <tr style={{ background: '#f1f5f9', color: '#334155', textAlign: 'left' }}>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>ID</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Año</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Mes</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Estado</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {resultados.map(p => {
-                                    const seleccionado = periodoSeleccionado?.PER_PERIODO === p.PER_PERIODO;
-                                    return (
-                                        <tr key={p.PER_PERIODO} style={{
-                                            borderBottom: '1px solid #e2e8f0',
-                                            background: seleccionado ? '#eff6ff' : 'white',
-                                            transition: 'background 0.2s'
-                                        }}>
-                                            <td style={{ padding: '10px 12px', color: '#64748b' }}>{p.PER_PERIODO}</td>
-                                            <td style={{ padding: '10px 12px', color: '#334155', fontWeight: '500' }}>{p.PER_AÑO}</td>
-                                            <td style={{ padding: '10px 12px', color: '#334155', fontWeight: '500' }}>{nombreMes(p.PER_MES)}</td>
-                                            <td style={{ padding: '10px 12px' }}>
-                                                <span style={{
-                                                    background: '#fee2e2', color: '#991b1b',
-                                                    padding: '2px 10px', borderRadius: '20px',
-                                                    fontSize: '11px', fontWeight: '600'
-                                                }}>
-                                                    {p.ESP_NOMBRE}
-                                                </span>
-                                            </td>
-                                            <td style={{ padding: '10px 12px' }}>
-                                                <Button
-                                                    variant={seleccionado ? 'secondary' : 'primary'}
-                                                    size="sm"
-                                                    onClick={() => seleccionado ? setPeriodoSeleccionado(null) : handleSeleccionar(p)}
-                                                >
-                                                    {seleccionado ? 'Deseleccionar' : 'Seleccionar'}
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+            {/* Paso 1: Búsqueda */}
+            <div className="bg-white border border-zinc-200 rounded-lg mb-6">
+                <div className="px-6 py-4 border-b border-zinc-200">
+                    <span className="text-sm font-semibold text-zinc-700">📅 Paso 1 — Buscar períodos cerrados</span>
+                </div>
+                <div className="p-6">
+                    <p className="text-sm text-zinc-500 mb-4">
+                        Puede buscar usando solo el año, solo el mes, o ambos a la vez.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <Input
+                            label="Año (opcional)"
+                            name="PER_AÑO"
+                            type="number"
+                            value={anio}
+                            onChange={e => { setAnio(e.target.value); limpiarBusqueda(); }}
+                            placeholder="Ej: 2025"
+                            min="2000" max="2099"
+                        />
+                        <Select
+                            label="Mes (opcional)"
+                            name="PER_MES"
+                            value={mes}
+                            onChange={e => { setMes(e.target.value); limpiarBusqueda(); }}
+                            options={MESES.map(m => ({ value: m.value, label: m.label }))}
+                        />
+                        <div className="mb-4">
+                            <Button onClick={handleBuscar} disabled={buscando} variant="primary" size="md">
+                                {buscando ? 'Buscando...' : '🔍 Buscar'}
+                            </Button>
+                        </div>
                     </div>
-                )}
+
+                    {/* Tabla de resultados */}
+                    {buscado && resultados.length > 0 && (
+                        <div className="mt-4">
+                            <p className="text-sm font-semibold text-zinc-700 mb-3">
+                                Seleccione el período que desea reprocesar:
+                            </p>
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse text-sm">
+                                    <thead>
+                                        <tr className="bg-zinc-50 border-b border-zinc-200">
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">ID</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Año</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Mes</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado</th>
+                                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-zinc-100">
+                                        {resultados.map(p => {
+                                            const seleccionado = periodoSeleccionado?.PER_PERIODO === p.PER_PERIODO;
+                                            return (
+                                                <tr key={p.PER_PERIODO} className={`transition-colors ${seleccionado ? 'bg-blue-50' : 'bg-white hover:bg-zinc-50'}`}>
+                                                    <td className="px-4 py-3 text-sm text-zinc-700">{p.PER_PERIODO}</td>
+                                                    <td className="px-4 py-3 text-sm text-zinc-700 font-medium">{p.PER_AÑO}</td>
+                                                    <td className="px-4 py-3 text-sm text-zinc-700 font-medium">{nombreMes(p.PER_MES)}</td>
+                                                    <td className="px-4 py-3 text-sm text-zinc-700">
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 text-zinc-500 border border-zinc-200">
+                                                            {p.ESP_NOMBRE}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right space-x-3">
+                                                        <Button
+                                                            variant={seleccionado ? 'secondary' : 'primary'}
+                                                            size="sm"
+                                                            onClick={() => seleccionado ? setPeriodoSeleccionado(null) : handleSeleccionar(p)}
+                                                        >
+                                                            {seleccionado ? 'Deseleccionar' : 'Seleccionar'}
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Paso 2 (solo si hay período seleccionado) */}
             {periodoSeleccionado && (
-                <div style={{
-                    background: 'white', padding: '24px', borderRadius: '12px',
-                    boxShadow: '0 1px 3px rgb(0 0 0 / 0.1)', marginBottom: '20px',
-                    border: '1px solid #e2e8f0'
-                }}>
-                    <h3 style={{ color: '#334155', fontSize: '15px', fontWeight: '600', marginBottom: '8px', marginTop: 0 }}>
-                        📝 Paso 2 — Datos del reproceso
-                    </h3>
-                    <div style={{
-                        background: '#eff6ff', border: '1px solid #93c5fd',
-                        borderRadius: '8px', padding: '10px 14px', marginBottom: '16px',
-                        fontSize: '13px', color: '#1e40af'
-                    }}>
-                        Período seleccionado: <strong>{nombreMes(periodoSeleccionado.PER_MES)} {periodoSeleccionado.PER_AÑO}</strong> (ID: {periodoSeleccionado.PER_PERIODO})
+                <div className="bg-white border border-zinc-200 rounded-lg mb-6">
+                    <div className="px-6 py-4 border-b border-zinc-200">
+                        <span className="text-sm font-semibold text-zinc-700">📝 Paso 2 — Datos del reproceso</span>
                     </div>
+                    <div className="p-6">
+                        <div className="px-4 py-3 rounded border border-blue-200 bg-blue-50 text-blue-800 text-sm mb-4">
+                            Período seleccionado: <strong>{nombreMes(periodoSeleccionado.PER_MES)} {periodoSeleccionado.PER_AÑO}</strong> (ID: {periodoSeleccionado.PER_PERIODO})
+                        </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                        <Select
-                            label="Usuario que autoriza"
-                            name="USU_USUARIO"
-                            value={usuarioId}
-                            onChange={e => setUsuarioId(e.target.value)}
-                            options={usuarios.map(u => ({ value: u.USU_USUARIO, label: `${u.USU_USUARIO} - ${u.USU_USER}` }))}
-                            required
-                        />
-                        <div style={{ gridColumn: '1 / -1' }}>
-                            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '4px' }}>
-                                Motivo del reproceso <span style={{ color: '#ef4444' }}>*</span>
-                            </label>
-                            <textarea
-                                value={motivo}
-                                onChange={e => setMotivo(e.target.value)}
-                                rows={3}
-                                placeholder="Describa la razón por la que se necesita reabrir este período (mínimo 20 caracteres)..."
-                                style={{
-                                    width: '100%', padding: '10px 12px', borderRadius: '8px',
-                                    border: '1px solid #d1d5db', fontSize: '14px', color: '#111827',
-                                    resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box',
-                                }}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Select
+                                label="Usuario que autoriza"
+                                name="USU_USUARIO"
+                                value={usuarioId}
+                                onChange={e => setUsuarioId(e.target.value)}
+                                options={usuarios.map(u => ({ value: u.USU_USUARIO, label: `${u.USU_USUARIO} - ${u.USU_USER}` }))}
+                                required
                             />
-                            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
-                                {motivo.length} caracteres ingresados
-                            </p>
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-zinc-700 mb-1">
+                                    Motivo del reproceso <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    value={motivo}
+                                    onChange={e => setMotivo(e.target.value)}
+                                    rows={3}
+                                    placeholder="Describa la razón por la que se necesita reabrir este período (mínimo 20 caracteres)..."
+                                    style={{
+                                        width: '100%', padding: '10px 12px', borderRadius: '8px',
+                                        border: '1px solid #d1d5db', fontSize: '14px', color: '#111827',
+                                        resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box',
+                                    }}
+                                />
+                                <p className="text-xs text-zinc-400 mt-1">
+                                    {motivo.length} caracteres ingresados
+                                </p>
+                            </div>
+                        </div>
+                        <div className="mt-4 flex items-center gap-3">
+                            <Button
+                                onClick={handleSolicitarReproceso}
+                                disabled={procesando || motivo.trim().length < 20}
+                                variant="warning" size="lg"
+                            >
+                                {procesando ? '⏳ Procesando...' : '🔓 Ejecutar Reproceso'}
+                            </Button>
+                            {motivo.trim().length > 0 && motivo.trim().length < 20 && (
+                                <span className="text-xs text-red-500">
+                                    El motivo debe tener al menos 20 caracteres
+                                </span>
+                            )}
                         </div>
                     </div>
-                    <div style={{ marginTop: '8px' }}>
-                        <Button
-                            onClick={handleSolicitarReproceso}
-                            disabled={procesando || motivo.trim().length < 20}
-                            variant="warning" size="lg"
-                        >
-                            {procesando ? '⏳ Procesando...' : '🔓 Ejecutar Reproceso'}
-                        </Button>
-                        {motivo.trim().length > 0 && motivo.trim().length < 20 && (
-                            <span style={{ marginLeft: '12px', fontSize: '12px', color: '#ef4444' }}>
-                                El motivo debe tener al menos 20 caracteres
-                            </span>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* Mensaje */}
-            {mensaje && (
-                <div style={{
-                    background: colorMensaje[mensaje.tipo].bg,
-                    border: `1px solid ${colorMensaje[mensaje.tipo].border}`,
-                    borderRadius: '8px', padding: '12px 16px',
-                    color: colorMensaje[mensaje.tipo].text,
-                    fontSize: '14px', marginBottom: '20px'
-                }}>
-                    {mensaje.texto}
                 </div>
             )}
 
@@ -348,20 +317,17 @@ const CON_REPROCESO_PERIODO = () => {
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
                 }}>
-                    <div style={{
-                        background: 'white', borderRadius: '16px', padding: '32px',
-                        maxWidth: '440px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-                    }}>
-                        <h3 style={{ color: '#0f172a', marginTop: 0, fontSize: '18px' }}>⚠️ Confirmar Reproceso</h3>
-                        <p style={{ color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>
+                    <div className="bg-white border border-zinc-200 rounded-lg p-8 max-w-md w-full mx-4">
+                        <h3 className="text-lg font-semibold text-zinc-900 mb-3">⚠️ Confirmar Reproceso</h3>
+                        <p className="text-sm text-zinc-700 leading-relaxed mb-3">
                             Está a punto de <strong>reabrir el período {nombreMes(periodoSeleccionado.PER_MES)} {periodoSeleccionado.PER_AÑO}</strong>.
                             Esta acción cambiará su estado de <strong>CERRADO</strong> a <strong>ABIERTO</strong>
                             y quedará registrada en la bitácora del sistema.
                         </p>
-                        <p style={{ color: '#475569', fontSize: '13px', background: '#f1f5f9', padding: '10px', borderRadius: '6px' }}>
+                        <div className="px-4 py-3 rounded border border-zinc-200 bg-zinc-50 text-zinc-700 text-sm mb-4">
                             <strong>Motivo:</strong> {motivo}
-                        </p>
-                        <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
+                        </div>
+                        <div className="flex gap-3 justify-end">
                             <Button variant="secondary" onClick={() => setMostrarConfirmacion(false)}>Cancelar</Button>
                             <Button variant="warning" onClick={handleConfirmarReproceso}>Sí, reabrir período</Button>
                         </div>
@@ -370,49 +336,48 @@ const CON_REPROCESO_PERIODO = () => {
             )}
 
             {/* Historial */}
-            <div style={{
-                background: 'white', padding: '24px', borderRadius: '12px',
-                boxShadow: '0 1px 3px rgb(0 0 0 / 0.1)', border: '1px solid #e2e8f0'
-            }}>
-                <h3 style={{ color: '#334155', fontSize: '15px', fontWeight: '600', marginBottom: '16px', marginTop: 0 }}>
-                    📋 Historial de reprocesos
-                </h3>
-                {cargandoHistorial ? (
-                    <p style={{ color: '#94a3b8', textAlign: 'center', padding: '20px' }}>Cargando historial...</p>
-                ) : historial.length === 0 ? (
-                    <p style={{ color: '#94a3b8', textAlign: 'center', padding: '20px', fontSize: '14px' }}>
-                        No se han realizado reprocesos aún.
-                    </p>
-                ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                            <thead>
-                                <tr style={{ background: '#f1f5f9', color: '#334155', textAlign: 'left' }}>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Fecha y Hora</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Período</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Usuario</th>
-                                    <th style={{ padding: '10px 12px', borderBottom: '2px solid #cbd5e1' }}>Motivo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {historial.map((h, i) => (
-                                    <tr key={i} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                        <td style={{ padding: '10px 12px', color: '#64748b' }}>
-                                            {new Date(h.BIT_FECHA_HORA).toLocaleString('es-GT')}
-                                        </td>
-                                        <td style={{ padding: '10px 12px', color: '#334155', fontWeight: '500' }}>{h.PERIODO}</td>
-                                        <td style={{ padding: '10px 12px', color: '#64748b' }}>{h.USU_USER}</td>
-                                        <td style={{ padding: '10px 12px', color: '#64748b', maxWidth: '260px' }}>
-                                            <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={h.MOTIVO}>
-                                                {h.MOTIVO}
-                                            </span>
-                                        </td>
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <div className="px-6 py-4 border-b border-zinc-200">
+                    <span className="text-sm font-semibold text-zinc-700">📋 Historial de reprocesos</span>
+                </div>
+                <div className="p-6">
+                    {cargandoHistorial ? (
+                        <div className="px-4 py-10 text-center text-zinc-400 text-sm">Cargando historial...</div>
+                    ) : historial.length === 0 ? (
+                        <div className="px-4 py-10 text-center text-zinc-400 text-sm">
+                            No se han realizado reprocesos aún.
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse text-sm">
+                                <thead>
+                                    <tr className="bg-zinc-50 border-b border-zinc-200">
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Fecha y Hora</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Período</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Usuario</th>
+                                        <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Motivo</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+                                </thead>
+                                <tbody className="divide-y divide-zinc-100">
+                                    {historial.map((h, i) => (
+                                        <tr key={i} className="bg-white hover:bg-zinc-50 transition-colors">
+                                            <td className="px-4 py-3 text-sm text-zinc-700">
+                                                {new Date(h.BIT_FECHA_HORA).toLocaleString('es-GT')}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-zinc-700 font-medium">{h.PERIODO}</td>
+                                            <td className="px-4 py-3 text-sm text-zinc-700">{h.USU_USER}</td>
+                                            <td className="px-4 py-3 text-sm text-zinc-700 max-w-xs">
+                                                <span className="block overflow-hidden text-ellipsis whitespace-nowrap" title={h.MOTIVO}>
+                                                    {h.MOTIVO}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

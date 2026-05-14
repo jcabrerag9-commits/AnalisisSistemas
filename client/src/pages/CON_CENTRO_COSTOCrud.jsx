@@ -79,7 +79,7 @@ const CON_CENTRO_COSTOCrud = () => {
         <Card title="Gestión de Centro Costo" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CTC_CENTRO_COSTO_PADRE: '', CTC_CODIGO_DEPARTAMENTO: '', CTC_NOMBRE: '' }); }}
             columns={[
                 { header: 'Centro Costo', accessor: 'CTC_CENTRO_COSTO' },
-                { header: 'Centro Costo Padre', accessor: 'CTC_CENTRO_COSTO_PADRE' },
+                { header: 'Centro Costo Padre', accessor: 'CTC_NOMBRE_PADRE' },
                 { header: 'Código Departamento', accessor: 'CTC_CODIGO_DEPARTAMENTO' },
                 { header: 'Nombre', accessor: 'CTC_NOMBRE' },
             ]}
@@ -88,7 +88,7 @@ const CON_CENTRO_COSTOCrud = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}>
             <Select label="Centro Costo Padre" name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
-                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CODIGO_DEPARTAMENTO} - ${opt.CTC_NOMBRE}` }))}
                 required />
 
             <Input label="Código Departamento" name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />

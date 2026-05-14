@@ -43,8 +43,6 @@ const menuItems = [
   { path: '/con-tipo-cambio', label: 'Tipo Cambio' },
   { path: '/con-impuesto', label: 'Impuesto' },
   { path: '/con-asiento', label: 'Asiento' },
-  { path: '/con-asiento-detalle', label: 'Asiento Detalle' },
-  { path: '/con-impuesto-movimiento', label: 'Impuesto Movimiento' },
   { path: '/con-bitacora', label: 'Bitácora' },
 ];
 
@@ -54,8 +52,8 @@ const operacionItems = [
 ];
 
 const reporteItems = [
-  { path: '/reporte-libro-diario',    label: 'Libro Diario' },
-  { path: '/reporte-libro-mayor',     label: 'Libro Mayor' },
+  { path: '/reporte-libro-diario', label: 'Libro Diario' },
+  { path: '/reporte-libro-mayor', label: 'Libro Mayor' },
   { path: '/reporte-estado-resultados', label: 'Estado de Resultados' },
   { path: '/reporte-balance-general', label: 'Balance General' },
 ];
@@ -67,89 +65,90 @@ const reporteItems = [
 function App() {
   return (
     <Router>
-      <div className="flex font-[Inter,sans-serif] min-h-screen">
-        <nav className="w-64 bg-slate-900 min-h-screen p-5 flex flex-col shadow-xl border-r border-slate-800 print:hidden">
-          <div className="flex items-center gap-3 mb-6 px-2">
-            <Database size={26} className="text-sky-400 drop-shadow-lg" />
-            <h2 className="text-lg font-bold text-white tracking-tight">Menú CRUD</h2>
+      <div className="flex min-h-screen bg-zinc-50">
+        <nav className="w-64 bg-white border-r border-zinc-200 fixed left-0 top-0 h-screen overflow-y-auto flex flex-col z-40 print:hidden">
+          <div className="px-6 py-5 border-b border-zinc-200 flex items-center gap-2 flex-shrink-0">
+            <Database size={26} className="text-zinc-700" />
+            <h2 className="text-base font-semibold text-zinc-900 tracking-tight">Menú CRUD</h2>
           </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-4" />
-          <ul className="list-none p-0 m-0 flex flex-col gap-1 overflow-y-auto flex-1">
-            <li>
-              <Link to="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 no-underline hover:bg-slate-800 hover:text-white transition-all duration-200 group">
-                <Home size={18} className="group-hover:scale-110 transition-transform duration-200" />
-                <span className="text-sm font-medium">Inicio</span>
-              </Link>
-            </li>
-
-            <li className="mt-4 mb-1 px-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Tablas</span>
-            </li>
-            {menuItems.map((item) => (
-              <li key={item.path}>
-                <Link to={item.path} className="block px-3 py-2 rounded-lg text-sm text-sky-400 no-underline hover:bg-sky-400/10 hover:text-sky-300 hover:translate-x-1 active:scale-95 transition-all duration-200">
-                  {item.label}
+          <div className="flex-1 overflow-y-auto py-4">
+            <ul className="list-none p-0 m-0 flex flex-col">
+              <li>
+                <Link to="/" className="flex items-center gap-2 px-4 py-2 mx-2 rounded text-sm text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
+                  <Home size={18} />
+                  <span>Inicio</span>
                 </Link>
               </li>
-            ))}
 
-            <li className="mt-4 mb-1 px-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Operaciones</span>
-            </li>
-            {operacionItems.map((item) => (
-              <li key={item.path}>
-                <Link to={item.path} className="block px-3 py-2 rounded-lg text-sm text-amber-400 no-underline hover:bg-amber-400/10 hover:text-amber-300 hover:translate-x-1 active:scale-95 transition-all duration-200">
-                  {item.label}
-                </Link>
+              <li className="px-6 pt-4 pb-1">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Tablas</span>
               </li>
-            ))}
+              {menuItems.map((item) => (
+                <li key={item.path}>
+                  <Link to={item.path} className="flex items-center gap-2 px-4 py-2 mx-2 rounded text-sm text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
 
-
-            <li className="mt-4 mb-1 px-3">
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Reportes</span>
-            </li>
-            {reporteItems.map((item) => (
-              <li key={item.path}>
-                <Link to={item.path} className="block px-3 py-2 rounded-lg text-sm text-emerald-400 no-underline hover:bg-emerald-400/10 hover:text-emerald-300 hover:translate-x-1 active:scale-95 transition-all duration-200">
-                  {item.label}
-                </Link>
+              <li className="px-6 pt-4 pb-1">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Operaciones</span>
               </li>
-            ))}
-          </ul>
-          <div className="mt-4 pt-4 border-t border-slate-800">
-            <p className="text-[11px] text-slate-600 text-center">Sistema Contable v1.0</p>
+              {operacionItems.map((item) => (
+                <li key={item.path}>
+                  <Link to={item.path} className="flex items-center gap-2 px-4 py-2 mx-2 rounded text-sm text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+
+
+              <li className="px-6 pt-4 pb-1">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Reportes</span>
+              </li>
+              {reporteItems.map((item) => (
+                <li key={item.path}>
+                  <Link to={item.path} className="flex items-center gap-2 px-4 py-2 mx-2 rounded text-sm text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="px-6 py-4 border-t border-zinc-200 flex-shrink-0">
+            <p className="text-xs text-zinc-400 text-center">Sistema Contable v1.0</p>
           </div>
         </nav>
 
-        <main className="flex-1 p-10 bg-slate-50 overflow-y-auto print:p-0 print:bg-white print:overflow-visible">
+        <main className="ml-64 flex-1 min-h-screen bg-zinc-50 p-8 print:p-0 print:ml-0 print:bg-white print:overflow-visible">
           <Routes>
             <Route path="/" element={
               <div className="max-w-2xl">
-                <h1 className="text-3xl font-extrabold text-slate-700 mb-3">Bienvenido al Sistema de Contabilidad</h1>
-                <p className="text-slate-500 text-base leading-relaxed">Seleccione una tabla del menú lateral para gestionar los registros.</p>
+                <h1 className="text-3xl font-extrabold text-zinc-700 mb-3">Bienvenido al Sistema de Contabilidad</h1>
+                <p className="text-zinc-500 text-base leading-relaxed">Seleccione una tabla del menú lateral para gestionar los registros.</p>
               </div>
             } />
-            <Route path="/con-usuario"             element={<CON_USUARIOCrud />} />
-            <Route path="/con-rol"                 element={<CON_ROLCrud />} />
-            <Route path="/con-usuario-rol"         element={<CON_USUARIO_ROLCrud />} />
-            <Route path="/con-moneda"              element={<CON_MONEDACrud />} />
-            <Route path="/con-estado-periodo"      element={<CON_ESTADO_PERIODOCrud />} />
-            <Route path="/con-estado-asiento"      element={<CON_ESTADO_ASIENTOCrud />} />
-            <Route path="/con-tipo-asiento"        element={<CON_TIPO_ASIENTOCrud />} />
-            <Route path="/con-tipo-cuenta"         element={<CON_TIPO_CUENTACrud />} />
-            <Route path="/con-centro-costo"        element={<CON_CENTRO_COSTOCrud />} />
-            <Route path="/con-cuenta"              element={<CON_CUENTACrud />} />
-            <Route path="/con-tipo-cambio"         element={<CON_TIPO_CAMBIOCrud />} />
-            <Route path="/con-impuesto"            element={<CON_IMPUESTOCrud />} />
-            <Route path="/con-asiento"             element={<CON_ASIENTOCrud />} />
-            <Route path="/con-asiento-detalle"     element={<CON_ASIENTO_DETALLECrud />} />
+            <Route path="/con-usuario" element={<CON_USUARIOCrud />} />
+            <Route path="/con-rol" element={<CON_ROLCrud />} />
+            <Route path="/con-usuario-rol" element={<CON_USUARIO_ROLCrud />} />
+            <Route path="/con-moneda" element={<CON_MONEDACrud />} />
+            <Route path="/con-estado-periodo" element={<CON_ESTADO_PERIODOCrud />} />
+            <Route path="/con-estado-asiento" element={<CON_ESTADO_ASIENTOCrud />} />
+            <Route path="/con-tipo-asiento" element={<CON_TIPO_ASIENTOCrud />} />
+            <Route path="/con-tipo-cuenta" element={<CON_TIPO_CUENTACrud />} />
+            <Route path="/con-centro-costo" element={<CON_CENTRO_COSTOCrud />} />
+            <Route path="/con-cuenta" element={<CON_CUENTACrud />} />
+            <Route path="/con-tipo-cambio" element={<CON_TIPO_CAMBIOCrud />} />
+            <Route path="/con-impuesto" element={<CON_IMPUESTOCrud />} />
+            <Route path="/con-asiento" element={<CON_ASIENTOCrud />} />
+            <Route path="/con-asiento-detalle" element={<CON_ASIENTO_DETALLECrud />} />
             <Route path="/con-impuesto-movimiento" element={<CON_IMPUESTO_MOVIMIENTOCrud />} />
-            <Route path="/con-bitacora"            element={<CON_BITACORACrud />} />
-            <Route path="/con-reproceso-periodo"   element={<CON_REPROCESO_PERIODO />} />
-            <Route path="/reporte-libro-diario"    element={<LibroDiarioReporte />} />
-            <Route path="/reporte-libro-mayor"     element={<LibroMayorReporte />} />
+            <Route path="/con-bitacora" element={<CON_BITACORACrud />} />
+            <Route path="/con-reproceso-periodo" element={<CON_REPROCESO_PERIODO />} />
+            <Route path="/reporte-libro-diario" element={<LibroDiarioReporte />} />
+            <Route path="/reporte-libro-mayor" element={<LibroMayorReporte />} />
             <Route path="/reporte-estado-resultados" element={<EstadoResultadosReporte />} />
-            <Route path="/gestion-periodos"        element={<GestionPeriodos />} />
+            <Route path="/gestion-periodos" element={<GestionPeriodos />} />
             {/* ← NUEVA RUTA */}
             <Route path="/reporte-balance-general" element={<BalanceGeneralReporte />} />
 

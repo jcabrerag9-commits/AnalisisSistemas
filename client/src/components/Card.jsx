@@ -31,26 +31,22 @@ const Card = ({
   submitSize = 'lg',
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white border border-zinc-200 rounded-lg">
       {/* ── Header ── */}
-      <div className="px-8 pt-8 pb-4 border-b border-slate-100">
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">{title}</h2>
+      <div className="px-6 py-4 border-b border-zinc-200 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-zinc-900">{title}</h2>
       </div>
 
       {/* ── Form section ── */}
-      <form
-        onSubmit={onSubmit}
-        className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200
-                   transition-colors duration-200"
-      >
+      <form onSubmit={onSubmit} className="px-6 py-5">
         {/* Grid de campos */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
           {children}
         </div>
 
         {/* Botones del formulario */}
-        <div className="mt-5 flex items-center gap-3">
-          <Button type="submit" size={submitSize}>
+        <div className="flex items-center gap-2 mt-4">
+          <Button type="submit" size={submitSize} variant="primary">
             {editingId ? 'Actualizar' : 'Crear'}
           </Button>
 
@@ -68,71 +64,71 @@ const Card = ({
       </form>
 
       {/* ── Table section ── */}
-      <div className="px-8 pb-8 overflow-x-auto">
+      <div className="border-t border-zinc-200 overflow-hidden">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-slate-100 text-left text-slate-700">
+            <tr className="bg-zinc-50">
               {columns.map((col) => (
                 <th
                   key={col.accessor}
-                  className="px-3 py-3 font-semibold border-b-2 border-slate-300
-                             first:rounded-tl-lg last:rounded-tr-lg whitespace-nowrap"
+                  className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide border-b border-zinc-200"
                 >
                   {col.header}
                 </th>
               ))}
-              <th
-                className="px-3 py-3 font-semibold border-b-2 border-slate-300
-                           rounded-tr-lg whitespace-nowrap"
-              >
+              <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide border-b border-zinc-200">
                 Acciones
               </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="divide-y divide-zinc-100">
             {data.map((item) => (
               <tr
                 key={item[rowKey]}
-                className="border-b border-slate-200 hover:bg-slate-50
-                           transition-colors duration-150"
+                className="bg-white hover:bg-zinc-50 transition-colors duration-100"
               >
                 {columns.map((col) => (
                   <td
                     key={col.accessor}
-                    className="px-3 py-3 text-slate-500 whitespace-nowrap"
+                    className="px-4 py-3 text-sm text-zinc-700"
                   >
                     {item[col.accessor]}
                   </td>
                 ))}
-                <td className="px-3 py-3 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="warning"
-                      size="sm"
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
                       onClick={() => onEdit(item)}
                     >
                       Editar
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
                       onClick={() => onDelete(item[rowKey])}
                     >
                       Eliminar
-                    </Button>
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
+
+            {data.length === 0 && (
+              <tr>
+                <td
+                  colSpan={columns.length + 1}
+                  className="py-12 text-center text-zinc-400 text-sm"
+                >
+                  No hay registros disponibles.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-
-        {data.length === 0 && (
-          <p className="text-center py-8 text-slate-400 text-sm">
-            No hay registros disponibles.
-          </p>
-        )}
       </div>
     </div>
   );
