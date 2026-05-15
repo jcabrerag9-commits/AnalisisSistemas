@@ -1,29 +1,33 @@
 const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
+const cors    = require('cors');
+const morgan  = require('morgan');
 require('dotenv').config();
 const db = require('./db');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// ── Middleware ──
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Health check endpoint
+// ── Health check ──
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Servidor funcionando correctamente' });
 });
 
+// ── Rutas de autenticación (públicas — no requieren token) ──
+const authRoutes = require('./routes/AUTH');
+app.use('/api/auth', authRoutes);
+
+// ── Rutas CRUD y reportes ──
 const crudRoutes = require('./routes');
 app.use('/api', crudRoutes);
 
-// Inicializar BD y Servidor
+// ── Inicializar BD y servidor ──
 async function startServer() {
     await db.initialize();
-
     app.listen(PORT, () => {
         console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
     });

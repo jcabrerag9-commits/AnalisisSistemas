@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -67,21 +66,19 @@ const CON_MONEDACrud = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 p-8">
-            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Monedas</h2>
-            <div className="bg-white border border-zinc-200 rounded-lg">
-                <form onSubmit={handleSubmit} className="p-6 border-b border-zinc-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Monedas</h2>
+            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
-                        <div>
-                            <Input label="Código ISO" name="MON_CODIGO_ISO" value={formData.MON_CODIGO_ISO || ''} onChange={handleChange} required />
-                        </div>
-                        <div>
-                            <Input label="Nombre" name="MON_NOMBRE" value={formData.MON_NOMBRE || ''} onChange={handleChange} required />
-                        </div>
-                        <div>
-                            <Input label="Símbolo" name="MON_SIMBOLO" value={formData.MON_SIMBOLO || ''} onChange={handleChange} required />
-                        </div>
+                    <div>
+                        <Input label="Código ISO" helpText="Código internacional de 3 letras de la moneda según la norma ISO 4217. Ej: GTQ (Quetzal), USD (Dólar), EUR (Euro)." name="MON_CODIGO_ISO" value={formData.MON_CODIGO_ISO || ''} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Input label="Nombre" name="MON_NOMBRE" value={formData.MON_NOMBRE || ''} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Input label="Símbolo" helpText="Carácter o caracteres que representan la moneda visualmente. Ej: Q para Quetzal, $ para Dólar, € para Euro." name="MON_SIMBOLO" value={formData.MON_SIMBOLO || ''} onChange={handleChange} required />
                     </div>
                     <div className="flex items-center gap-2 pt-2">
                         <Button type='submit' size='md'>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -70,12 +69,13 @@ const CON_TIPO_ASIENTOCrud = () => {
         <div className="min-h-screen bg-zinc-50 p-8">
             <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Tipo Asiento</h2>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                        <Input label="Código" name="TPA_CODIGO" value={formData.TPA_CODIGO || ''} onChange={handleChange}
+
+                    <div>
+                        <Input label="Código" helpText="Código corto e identificador único del tipo de asiento. Ej: DIARIO, APERTURA, AJUSTE, CIERRE." name="TPA_CODIGO" value={formData.TPA_CODIGO || ''} onChange={handleChange}
                             type="text" required />
-                        <Input label="Descripción" name="TPA_DESCRIPCION" value={formData.TPA_DESCRIPCION || ''} onChange={handleChange}
+                    </div>
+                    <div>
+                        <Input label="Descripción" helpText="Explicación del uso de este tipo de asiento. Ej: Asiento de apertura del ejercicio fiscal." name="TPA_DESCRIPCION" value={formData.TPA_DESCRIPCION || ''} onChange={handleChange}
                             type="text" required />
                     </div>
                     <div className="flex items-center gap-2 pt-2">

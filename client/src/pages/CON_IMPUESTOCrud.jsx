@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -87,53 +86,61 @@ const CON_IMPUESTOCrud = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 p-8">
-            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Impuestos</h2>
+        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Impuestos</h2>
+            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <Select label="Cuenta Contable" helpText="Cuenta de Pasivo o Activo donde se registra el impuesto. Ej: IVA por Pagar, IVA Crédito Fiscal." name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
+                        options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                        required />
+                    <Input label="Código" helpText="Código corto e identificador único del impuesto. Ej: IVA, ISR, IUSI." name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} required />
+                    <Input label="Nombre" name="IMP_NOMBRE" value={formData.IMP_NOMBRE || ''} onChange={handleChange} required />
+                    <Input label="Porcentaje" helpText="Tasa del impuesto en formato decimal. Ej: para 12% escribe 0.1200, para 5% escribe 0.0500." name="IMP_PORCENTAJE" value={formData.IMP_PORCENTAJE || ''} onChange={handleChange} type="number" required />
+                    <Input label="Fecha Inicial de Vigencia" helpText="Fecha desde la que aplica esta tasa de impuesto. Importante cuando hay cambios de ley." name="IMP_FECHA_VIGENCIA_INICIO" value={formData.IMP_FECHA_VIGENCIA_INICIO || ''} onChange={handleChange} required />
+                    <Input label="Fecha Final de Vigencia" helpText="Fecha en que deja de aplicar esta tasa. Déjala vacía si el impuesto sigue vigente." name="IMP_FECHA_VIGENCIA_FIN" value={formData.IMP_FECHA_VIGENCIA_FIN || ''} onChange={handleChange} required />
+                    <Input label="Estado" helpText="1 = Activo (se aplica en nuevos movimientos). 0 = Inactivo (ya no se aplica pero conserva el historial)." name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} required />
+                </div>
+                <div style={{ marginTop: '20px' }}>
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    {editingId && (
+                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                            onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' }); }}>
+                            Cancelar
+                        </Button>
+                    )}
+                </div>
+            </form>
 
-            <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                        <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
-                            options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
-                            required />
-                        <Input label="Código" name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} required />
-                        <Input label="Nombre" name="IMP_NOMBRE" value={formData.IMP_NOMBRE || ''} onChange={handleChange} required />
-                        <Input label="Porcentaje" name="IMP_PORCENTAJE" value={formData.IMP_PORCENTAJE || ''} onChange={handleChange} type="number" required />
-                        <Input label="Fecha Inicial de Vigencia" name="IMP_FECHA_VIGENCIA_INICIO" value={formData.IMP_FECHA_VIGENCIA_INICIO || ''} onChange={handleChange} type="date" required />
-                        <Input label="Fecha Final de Vigencia" name="IMP_FECHA_VIGENCIA_FIN" value={formData.IMP_FECHA_VIGENCIA_FIN || ''} onChange={handleChange} type="date" required />
-                        <Select label="Estado" name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange}
-                            options={[
-                                { value: 1, label: 'Activo' },
-                                { value: 0, label: 'Inactivo' }
-                            ]}
-                            required />
-                    </div>
-                    <div className="flex items-center gap-2 pt-2">
-                        <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
-                        {editingId && (
-                            <Button type='button' size='lg' variant='secondary'
-                                onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' }); }}>
-                                Cancelar
-                            </Button>
-                        )}
-                    </div>
-                </form>
-            </div>
-
-            <div className="bg-white border border-zinc-200 rounded-lg">
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-sm">
-                        <thead>
-                            <tr className="bg-zinc-50 border-b border-zinc-200">
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Impuesto</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Cuenta</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Código</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Nombre</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Porcentaje</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Fecha Inicial De Vigencia</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Fecha Final De Vigencia</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
+            <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                    <thead>
+                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Impuesto</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Porcentaje</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Inicial De Vigencia</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Final De Vigencia</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado</th>
+                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.map(item => (
+                            <tr key={item.IMP_IMPUESTO} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_IMPUESTO}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CUENTA}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_CODIGO}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_NOMBRE}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_PORCENTAJE}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_FECHA_VIGENCIA_INICIO}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_FECHA_VIGENCIA_FIN}</td>
+                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_ESTADO}</td>
+                                <td style={{ padding: '12px' }}>
+                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
+                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</Button>
+                                </td>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">

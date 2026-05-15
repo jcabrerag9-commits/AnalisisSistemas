@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -75,28 +74,27 @@ const CON_TIPO_CAMBIOCrud = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 p-8">
-            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Cambios</h2>
-            <div className="bg-white border border-zinc-200 rounded-lg">
-                <form onSubmit={handleSubmit} className="p-6 border-b border-zinc-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                        <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
-                            options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_SIMBOLO} - ${opt.MON_NOMBRE}` }))}
-                            required />
-                        <Input label="Tasa Fecha" name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} type="date" required />
-                        <Input label="Tasa de Compra" name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
-                        <Input label="Tasa de Venta" name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
-                    </div>
-                    <div className="flex items-center gap-2 pt-2">
-                        <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
-                        {editingId && (
-                            <Button type='button' size='lg' variant='secondary' className='ml-2'
-                                onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }}>
-                                Cancelar
-                            </Button>
-                        )}
-                    </div>
-                </form>
+        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cambios</h2>
+            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <Select label="Moneda" helpText="Moneda extranjera para la que se registra el tipo de cambio. La moneda local (GTQ) no necesita registro." name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                        options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                        required />
+                    <Input label="Fecha de la Tasa" helpText="Fecha en que aplica este tipo de cambio. Solo puede existir una tasa por moneda por día." name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} required />
+                    <Input label="Tasa de Compra" helpText="Precio al que el banco compra la moneda extranjera. Ej: si el banco compra USD a Q7.72, ingresa 7.72." name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
+                    <Input label="Tasa de Venta" helpText="Precio al que el banco vende la moneda extranjera. Generalmente mayor a la tasa de compra. Ej: 7.78." name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
+                </div>
+                <div style={{ marginTop: '20px' }}>
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    {editingId && (
+                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                            onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }}>
+                            Cancelar
+                        </Button>
+                    )}
+                </div>
+            </form>
 
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-sm">

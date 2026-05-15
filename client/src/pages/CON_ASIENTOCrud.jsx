@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import HelpIcon from '../components/HelpIcon';
 
 // Fila de detalle vacía por defecto
 const DETALLE_VACIO = {
@@ -392,9 +392,9 @@ const CON_ASIENTOCrud = () => {
                 {/* ══════════════════════════════════════
                     SECCIÓN MAESTRO — Encabezado del Asiento
                    ══════════════════════════════════════ */}
-                <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">
-                    <h3 className="text-base font-semibold text-zinc-900 mb-5">Encabezado del Asiento</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center gap-2 mb-4"><h3 className="text-lg font-semibold text-slate-700">Encabezado del Asiento</h3><HelpIcon text="El encabezado identifica el asiento. Selecciona el período contable, el tipo, estado, usuario responsable, fecha y una glosa que describe el movimiento." position="right" /></div>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                         <Select label="Periodo" name="PER_PERIODO" value={formData.PER_PERIODO || ''} onChange={handleChange}
                             options={(() => {
                                 const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
@@ -414,9 +414,9 @@ const CON_ASIENTOCrud = () => {
                             required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Usuario" name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange}
                             options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required disabled={isPeriodoCerrado || isViewMode} />
-                        <Input label="Fecha" name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} type="date" required disabled={isPeriodoCerrado || isViewMode} />
-                        <Input label="Glosa (Descripción)" name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} required disabled={isPeriodoCerrado || isViewMode} />
+                            required disabled={isPeriodoCerrado} />
+                        <Input label="Fecha" name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} type="date" required disabled={isPeriodoCerrado} />
+                        <Input label="Glosa (Descripción)" name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} required disabled={isPeriodoCerrado} hint="Descripción breve del movimiento contable. Ej: Pago a proveedor, Compra de equipo." />
                     </div>
                 </div>
 
@@ -425,8 +425,8 @@ const CON_ASIENTOCrud = () => {
                    ══════════════════════════════════════ */}
                 <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-semibold text-zinc-900 mb-5">Movimientos (Detalle)</h3>
-                        {!isPeriodoCerrado && !isViewMode && (
+                        <div className="flex items-center gap-2"><h3 className="text-lg font-semibold text-slate-700">Movimientos (Detalle)</h3><HelpIcon text="Cada fila es una línea contable. La suma del Debe debe ser igual a la suma del Haber (partida doble). Mínimo 2 líneas." position="right" /></div>
+                        {!isPeriodoCerrado && (
                             <Button type="button" variant="success" size="sm" onClick={agregarDetalle}>
                                 + Agregar Movimiento
                             </Button>
@@ -436,17 +436,17 @@ const CON_ASIENTOCrud = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-sm">
                             <thead>
-                                <tr className="bg-zinc-50 border-b border-zinc-200">
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">#</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide min-w-[180px]">Cuenta</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Debe Origen</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Haber Origen</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tasa Cambio</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide min-w-[160px]">Centro de Costo</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide min-w-[150px]">Moneda</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide text-right">Debe Calculado</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide text-right">Haber Calculado</th>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
+                                <tr className="bg-slate-200 text-left text-slate-700">
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">#</th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap min-w-[180px]">Cuenta</th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap"><span className="flex items-center gap-1">Debe Origen <HelpIcon text="Monto en la moneda de origen que se carga (debita) a esta cuenta." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap"><span className="flex items-center gap-1">Haber Origen <HelpIcon text="Monto en la moneda de origen que se abona (acredita) a esta cuenta. No puedes llenar Debe y Haber al mismo tiempo." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap"><span className="flex items-center gap-1">Tasa Cambio <HelpIcon text="Factor de conversión a moneda local. Si usas GTQ pon 1. Si usas USD en Guatemala, pon el tipo de cambio del día (ej: 7.75)." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap min-w-[160px]"><span className="flex items-center gap-1">Centro de Costo <HelpIcon text="Departamento o área de la empresa a la que se imputa este gasto o ingreso. Es opcional para cuentas de balance." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap min-w-[150px]">Moneda</th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap text-right"><span className="flex items-center justify-end gap-1">Debe Local <HelpIcon text="Resultado automático: Debe Origen × Tasa de Cambio. Es el valor en moneda local (GTQ)." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap text-right"><span className="flex items-center justify-end gap-1">Haber Local <HelpIcon text="Resultado automático: Haber Origen × Tasa de Cambio. Es el valor en moneda local (GTQ)." position="bottom" size={14} /></span></th>
+                                    <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100">

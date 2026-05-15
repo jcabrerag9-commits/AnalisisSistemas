@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -66,14 +65,15 @@ const CON_PERIODOCrud = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 p-8">
-            <h2 className="text-xl font-semibold text-zinc-900 mb-2">Gestión de Periodos</h2>
-            <p className="text-sm text-zinc-500 mb-6">Administración de períodos contables.</p>
-
-            {/* Formulario */}
-            <div className="bg-white border border-zinc-200 rounded-lg mb-6">
-                <div className="px-6 py-4 border-b border-zinc-200">
-                    <span className="text-sm font-semibold text-zinc-700">{editingId ? 'Editar Período' : 'Nuevo Período'}</span>
+        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
+            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <Select label="Estado del Periodo" helpText="ABIERTO: permite registrar asientos. CERRADO: no acepta modificaciones. BLOQUEADO: bloqueado por auditoría." name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
+                        options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
+                        required />
+                    <Input label="Año" helpText="Año fiscal del período contable. Ej: 2026. No puede existir el mismo mes dos veces en el mismo año." name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
+                    <Input label="Mes" helpText="Número del mes: 1 = Enero, 2 = Febrero ... 12 = Diciembre. Cada mes del año es un período independiente." name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
                 </div>
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

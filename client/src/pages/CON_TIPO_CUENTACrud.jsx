@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -56,24 +55,23 @@ const CON_TIPO_CUENTACrud = () => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 p-8">
-            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Cuentas</h2>
-            <div className="bg-white border border-zinc-200 rounded-lg">
-                <form onSubmit={handleSubmit} className="p-6 border-b border-zinc-200">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                        <Input label="Nombre" name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
-                        <Input label="Descripción" name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
-                    </div>
-                    <div className="flex items-center gap-2 pt-2">
-                        <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
-                        {editingId && (
-                            <Button type='button' size='lg' variant='secondary' className='ml-2'
-                                onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }}>
-                                Cancelar
-                            </Button>
-                        )}
-                    </div>
-                </form>
+        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuentas</h2>
+            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+                    <Input label="Nombre" helpText="Clasificación contable. Los valores estándar son: ACTIVO, PASIVO, CAPITAL, INGRESO, GASTO." name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
+                    <Input label="Descripción" helpText="Explica qué tipo de cuentas pertenecen a esta clasificación y cómo afectan el balance." name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
+                </div>
+                <div style={{ marginTop: '20px' }}>
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    {editingId && (
+                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                            onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }}>
+                            Cancelar
+                        </Button>
+                    )}
+                </div>
+            </form>
 
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-sm">

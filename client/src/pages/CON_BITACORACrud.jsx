@@ -217,24 +217,25 @@ const CON_BITACORACrud = () => {
             <h2 className="text-xl font-semibold text-zinc-900 mb-2">Bitácora de Eventos</h2>
             <p className="text-sm text-zinc-500 mb-6">Auditoría y control de cambios en el sistema.</p>
 
-            {/* Tabla principal */}
-            <div className="bg-white border border-zinc-200 rounded-lg">
-                {/* Filtro */}
-                <div className="flex items-center gap-3 px-6 py-4 border-b border-zinc-200">
-                    <div className="flex-1">
-                        <Select
-                            label="Filtrar por Usuario Responsable:"
-                            name="filtroUsuario"
-                            value={filtroUsuario}
-                            onChange={(e) => setFiltroUsuario(e.target.value)}
-                            options={CON_USUARIOData.map(opt => ({
-                                value: opt.USU_USUARIO,
-                                label: `${opt.USU_USUARIO} - ${opt.USU_USER || 'ID: ' + opt.USU_USUARIO}`
-                            }))}
-                        />
-                    </div>
-                    <div className="text-sm text-zinc-500">
-                        Mostrando <span className="text-zinc-900 font-semibold">{datosFiltrados.length}</span> registros
+            {/* Formulario (Opcional en Bitácora, pero mantenido por requerimiento) */}
+            <form onSubmit={handleSubmit} className="mb-10 p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-inner">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <Select
+                        label="Usuario"
+                        name="USU_USUARIO"
+                        value={formData.USU_USUARIO || ''}
+                        onChange={handleChange}
+                        options={CON_USUARIOData.map(opt => ({
+                            value: opt.USU_USUARIO,
+                            label: `${opt.USU_USUARIO} - ${opt.USU_USER || 'ID: ' + opt.USU_USUARIO}`
+                        }))}
+                        required
+                    />
+                    <Input label="Tabla Afectada" helpText="Nombre de la tabla de la base de datos que fue modificada. Ej: CON_PERIODO, CON_ASIENTO." name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange} type="text" required placeholder="Ej: CON_PERIODO" />
+                    <Input label="Acción" helpText="Tipo de operación realizada: INSERT (creación), UPDATE (modificación), DELETE (eliminación), REPROCESO (reapertura de período)." name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange} type="text" required placeholder="INSERT, UPDATE, DELETE..." />
+                    <Input label="Fecha" name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange} type="date" required />
+                    <div className="md:col-span-2">
+                        <Input label="Datos Previos (JSON)" helpText="Registro del estado anterior en formato JSON. Se usa para auditoría y poder revertir cambios si es necesario." name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange} type="text" placeholder='{"ID": 1, "NOMBRE": "..."}' />
                     </div>
                 </div>
 

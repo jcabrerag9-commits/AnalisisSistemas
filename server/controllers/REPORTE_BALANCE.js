@@ -14,44 +14,30 @@ exports.getBalanceGeneral = async (req, res) => {
             ? { anio: parseInt(anio), mes: parseInt(mes) }
             : { anio: parseInt(anio) };
 
+        // Trae cuenta + su cuenta PADRE para poder agrupar en subcategorías
+        // (Activo Corriente, Activo Fijo, Pasivo Corriente, etc.)
         const SQL = `
             SELECT
-                TC.TCU_NOMBRE AS SUBTIPO_CUENTA,
-                CASE
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'ACTIVO%'    THEN 'ACTIVO'
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'PASIVO%'    THEN 'PASIVO'
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'CAPITAL%'   THEN 'CAPITAL'
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'PATRIMONIO%' THEN 'CAPITAL'
-                    ELSE UPPER(TC.TCU_NOMBRE)
-                END                       AS GRUPO_PRINCIPAL,
-                C.CUE_CODIGO             AS CODIGO_CUENTA,
-                C.CUE_NOMBRE             AS NOMBRE_CUENTA,
-                SUM(AD.ASD_DEBE_LOCAL)   AS TOTAL_DEBE,
-                SUM(AD.ASD_HABER_LOCAL)  AS TOTAL_HABER
+                TC.TCU_NOMBRE                           AS TIPO_CUENTA,
+                NVL(CP.CUE_CODIGO, C.CUE_CODIGO)       AS CODIGO_GRUPO,
+                NVL(CP.CUE_NOMBRE, C.CUE_NOMBRE)       AS NOMBRE_GRUPO,
+                C.CUE_CODIGO                            AS CODIGO_CUENTA,
+                C.CUE_NOMBRE                            AS NOMBRE_CUENTA,
+                SUM(AD.ASD_DEBE_LOCAL)                  AS TOTAL_DEBE,
+                SUM(AD.ASD_HABER_LOCAL)                 AS TOTAL_HABER
             FROM CON_ASIENTO_DETALLE AD
-            JOIN CON_ASIENTO        A  ON AD.ASI_ASIENTO      = A.ASI_ASIENTO
-            JOIN CON_PERIODO        P  ON A.PER_PERIODO        = P.PER_PERIODO
-            JOIN CON_ESTADO_ASIENTO EA ON A.ESA_ESTADO_ASIENTO = EA.ESA_ESTADO_ASIENTO
-            JOIN CON_CUENTA         C  ON AD.CUE_CUENTA        = C.CUE_CUENTA
-            JOIN CON_TIPO_CUENTA    TC ON C.TCU_TIPO_CUENTA    = TC.TCU_TIPO_CUENTA
+            JOIN CON_ASIENTO        A   ON AD.ASI_ASIENTO      = A.ASI_ASIENTO
+            JOIN CON_PERIODO        P   ON A.PER_PERIODO        = P.PER_PERIODO
+            JOIN CON_ESTADO_ASIENTO EA  ON A.ESA_ESTADO_ASIENTO = EA.ESA_ESTADO_ASIENTO
+            JOIN CON_CUENTA         C   ON AD.CUE_CUENTA        = C.CUE_CUENTA
+            LEFT JOIN CON_CUENTA    CP  ON C.CUE_CUENTA_PADRE   = CP.CUE_CUENTA
+            JOIN CON_TIPO_CUENTA    TC  ON C.TCU_TIPO_CUENTA    = TC.TCU_TIPO_CUENTA
             WHERE P.PER_AÑO = :anio
               ${condicionMes}
               AND UPPER(EA.ESA_NOMBRE) = 'VALIDADO'
-              AND (
-                  UPPER(TC.TCU_NOMBRE) LIKE 'ACTIVO%'
-                  OR UPPER(TC.TCU_NOMBRE) LIKE 'PASIVO%'
-                  OR UPPER(TC.TCU_NOMBRE) LIKE 'CAPITAL%'
-                  OR UPPER(TC.TCU_NOMBRE) LIKE 'PATRIMONIO%'
-              )
-            GROUP BY TC.TCU_NOMBRE, C.CUE_CODIGO, C.CUE_NOMBRE
-            ORDER BY
-                CASE
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'ACTIVO%'    THEN 1
-                    WHEN UPPER(TC.TCU_NOMBRE) LIKE 'PASIVO%'    THEN 2
-                    ELSE 3
-                END,
-                TC.TCU_NOMBRE,
-                C.CUE_CODIGO
+              AND UPPER(TC.TCU_NOMBRE) IN ('ACTIVO', 'PASIVO', 'PATRIMONIO', 'CAPITAL')
+            GROUP BY TC.TCU_NOMBRE, CP.CUE_CODIGO, CP.CUE_NOMBRE, C.CUE_CODIGO, C.CUE_NOMBRE
+            ORDER BY TC.TCU_NOMBRE, NVL(CP.CUE_CODIGO, C.CUE_CODIGO), C.CUE_CODIGO
         `;
 
         const result = await db.executeQuery(SQL, binds);
