@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -73,11 +72,11 @@ const CON_ESTADO_ASIENTOCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Input label="Nombre" name="ESA_NOMBRE" value={formData.ESA_NOMBRE || ''} onChange={handleChange}
+                        <Input label="Nombre del Estado" helpText="Estado del asiento contable. Valores estándar: BORRADOR (en edición), VALIDADO (aprobado, aparece en reportes), ANULADO (cancelado)." name="ESA_NOMBRE" value={formData.ESA_NOMBRE || ''} onChange={handleChange}
                             type="text" required />
                     </div>
                     <div>
-                        <Input label="Descripción" name="ESA_DESCRIPCION" value={formData.ESA_DESCRIPCION || ''} onChange={handleChange}
+                        <Input label="Descripción" helpText="Explica el significado de este estado y cuándo se usa." name="ESA_DESCRIPCION" value={formData.ESA_DESCRIPCION || ''} onChange={handleChange}
                             type="text" required />
                     </div>
                 </div>

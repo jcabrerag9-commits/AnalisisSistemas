@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -71,10 +70,10 @@ const CON_ROLCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Input label="Nombre" name="ROL_NOMBRE" value={formData.ROL_NOMBRE || ''} onChange={handleChange} required />
+                        <Input label="Nombre del Rol" helpText="Nombre único del rol de acceso. Ej: ADMINISTRADOR, CONTADOR, AUDITOR, SOLO_LECTURA." name="ROL_NOMBRE" value={formData.ROL_NOMBRE || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <Input label="Descripción" name="ROL_DESCRIPCION" value={formData.ROL_DESCRIPCION || ''} onChange={handleChange} required />
+                        <Input label="Descripción" helpText="Explica qué permisos tiene este rol y qué áreas del sistema puede usar." name="ROL_DESCRIPCION" value={formData.ROL_DESCRIPCION || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>

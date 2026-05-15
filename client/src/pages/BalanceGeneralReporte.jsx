@@ -2,21 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { Link } from 'react-router-dom';
 
 // Orden de secciones y su naturaleza contable
 const SECCIONES = [
-    { tipo: 'ACTIVO',  naturaleza: 'deudora',   color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
-    { tipo: 'PASIVO',  naturaleza: 'acreedora', color: '#991b1b', bg: '#fef2f2', border: '#fecaca' },
+    { tipo: 'ACTIVO', naturaleza: 'deudora', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
+    { tipo: 'PASIVO', naturaleza: 'acreedora', color: '#991b1b', bg: '#fef2f2', border: '#fecaca' },
     { tipo: 'CAPITAL', naturaleza: 'acreedora', color: '#166534', bg: '#f0fdf4', border: '#bbf7d0' },
 ];
 
 const BalanceGeneralReporte = () => {
-    const [anio, setAnio]           = useState('');
-    const [mes, setMes]             = useState('');
-    const [data, setData]           = useState(null);   // null = sin consulta
+    const [anio, setAnio] = useState('');
+    const [mes, setMes] = useState('');
+    const [data, setData] = useState(null);   // null = sin consulta
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError]         = useState(null);
-    const [anios, setAnios]         = useState([]);
+    const [error, setError] = useState(null);
+    const [anios, setAnios] = useState([]);
 
     const MESES = [
         { value: '1', label: 'Enero' }, { value: '2', label: 'Febrero' },
@@ -78,7 +79,7 @@ const BalanceGeneralReporte = () => {
                     };
                 }
                 // Saldo según naturaleza
-                const debe  = parseFloat(row.TOTAL_DEBE)  || 0;
+                const debe = parseFloat(row.TOTAL_DEBE) || 0;
                 const haber = parseFloat(row.TOTAL_HABER) || 0;
                 acc[key].saldo += sec.naturaleza === 'deudora'
                     ? debe - haber
@@ -96,8 +97,8 @@ const BalanceGeneralReporte = () => {
         })
         : [];
 
-    const totalActivo     = secciones.find(s => s.tipo === 'ACTIVO')?.total    || 0;
-    const totalPasivo     = secciones.find(s => s.tipo === 'PASIVO')?.total    || 0;
+    const totalActivo = secciones.find(s => s.tipo === 'ACTIVO')?.total || 0;
+    const totalPasivo = secciones.find(s => s.tipo === 'PASIVO')?.total || 0;
     const totalPatrimonio = secciones.find(s => s.tipo === 'PATRIMONIO')?.total || 0;
     const totalPasivoPatrimonio = totalPasivo + totalPatrimonio;
     const cuadra = Math.abs(totalActivo - totalPasivoPatrimonio) < 0.01;
@@ -190,11 +191,10 @@ const BalanceGeneralReporte = () => {
 
 
                     {/* Indicador de cuadre */}
-                    <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 print:hidden ${
-                        cuadra
+                    <div className={`mb-6 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 print:hidden ${cuadra
                             ? 'bg-green-50 text-green-800 border border-green-300'
                             : 'bg-red-50 text-red-800 border border-red-300'
-                    }`}>
+                        }`}>
                         {cuadra
                             ? '✅ El Balance cuadra correctamente — Activo = Pasivo + Patrimonio'
                             : `⚠️ El Balance NO cuadra — Diferencia: Q ${fmt(Math.abs(totalActivo - totalPasivoPatrimonio))}`
@@ -228,19 +228,25 @@ const BalanceGeneralReporte = () => {
                         </div>
                     </div>
 
-                    {/* Fila de gran total al fondo */}
+                    {/* Pie con totales */}
                     <div className="mt-6 grid grid-cols-2 gap-6 print:gap-4">
                         <div className="border-2 border-blue-800 rounded-lg p-4 bg-blue-50">
                             <div className="flex justify-between items-center font-bold text-blue-900 text-base">
                                 <span>TOTAL ACTIVO</span>
-                                <span className="font-mono text-blue-900">Q {fmt(totalActivo)}</span>
+                                <span className="font-mono">Q {fmt(totalActivo)}</span>
                             </div>
                         </div>
 
-                        <div className={`rounded-lg p-4 text-center font-bold text-sm ${
-                            cuadra ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                            {cuadra ? '✓ Cuadre verificado' : '✗ Revisar asientos'}
+                        <div className={`print:hidden rounded-lg p-4 text-center font-bold text-sm ${cuadra ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                            {cuadra
+                                ? '✓ Cuadre verificado'
+                                : (
+                                    <Link to="/con-asiento" className="underline underline-offset-2 text-red-800 hover:text-red-600">
+                                        ✗ Revisar asientos →
+                                    </Link>
+                                )
+                            }
                         </div>
                     </div>
                 </div>

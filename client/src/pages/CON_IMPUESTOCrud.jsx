@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -71,15 +70,15 @@ const CON_IMPUESTOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Impuestos</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
+                    <Select label="Cuenta Contable" helpText="Cuenta de Pasivo o Activo donde se registra el impuesto. Ej: IVA por Pagar, IVA Crédito Fiscal." name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
                         options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
                         required />
-                    <Input label="Código" name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} required />
+                    <Input label="Código" helpText="Código corto e identificador único del impuesto. Ej: IVA, ISR, IUSI." name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} required />
                     <Input label="Nombre" name="IMP_NOMBRE" value={formData.IMP_NOMBRE || ''} onChange={handleChange} required />
-                    <Input label="Porcentaje" name="IMP_PORCENTAJE" value={formData.IMP_PORCENTAJE || ''} onChange={handleChange} type="number" required />
-                    <Input label="Fecha Inicial de Vigencia" name="IMP_FECHA_VIGENCIA_INICIO" value={formData.IMP_FECHA_VIGENCIA_INICIO || ''} onChange={handleChange} required />
-                    <Input label="Fecha Final de Vigencia" name="IMP_FECHA_VIGENCIA_FIN" value={formData.IMP_FECHA_VIGENCIA_FIN || ''} onChange={handleChange} required />
-                    <Input label="Estado" name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} required />
+                    <Input label="Porcentaje" helpText="Tasa del impuesto en formato decimal. Ej: para 12% escribe 0.1200, para 5% escribe 0.0500." name="IMP_PORCENTAJE" value={formData.IMP_PORCENTAJE || ''} onChange={handleChange} type="number" required />
+                    <Input label="Fecha Inicial de Vigencia" helpText="Fecha desde la que aplica esta tasa de impuesto. Importante cuando hay cambios de ley." name="IMP_FECHA_VIGENCIA_INICIO" value={formData.IMP_FECHA_VIGENCIA_INICIO || ''} onChange={handleChange} required />
+                    <Input label="Fecha Final de Vigencia" helpText="Fecha en que deja de aplicar esta tasa. Déjala vacía si el impuesto sigue vigente." name="IMP_FECHA_VIGENCIA_FIN" value={formData.IMP_FECHA_VIGENCIA_FIN || ''} onChange={handleChange} required />
+                    <Input label="Estado" helpText="1 = Activo (se aplica en nuevos movimientos). 0 = Inactivo (ya no se aplica pero conserva el historial)." name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
                     <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>

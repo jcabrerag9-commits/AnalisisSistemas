@@ -54,38 +54,3 @@ exports.getAniosDisponibles = async (req, res) => {
     }
 };
 
-exports.getEstadoResultados = async (req, res) => {
-    try {
-        const { anio, mes } = req.query;
-
-        if (!anio || !mes) {
-            return res.status(400).json({ error: 'Los parámetros "anio" y "mes" son obligatorios.' });
-        }
-
-        const sql = `
-            SELECT 
-                c.CUE_CODIGO AS CODIGO_CUENTA,
-                c.CUE_NOMBRE AS NOMBRE_CUENTA,
-                SUM(ad.ASD_DEBE_LOCAL) AS TOTAL_DEBE,
-                SUM(ad.ASD_HABER_LOCAL) AS TOTAL_HABER,
-                SUBSTR(c.CUE_CODIGO, 1, 1) AS TIPO
-            FROM CON_ASIENTO a
-            JOIN CON_ASIENTO_DETALLE ad ON a.ASI_ASIENTO = ad.ASI_ASIENTO
-            JOIN CON_CUENTA c ON ad.CUE_CUENTA = c.CUE_CUENTA
-            JOIN CON_PERIODO p ON a.PER_PERIODO = p.PER_PERIODO
-            JOIN CON_ESTADO_ASIENTO ea ON a.ESA_ESTADO_ASIENTO = ea.ESA_ESTADO_ASIENTO
-            WHERE p.PER_AÑO = :anio 
-              AND p.PER_MES = :mes
-              AND UPPER(ea.ESA_NOMBRE) = 'VALIDADO'
-              AND (c.CUE_CODIGO LIKE '4%' OR c.CUE_CODIGO LIKE '5%')
-            GROUP BY c.CUE_CODIGO, c.CUE_NOMBRE, SUBSTR(c.CUE_CODIGO, 1, 1)
-            ORDER BY c.CUE_CODIGO
-
-        `;
-
-        const result = await db.executeQuery(sql, { anio: Number(anio), mes: Number(mes) });
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};

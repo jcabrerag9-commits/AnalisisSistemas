@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -70,11 +69,11 @@ const CON_PERIODOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Select label="Estado del Periodo" name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
+                    <Select label="Estado del Periodo" helpText="ABIERTO: permite registrar asientos. CERRADO: no acepta modificaciones. BLOQUEADO: bloqueado por auditoría." name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
                         options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
                         required />
-                    <Input label="Año" name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
-                    <Input label="Mes" name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
+                    <Input label="Año" helpText="Año fiscal del período contable. Ej: 2026. No puede existir el mismo mes dos veces en el mismo año." name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
+                    <Input label="Mes" helpText="Número del mes: 1 = Enero, 2 = Febrero ... 12 = Diciembre. Cada mes del año es un período independiente." name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
                     <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>

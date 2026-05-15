@@ -194,11 +194,11 @@ const CON_BITACORACrud = () => {
                         }))}
                         required
                     />
-                    <Input label="Tabla Afectada" name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange} type="text" required placeholder="Ej: CON_PERIODO" />
-                    <Input label="Acción" name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange} type="text" required placeholder="INSERT, UPDATE, DELETE..." />
+                    <Input label="Tabla Afectada" helpText="Nombre de la tabla de la base de datos que fue modificada. Ej: CON_PERIODO, CON_ASIENTO." name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange} type="text" required placeholder="Ej: CON_PERIODO" />
+                    <Input label="Acción" helpText="Tipo de operación realizada: INSERT (creación), UPDATE (modificación), DELETE (eliminación), REPROCESO (reapertura de período)." name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange} type="text" required placeholder="INSERT, UPDATE, DELETE..." />
                     <Input label="Fecha" name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange} type="date" required />
                     <div className="md:col-span-2">
-                        <Input label="Datos Previos (JSON)" name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange} type="text" placeholder='{"ID": 1, "NOMBRE": "..."}' />
+                        <Input label="Datos Previos (JSON)" helpText="Registro del estado anterior en formato JSON. Se usa para auditoría y poder revertir cambios si es necesario." name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange} type="text" placeholder='{"ID": 1, "NOMBRE": "..."}' />
                     </div>
                 </div>
                 <div className="mt-8 flex gap-3">

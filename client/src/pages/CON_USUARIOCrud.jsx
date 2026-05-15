@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -71,10 +70,10 @@ const CON_USUARIOCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Input label="Usuario" name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} required />
+                        <Input label="Nombre de Usuario" helpText="Nombre único con el que el usuario accede al sistema. No puede repetirse. Ej: jperez, admin01." name="USU_USER" value={formData.USU_USER || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <Input label="Contraseña" name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} required />
+                        <Input label="Contraseña" helpText="Contraseña de acceso. Se almacena de forma segura (hasheada). Mínimo 8 caracteres recomendado." name="USU_CONTRASEÑA" value={formData.USU_CONTRASEÑA || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>

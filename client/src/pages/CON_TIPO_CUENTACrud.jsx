@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -60,8 +59,8 @@ const CON_TIPO_CUENTACrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuentas</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Input label="Nombre" name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
-                    <Input label="Descripción" name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
+                    <Input label="Nombre" helpText="Clasificación contable. Los valores estándar son: ACTIVO, PASIVO, CAPITAL, INGRESO, GASTO." name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
+                    <Input label="Descripción" helpText="Explica qué tipo de cuentas pertenecen a esta clasificación y cómo afectan el balance." name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
                     <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>

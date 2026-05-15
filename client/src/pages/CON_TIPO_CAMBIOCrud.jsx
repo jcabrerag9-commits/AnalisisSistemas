@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -70,12 +69,12 @@ const CON_TIPO_CAMBIOCrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cambios</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                    <Select label="Moneda" helpText="Moneda extranjera para la que se registra el tipo de cambio. La moneda local (GTQ) no necesita registro." name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
                         options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
                         required />
-                    <Input label="Tasa Fecha" name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} required />
-                    <Input label="Tasa de Compra" name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
-                    <Input label="Tasa de Venta" name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
+                    <Input label="Fecha de la Tasa" helpText="Fecha en que aplica este tipo de cambio. Solo puede existir una tasa por moneda por día." name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} required />
+                    <Input label="Tasa de Compra" helpText="Precio al que el banco compra la moneda extranjera. Ej: si el banco compra USD a Q7.72, ingresa 7.72." name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
+                    <Input label="Tasa de Venta" helpText="Precio al que el banco vende la moneda extranjera. Generalmente mayor a la tasa de compra. Ej: 7.78." name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
                     <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>

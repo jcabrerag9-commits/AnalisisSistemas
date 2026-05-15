@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -100,15 +99,15 @@ const CON_CUENTACrud = () => {
             rowKey="CUE_CUENTA"
             onEdit={handleEdit}
             onDelete={handleDelete}>
-            <Select label="Cuenta padre" name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
+            <Select label="Cuenta padre" helpText="Cuenta de nivel superior en el plan de cuentas. Déjala vacía si esta es una cuenta principal. Las subcuentas heredan el tipo de la cuenta padre." name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
                 options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
                 required />
 
-            <Select label="Tipo Cuenta" name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
+            <Select label="Tipo Cuenta" helpText="Clasifica la cuenta: ACTIVO (bienes y derechos), PASIVO (deudas), CAPITAL/PATRIMONIO (recursos propios), INGRESO o GASTO." name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
                 options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
                 required />
 
-            <Input label="Código" name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
+            <Input label="Código" helpText="Código único del plan de cuentas. Ej: 1.1.01 para Caja, 2.1 para Cuentas por Pagar. Sigue la estructura numérica de tu catálogo." name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
             <Input label="Nombre" name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} required />
             <Input label="Descripción" name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} required />
         </Card>

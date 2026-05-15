@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from '../components/Select';
@@ -91,7 +90,7 @@ const CON_USUARIO_ROLCrud = () => {
 
                     <div>
                         <Select
-                            label="Usuario"
+                            label="Usuario" helpText="Usuario al que se le asignará el rol. Un usuario puede tener múltiples roles."
                             name="USU_USUARIO"
                             value={formData.USU_USUARIO || ''}
                             onChange={handleChange}
@@ -101,7 +100,7 @@ const CON_USUARIO_ROLCrud = () => {
                     </div>
                     <div>
                         <Select
-                            label="Rol"
+                            label="Rol" helpText="Rol que se asignará al usuario seleccionado. Define sus permisos en el sistema."
                             name="ROL_ROL"
                             value={formData.ROL_ROL || ''}
                             onChange={handleChange}

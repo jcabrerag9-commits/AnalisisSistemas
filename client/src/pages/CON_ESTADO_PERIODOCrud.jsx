@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -73,11 +72,11 @@ const CON_ESTADO_PERIODOCrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Input label="Nombre" name="ESP_NOMBRE" value={formData.ESP_NOMBRE || ''} onChange={handleChange}
+                        <Input label="Nombre del Estado" helpText="Estado del período contable. Valores estándar: ABIERTO (acepta asientos), CERRADO (no acepta modificaciones), BLOQUEADO (auditoría)." name="ESP_NOMBRE" value={formData.ESP_NOMBRE || ''} onChange={handleChange}
                             type="text" required />
                     </div>
                     <div>
-                        <Input label="Descripción" name="ESP_DESCRIPCION" value={formData.ESP_DESCRIPCION || ''} onChange={handleChange}
+                        <Input label="Descripción" helpText="Explica el significado de este estado y qué operaciones permite." name="ESP_DESCRIPCION" value={formData.ESP_DESCRIPCION || ''} onChange={handleChange}
                             type="text" required />
                     </div>
                 </div>

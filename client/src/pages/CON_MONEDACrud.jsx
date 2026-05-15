@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -71,13 +70,13 @@ const CON_MONEDACrud = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
 
                     <div>
-                        <Input label="Código ISO" name="MON_CODIGO_ISO" value={formData.MON_CODIGO_ISO || ''} onChange={handleChange} required />
+                        <Input label="Código ISO" helpText="Código internacional de 3 letras de la moneda según la norma ISO 4217. Ej: GTQ (Quetzal), USD (Dólar), EUR (Euro)." name="MON_CODIGO_ISO" value={formData.MON_CODIGO_ISO || ''} onChange={handleChange} required />
                     </div>
                     <div>
                         <Input label="Nombre" name="MON_NOMBRE" value={formData.MON_NOMBRE || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                        <Input label="Símbolo" name="MON_SIMBOLO" value={formData.MON_SIMBOLO || ''} onChange={handleChange} required />
+                        <Input label="Símbolo" helpText="Carácter o caracteres que representan la moneda visualmente. Ej: Q para Quetzal, $ para Dólar, € para Euro." name="MON_SIMBOLO" value={formData.MON_SIMBOLO || ''} onChange={handleChange} required />
                     </div>
                 </div>
                 <div style={{ marginTop: '20px' }}>
