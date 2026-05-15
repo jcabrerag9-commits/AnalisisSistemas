@@ -241,9 +241,17 @@ const EstadoResultadosReporte = () => {
                             <p className="font-bold">Contador General</p>
                             <p className="text-xs text-slate-500">Firma y Sello</p>
                         </div>
-                        <div className="border-t border-slate-900 pt-2">
-                            <p className="font-bold">Representante Legal</p>
-                            <p className="text-xs text-slate-500">Firma y Sello</p>
+
+                        {/* Firmas */}
+                        <div className="mt-16 grid grid-cols-2 gap-20 text-center text-zinc-900 text-sm">
+                            <div className="border-t border-zinc-900 pt-2">
+                                <p className="font-semibold">Contador General</p>
+                                <p className="text-xs text-zinc-400 mt-0.5">Firma y Sello</p>
+                            </div>
+                            <div className="border-t border-zinc-900 pt-2">
+                                <p className="font-semibold">Representante Legal</p>
+                                <p className="text-xs text-zinc-400 mt-0.5">Firma y Sello</p>
+                            </div>
                         </div>
                     </div>
                 </div>

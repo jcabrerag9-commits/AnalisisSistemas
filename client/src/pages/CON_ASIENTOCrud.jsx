@@ -44,8 +44,9 @@ const CON_ASIENTOCrud = () => {
     const [data, setData] = useState([]);
     const [editingId, setEditingId] = useState(null);
 
-    // ── Modo Solo Lectura (periodo cerrado) ──
+    // ── Modo Solo Lectura (periodo cerrado o modo ver) ──
     const [isPeriodoCerrado, setIsPeriodoCerrado] = useState(false);
+    const [isViewMode, setIsViewMode] = useState(false);
 
     // ── Catálogos para selects ──
     const [CON_PERIODOData, setCON_PERIODOData] = useState([]);
@@ -192,6 +193,7 @@ const CON_ASIENTOCrud = () => {
         setDetalles([{ ...DETALLE_VACIO }, { ...DETALLE_VACIO }]);
         setEditingId(null);
         setIsPeriodoCerrado(false);
+        setIsViewMode(false);
     };
 
     const handleSubmit = async (e) => {
@@ -295,7 +297,8 @@ const CON_ASIENTOCrud = () => {
     // ══════════════════════════════════════════
     //  HANDLERS — TABLA EXISTENTE
     // ══════════════════════════════════════════
-    const handleEdit = async (item) => {
+    const handleEdit = async (item, viewOnly = false) => {
+        setIsViewMode(viewOnly);
         setFormData({
             PER_PERIODO: item.PER_PERIODO, TPA_TIPO_ASIENTO: item.TPA_TIPO_ASIENTO,
             ESA_ESTADO_ASIENTO: item.ESA_ESTADO_ASIENTO, USU_USUARIO: item.USU_USUARIO,
@@ -360,17 +363,14 @@ const CON_ASIENTOCrud = () => {
     //  RENDER
     // ══════════════════════════════════════════
     return (
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-            {/* ── Header ── */}
-            <div className="px-8 pt-8 pb-4 border-b border-slate-100">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
-                    Gestión de Asientos Contables
-                </h2>
-            </div>
+        <div className="min-h-screen bg-zinc-50 p-8">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-6">
+                Gestión de Asientos Contables
+            </h2>
 
             {/* ── Banner Modo Solo Lectura ── */}
             {isPeriodoCerrado && (
-                <div className="mx-8 mt-4 px-4 py-3 rounded-lg text-sm font-medium bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-2">
+                <div className="px-4 py-3 rounded border border-amber-200 bg-amber-50 text-amber-800 text-sm mb-4 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                     </svg>
@@ -380,9 +380,9 @@ const CON_ASIENTOCrud = () => {
 
             {/* ── Mensaje de feedback ── */}
             {mensaje && (
-                <div className={`mx-8 mt-4 px-4 py-3 rounded-lg text-sm font-medium ${mensaje.tipo === 'success'
-                    ? 'bg-green-50 text-green-700 border border-green-200'
-                    : 'bg-red-50 text-red-700 border border-red-200'
+                <div className={`mb-4 ${mensaje.tipo === 'success'
+                    ? 'px-4 py-3 rounded border border-green-200 bg-green-50 text-green-800 text-sm'
+                    : 'px-4 py-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm'
                     }`}>
                     {mensaje.texto}
                 </div>
@@ -405,13 +405,13 @@ const CON_ASIENTOCrud = () => {
                                         label: `${opt.PER_PERIODO} - ${NOMBRES_MESES[opt.PER_MES]} ${opt.PER_AÑO}`
                                     }));
                             })()}
-                            required disabled={isPeriodoCerrado} />
+                            required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Tipo de Asiento" name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange}
                             options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: `${opt.TPA_TIPO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required disabled={isPeriodoCerrado} />
+                            required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Estado" name="ESA_ESTADO_ASIENTO" value={formData.ESA_ESTADO_ASIENTO || ''} onChange={handleChange}
                             options={CON_ESTADO_ASIENTOData.map(opt => ({ value: opt.ESA_ESTADO_ASIENTO, label: `${opt.ESA_ESTADO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required disabled={isPeriodoCerrado} />
+                            required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Usuario" name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange}
                             options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
                             required disabled={isPeriodoCerrado} />
@@ -423,7 +423,7 @@ const CON_ASIENTOCrud = () => {
                 {/* ══════════════════════════════════════
                     SECCIÓN DETALLE — Movimientos del Asiento
                    ══════════════════════════════════════ */}
-                <div className="mx-8 mb-6 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="bg-white border border-zinc-200 rounded-lg p-6 mb-6">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2"><h3 className="text-lg font-semibold text-slate-700">Movimientos (Detalle)</h3><HelpIcon text="Cada fila es una línea contable. La suma del Debe debe ser igual a la suma del Haber (partida doble). Mínimo 2 líneas." position="right" /></div>
                         {!isPeriodoCerrado && (
@@ -449,47 +449,47 @@ const CON_ASIENTOCrud = () => {
                                     <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-zinc-100">
                                 {detalles.map((det, idx) => {
                                     const tasa = parseFloat(det.CTC_TASA_CAMBIO) || 0;
                                     const debeCal = ((parseFloat(det.ASD_DEBE_ORIGEN) || 0) * tasa).toFixed(2);
                                     const haberCal = ((parseFloat(det.ASD_HABER_ORIGEN) || 0) * tasa).toFixed(2);
 
                                     return (
-                                        <tr key={idx} className="border-b border-slate-200 hover:bg-slate-100 transition-colors duration-150">
-                                            <td className="px-3 py-2 text-slate-500 font-medium">{idx + 1}</td>
+                                        <tr key={idx} className="bg-white hover:bg-zinc-50 transition-colors">
+                                            <td className="px-4 py-3 text-sm text-zinc-700">{idx + 1}</td>
                                             <td className="px-2 py-2">
                                                 <Select name="CUE_CUENTA" value={det.CUE_CUENTA || ''} onChange={(e) => handleDetalleChange(idx, e)}
                                                     options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt.CUE_NOMBRE || opt[Object.keys(opt)[1]]}` }))}
-                                                    required disabled={isPeriodoCerrado} />
+                                                    required disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Input name="ASD_DEBE_ORIGEN" type="number" step="0.01" min="0" value={det.ASD_DEBE_ORIGEN}
-                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="0.00" disabled={isPeriodoCerrado} />
+                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="0.00" disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Input name="ASD_HABER_ORIGEN" type="number" step="0.01" min="0" value={det.ASD_HABER_ORIGEN}
-                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="0.00" disabled={isPeriodoCerrado} />
+                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="0.00" disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Input name="CTC_TASA_CAMBIO" type="number" step="0.01" min="0" value={det.CTC_TASA_CAMBIO}
-                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="1.00" disabled={isPeriodoCerrado} />
+                                                    onChange={(e) => handleDetalleChange(idx, e)} placeholder="1.00" disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Select name="CTC_CENTRO_COSTO" value={det.CTC_CENTRO_COSTO || ''} onChange={(e) => handleDetalleChange(idx, e)}
                                                     options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt.CTC_NOMBRE}` }))}
-                                                    disabled={isPeriodoCerrado}
+                                                    disabled={isPeriodoCerrado || isViewMode}
                                                 />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Select name="MON_MONEDA" value={det.MON_MONEDA || ''} onChange={(e) => handleDetalleChange(idx, e)}
                                                     options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
-                                                    required disabled={isPeriodoCerrado} />
+                                                    required disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
-                                            <td className="px-3 py-2 text-right font-mono text-slate-600">{debeCal}</td>
-                                            <td className="px-3 py-2 text-right font-mono text-slate-600">{haberCal}</td>
-                                            <td className="px-3 py-2">
-                                                {!isPeriodoCerrado && (
+                                            <td className="px-4 py-3 text-sm text-zinc-700 text-right font-mono">{debeCal}</td>
+                                            <td className="px-4 py-3 text-sm text-zinc-700 text-right font-mono">{haberCal}</td>
+                                            <td className="px-4 py-3 text-sm text-zinc-700">
+                                                {!isPeriodoCerrado && !isViewMode && (
                                                     <Button type="button" variant="danger" size="sm"
                                                         onClick={() => eliminarDetalle(idx)}
                                                         disabled={detalles.length <= 2}>
@@ -504,17 +504,17 @@ const CON_ASIENTOCrud = () => {
 
                             {/* ── Fila de totales ── */}
                             <tfoot>
-                                <tr className="bg-slate-100 font-semibold text-slate-800">
-                                    <td colSpan={7} className="px-3 py-3 text-right text-base">Totales:</td>
-                                    <td className="px-3 py-3 text-right font-mono text-base">{totalDebe.toFixed(2)}</td>
-                                    <td className="px-3 py-3 text-right font-mono text-base">{totalHaber.toFixed(2)}</td>
+                                <tr className="bg-zinc-50 font-semibold text-zinc-800 border-t border-zinc-200">
+                                    <td colSpan={7} className="px-4 py-3 text-right text-base">Totales:</td>
+                                    <td className="px-4 py-3 text-right font-mono text-base">{totalDebe.toFixed(2)}</td>
+                                    <td className="px-4 py-3 text-right font-mono text-base">{totalHaber.toFixed(2)}</td>
                                     <td></td>
                                 </tr>
                                 <tr className={`font-bold text-base ${cuadrado ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                                    <td colSpan={7} className="px-3 py-3 text-right">
+                                    <td colSpan={7} className="px-4 py-3 text-right">
                                         Diferencia:
                                     </td>
-                                    <td colSpan={2} className="px-3 py-3 text-right font-mono">
+                                    <td colSpan={2} className="px-4 py-3 text-right font-mono">
                                         {diferencia.toFixed(2)}
                                         {cuadrado
                                             ? ' Cuadrado'
@@ -528,15 +528,15 @@ const CON_ASIENTOCrud = () => {
                 </div>
 
                 {/* ── Botones de acción ── */}
-                <div className="mx-8 mb-8 flex items-center gap-3">
-                    {!isPeriodoCerrado && (
+                <div className="flex items-center gap-2 pt-2 mb-8">
+                    {!isPeriodoCerrado && !isViewMode && (
                         <Button type="submit" size="lg" disabled={!puedeGuardar}>
                             {editingId ? 'Actualizar Asiento' : 'Guardar Asiento'}
                         </Button>
                     )}
                     {editingId && (
                         <Button type="button" size="lg" variant="secondary" onClick={resetFormulario}>
-                            {isPeriodoCerrado ? 'Cerrar Vista' : 'Cancelar'}
+                            {isPeriodoCerrado || isViewMode ? 'Cerrar Vista' : 'Cancelar'}
                         </Button>
                     )}
                     {!isPeriodoCerrado && !cuadrado && (
@@ -555,128 +555,130 @@ const CON_ASIENTOCrud = () => {
             {/* ══════════════════════════════════════
                 TABLA DE ASIENTOS EXISTENTES
                ══════════════════════════════════════ */}
-            <div className="px-8 pb-8 overflow-x-auto">
+            <div className="bg-white border border-zinc-200 rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-700">Asientos Registrados</h3>
+                    <h3 className="text-base font-semibold text-zinc-900 mb-5">Asientos Registrados</h3>
                     <Button type="button" variant="secondary" size="sm" onClick={handleVerHistorial}>
                         Ver Historial de Anulaciones
                     </Button>
                 </div>
-                <table className="w-full border-collapse text-sm">
-                    <thead>
-                        <tr className="bg-slate-100 text-left text-slate-700">
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Asiento</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Periodo</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Tipo</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Estado</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Usuario</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Fecha</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Glosa</th>
-                            <th className="px-3 py-3 font-semibold border-b-2 border-slate-300 whitespace-nowrap">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {[...data].sort((a, b) => b.ASI_ASIENTO - a.ASI_ASIENTO).map(item => {
-                            const periodoObj = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
-                            const periodoStr = periodoObj ? `${NOMBRES_MESES[periodoObj.PER_MES]} - ${periodoObj.PER_AÑO}` : item.PER_PERIODO;
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-sm">
+                        <thead>
+                            <tr className="bg-zinc-50 border-b border-zinc-200">
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Asiento</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Periodo</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tipo</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Usuario</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Fecha</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Glosa</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {[...data].sort((a, b) => b.ASI_ASIENTO - a.ASI_ASIENTO).map(item => {
+                                const periodoObj = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
+                                const periodoStr = periodoObj ? `${NOMBRES_MESES[periodoObj.PER_MES]} - ${periodoObj.PER_AÑO}` : item.PER_PERIODO;
 
-                            const tipoObj = CON_TIPO_ASIENTOData.find(t => t.TPA_TIPO_ASIENTO === item.TPA_TIPO_ASIENTO);
-                            const tipoStr = tipoObj ? tipoObj[Object.keys(tipoObj)[1]] : item.TPA_TIPO_ASIENTO;
+                                const tipoObj = CON_TIPO_ASIENTOData.find(t => t.TPA_TIPO_ASIENTO === item.TPA_TIPO_ASIENTO);
+                                const tipoStr = tipoObj ? tipoObj[Object.keys(tipoObj)[1]] : item.TPA_TIPO_ASIENTO;
 
-                            const estadoObj = CON_ESTADO_ASIENTOData.find(e => e.ESA_ESTADO_ASIENTO === item.ESA_ESTADO_ASIENTO);
-                            const estadoStr = estadoObj ? estadoObj[Object.keys(estadoObj)[1]] : item.ESA_ESTADO_ASIENTO;
+                                const estadoObj = CON_ESTADO_ASIENTOData.find(e => e.ESA_ESTADO_ASIENTO === item.ESA_ESTADO_ASIENTO);
+                                const estadoStr = estadoObj ? estadoObj[Object.keys(estadoObj)[1]] : item.ESA_ESTADO_ASIENTO;
 
-                            const usuarioObj = CON_USUARIOData.find(u => u.USU_USUARIO === item.USU_USUARIO);
-                            const usuarioStr = usuarioObj ? usuarioObj[Object.keys(usuarioObj)[1]] : item.USU_USUARIO;
+                                const usuarioObj = CON_USUARIOData.find(u => u.USU_USUARIO === item.USU_USUARIO);
+                                const usuarioStr = usuarioObj ? usuarioObj[Object.keys(usuarioObj)[1]] : item.USU_USUARIO;
 
-                            let fechaStr = item.ASI_FECHA;
-                            if (fechaStr) {
-                                // Evita problemas de zona horaria usando split si viene de la DB (ej. "2026-04-10T00:00:00.000Z")
-                                const d = new Date(fechaStr);
-                                // Para forzar local agregamos timezone offset si es necesario, pero Date funciona bien.
-                                // Usaremos Date en local:
-                                if (!isNaN(d.getTime())) {
-                                    fechaStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                                let fechaStr = item.ASI_FECHA;
+                                if (fechaStr) {
+                                    // Evita problemas de zona horaria usando split si viene de la DB (ej. "2026-04-10T00:00:00.000Z")
+                                    const d = new Date(fechaStr);
+                                    // Para forzar local agregamos timezone offset si es necesario, pero Date funciona bien.
+                                    // Usaremos Date en local:
+                                    if (!isNaN(d.getTime())) {
+                                        fechaStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                                    }
                                 }
-                            }
 
-                            return (
-                                <tr key={item.ASI_ASIENTO} className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150">
-                                    <td className="px-3 py-3 text-slate-500">{item.ASI_ASIENTO}</td>
-                                    <td className="px-3 py-3 text-slate-500">{periodoStr}</td>
-                                    <td className="px-3 py-3 text-slate-500">{tipoStr}</td>
-                                    <td className="px-3 py-3 text-slate-500">{estadoStr}</td>
-                                    <td className="px-3 py-3 text-slate-500">{usuarioStr}</td>
-                                    <td className="px-3 py-3 text-slate-500">{fechaStr}</td>
-                                    <td className="px-3 py-3 text-slate-500">{item.ASI_GLOSA}</td>
-                                    <td className="px-3 py-3 whitespace-nowrap">
-                                        <div className="flex items-center gap-2">
+                                return (
+                                    <tr key={item.ASI_ASIENTO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.ASI_ASIENTO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{periodoStr}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{tipoStr}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{estadoStr}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{usuarioStr}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{fechaStr}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.ASI_GLOSA}</td>
+                                        <td className="px-4 py-3">
                                             {(() => {
                                                 const idAbierto = CON_ESTADO_PERIODOData.find(e => e.ESP_NOMBRE?.toUpperCase() === 'ABIERTO')?.ESP_ESTADO_PERIODO;
                                                 const abierto = periodoObj ? periodoObj.ESP_ESTADO_PERIODO === idAbierto : false;
                                                 const protegido = esAsientoProtegido(item);
 
                                                 return abierto && !protegido ? (
-                                                    <>
-                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item, true)}>
                                                             Ver
                                                         </Button>
-                                                        <Button type="button" variant="warning" size="sm" onClick={() => handleEdit(item)}>
+                                                        <button type="button" className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item, false)}>
                                                             Editar
-                                                        </Button>
-                                                        <Button type="button" variant="danger" size="sm" onClick={() => handleAbrirModalAnular(item)}>
+                                                        </button>
+                                                        <button type="button" className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleAbrirModalAnular(item)}>
                                                             Anular
-                                                        </Button>
-                                                    </>
+                                                        </button>
+                                                    </div>
                                                 ) : (
-                                                    <>
-                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item)}>
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item, true)}>
                                                             Ver
                                                         </Button>
                                                         {protegido && (
-                                                            <span className="text-xs px-2 py-1 rounded-full bg-slate-200 text-slate-600 font-medium">
+                                                            <span className="text-xs px-2 py-1 rounded-full bg-zinc-200 text-zinc-600 font-medium">
                                                                 {estadoStr}
                                                             </span>
                                                         )}
-                                                    </>
+                                                    </div>
                                                 );
                                             })()}
-                                        </div>
-                                    </td>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                            {data.length === 0 && (
+                                <tr>
+                                    <td colSpan={8} className="px-4 py-10 text-center text-zinc-400 text-sm">No hay asientos registrados.</td>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-                {data.length === 0 && (
-                    <p className="text-center py-8 text-slate-400 text-sm">No hay asientos registrados.</p>
-                )}
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* ══════════════════════════════════════
                 MODALES ANULACIÓN E HISTORIAL
                ══════════════════════════════════════ */}
             {modalAnular && asientoSeleccionado && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={handleCerrarModal}>
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-between p-4 border-b border-slate-200">
-                            <h2 className="text-xl font-bold text-red-600"> Anular Asiento #{asientoSeleccionado.ASI_ASIENTO}</h2>
-                            <button onClick={handleCerrarModal} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={handleCerrarModal}>
+                    <div className="bg-white border border-zinc-200 rounded-lg shadow-sm w-full max-w-lg p-6" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-base font-semibold text-zinc-900 mb-5"> Anular Asiento #{asientoSeleccionado.ASI_ASIENTO}</h2>
+                            <button onClick={handleCerrarModal} className="text-zinc-400 hover:text-zinc-600 text-2xl leading-none">&times;</button>
                         </div>
-                        <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-                            <div className="bg-slate-50 p-3 rounded mb-4 text-sm whitespace-pre-wrap">
+                        <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                            <div className="bg-zinc-50 border border-zinc-200 p-3 rounded mb-4 text-sm whitespace-pre-wrap">
                                 <strong>Glosa:</strong> {asientoSeleccionado.ASI_GLOSA}
                             </div>
                             <div className="mb-4">
-                                <label className="block text-sm font-semibold text-slate-700 mb-1" htmlFor="txtMotivo">Motivo (mínimo 10 caracteres) *</label>
-                                <textarea id="txtMotivo" className="w-full border border-slate-300 rounded p-2 focus:outline-none focus:ring focus:ring-blue-200 text-slate-900" rows="3" required defaultValue={motivoAnulacion} onChange={e => setMotivoAnulacion(e.target.value)} placeholder="Ingrese el motivo detallado de la anulación..."></textarea>
-                                <div className="text-xs text-slate-500 mt-1">{motivoAnulacion.length} / 10 caracteres mínimos</div>
+                                <label className="block text-sm font-semibold text-zinc-700 mb-1" htmlFor="txtMotivo">Motivo (mínimo 10 caracteres) *</label>
+                                <textarea id="txtMotivo" className="w-full border border-zinc-200 rounded p-2 focus:outline-none focus:ring focus:ring-blue-200 text-zinc-900" rows="3" required defaultValue={motivoAnulacion} onChange={e => setMotivoAnulacion(e.target.value)} placeholder="Ingrese el motivo detallado de la anulación..."></textarea>
+                                <div className="text-xs text-zinc-500 mt-1">{motivoAnulacion.length} / 10 caracteres mínimos</div>
                             </div>
-                            <div className="bg-red-50 border border-red-200 p-3 rounded text-sm text-red-800">
+                            <div className="px-4 py-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm mb-4">
                                 <strong>ADVERTENCIA:</strong> Esta acción cambiará el estado a ANULADO, creará un asiento de REVERSIÓN, y quedará registrada. No se puede deshacer.
                             </div>
                         </div>
-                        <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-200 bg-slate-50">
+                        <div className="flex items-center gap-2 pt-2 border-t border-zinc-200">
                             <Button type="button" variant="secondary" onClick={handleCerrarModal} disabled={procesandoAnulacion}>Cancelar</Button>
                             <Button type="button" variant="danger" disabled={procesandoAnulacion || motivoAnulacion.trim().length < 10} onClick={handleAnularAsiento}>
                                 {procesandoAnulacion ? 'Procesando...' : 'Confirmar Anulación'}
@@ -687,46 +689,48 @@ const CON_ASIENTOCrud = () => {
             )}
 
             {mostrarHistorial && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setMostrarHistorial(false)}>
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-between p-4 border-b border-slate-200">
-                            <h2 className="text-xl font-bold text-slate-800">Historial de Anulaciones</h2>
-                            <button onClick={() => setMostrarHistorial(false)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setMostrarHistorial(false)}>
+                    <div className="bg-white border border-zinc-200 rounded-lg shadow-sm w-full max-w-4xl p-6" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-base font-semibold text-zinc-900 mb-5">Historial de Anulaciones</h2>
+                            <button onClick={() => setMostrarHistorial(false)} className="text-zinc-400 hover:text-zinc-600 text-2xl leading-none">&times;</button>
                         </div>
-                        <div className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                        <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                             {historial.length === 0 ? (
-                                <p className="text-center text-slate-500">No hay anulaciones registradas.</p>
+                                <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay anulaciones registradas.</p>
                             ) : (
-                                <table className="w-full border-collapse text-sm text-left text-slate-800">
-                                    <thead>
-                                        <tr className="bg-slate-100 text-slate-700">
-                                            <th className="p-2 border-b">Fecha Date</th>
-                                            <th className="p-2 border-b">Usuario</th>
-                                            <th className="p-2 border-b">Asientos</th>
-                                            <th className="p-2 border-b">Glosa Anterior / Motivo</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {historial.map((h, i) => {
-                                            let previos = {};
-                                            try { previos = JSON.parse(h.BIT_DATOS_PREVIOS || '{}'); } catch (e) { }
-                                            return (
-                                                <tr key={i} className="border-b hover:bg-slate-50">
-                                                    <td className="p-2">{new Date(h.BIT_FECHA_HORA).toLocaleString()}</td>
-                                                    <td className="p-2">{h.USU_USUARIO}</td>
-                                                    <td className="p-2">
-                                                        Anulado: #{previos.asiento_anulado}<br />
-                                                        Reversión: #{previos.asiento_reversion}
-                                                    </td>
-                                                    <td className="p-2">
-                                                        <span className="text-xs text-slate-500 font-semibold">Motivo:</span> {previos.motivo}<br />
-                                                        <span className="text-xs text-slate-500 font-semibold">Glosa:</span> {previos.glosa_original}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full border-collapse text-sm">
+                                        <thead>
+                                            <tr className="bg-zinc-50 border-b border-zinc-200">
+                                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Fecha Date</th>
+                                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Usuario</th>
+                                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Asientos</th>
+                                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Glosa Anterior / Motivo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-zinc-100">
+                                            {historial.map((h, i) => {
+                                                let previos = {};
+                                                try { previos = JSON.parse(h.BIT_DATOS_PREVIOS || '{}'); } catch (e) { }
+                                                return (
+                                                    <tr key={i} className="bg-white hover:bg-zinc-50 transition-colors">
+                                                        <td className="px-4 py-3 text-sm text-zinc-700">{new Date(h.BIT_FECHA_HORA).toLocaleString()}</td>
+                                                        <td className="px-4 py-3 text-sm text-zinc-700">{h.USU_USUARIO}</td>
+                                                        <td className="px-4 py-3 text-sm text-zinc-700">
+                                                            Anulado: #{previos.asiento_anulado}<br />
+                                                            Reversión: #{previos.asiento_reversion}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-sm text-zinc-700">
+                                                            <span className="text-xs text-zinc-500 font-semibold">Motivo:</span> {previos.motivo}<br />
+                                                            <span className="text-xs text-zinc-500 font-semibold">Glosa:</span> {previos.glosa_original}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             )}
                         </div>
                     </div>

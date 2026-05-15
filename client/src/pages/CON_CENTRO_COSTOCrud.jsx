@@ -78,7 +78,7 @@ const CON_CENTRO_COSTOCrud = () => {
         <Card title="Gestión de Centro Costo" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CTC_CENTRO_COSTO_PADRE: '', CTC_CODIGO_DEPARTAMENTO: '', CTC_NOMBRE: '' }); }}
             columns={[
                 { header: 'Centro Costo', accessor: 'CTC_CENTRO_COSTO' },
-                { header: 'Centro Costo Padre', accessor: 'CTC_CENTRO_COSTO_PADRE' },
+                { header: 'Centro Costo Padre', accessor: 'CTC_NOMBRE_PADRE' },
                 { header: 'Código Departamento', accessor: 'CTC_CODIGO_DEPARTAMENTO' },
                 { header: 'Nombre', accessor: 'CTC_NOMBRE' },
             ]}

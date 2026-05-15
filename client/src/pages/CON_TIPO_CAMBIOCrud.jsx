@@ -47,11 +47,20 @@ const CON_TIPO_CAMBIOCrud = () => {
             setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' });
             setEditingId(null);
             fetchData();
-        } catch (err) { console.error(err); }
+        } catch (err) {
+            console.error('Error al guardar:', err);
+            const msg = err.response?.data?.error || err.message;
+            alert(`Error: ${msg}`);
+        }
     };
 
     const handleEdit = (item) => {
-        setFormData({ MON_MONEDA: item.MON_MONEDA, TPC_FECHA_TASA: item.TPC_FECHA_TASA, TPC_TASA_COMPRA: item.TPC_TASA_COMPRA, TPC_TASA_VENTA: item.TPC_TASA_VENTA });
+        setFormData({ 
+            MON_MONEDA: item.MON_MONEDA, 
+            TPC_FECHA_TASA: item.TPC_FECHA_TASA_ISO, 
+            TPC_TASA_COMPRA: item.TPC_TASA_COMPRA, 
+            TPC_TASA_VENTA: item.TPC_TASA_VENTA 
+        });
         setEditingId(item.TPC_TIPO_CAMBIO);
     };
 
@@ -87,35 +96,41 @@ const CON_TIPO_CAMBIOCrud = () => {
                 </div>
             </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cambio</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Moneda</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tasa Fecha</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tasa de Compra</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tasa de Venta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.TPC_TIPO_CAMBIO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_TIPO_CAMBIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.MON_MONEDA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_FECHA_TASA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_TASA_COMPRA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPC_TASA_VENTA}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</Button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-sm">
+                        <thead className="bg-zinc-50 border-b border-zinc-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Cambio</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Moneda</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tasa Fecha</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tasa de Compra</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tasa de Venta</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {data.map(item => (
+                                <tr key={item.TPC_TIPO_CAMBIO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TIPO_CAMBIO}</td>
+                                    <td className="px-4 py-3 text-sm font-medium text-zinc-900">
+                                        <span className="bg-zinc-100 px-2 py-1 rounded mr-2 text-xs">{item.MON_CODIGO_ISO}</span>
+                                        {item.MON_SIMBOLO}
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_FECHA_TASA_ISO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TASA_COMPRA}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TASA_VENTA}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {data.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                </div>
             </div>
         </div>
     );

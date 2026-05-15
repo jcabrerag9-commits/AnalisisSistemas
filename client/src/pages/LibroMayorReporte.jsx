@@ -122,40 +122,33 @@ const LibroMayorReporte = () => {
     cuentas.forEach((cta) => {
         // Ordenar detalles por fecha
         cta.detalles.sort((a, b) => new Date(a.FECHA_POLIZA) - new Date(b.FECHA_POLIZA));
-        
+
         let saldoAcumulado = 0;
         const inicial = parseInt(cta.codigo.charAt(0), 10);
         // Naturaleza deudora: Activos (1) y Gastos (5)
         // Naturaleza acreedora: Pasivos (2), Capital (3), Ingresos (4)
         const esDeudora = inicial === 1 || inicial === 5;
-        
+
         cta.detalles.forEach(det => {
             const debe = parseFloat(det.DEBE) || 0;
             const haber = parseFloat(det.HABER) || 0;
-            
+
             if (esDeudora) {
                 saldoAcumulado = saldoAcumulado + debe - haber;
             } else {
                 saldoAcumulado = saldoAcumulado + haber - debe;
             }
-            
+
             det.SALDO_CALCULADO = saldoAcumulado;
         });
     });
 
     return (
-        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 print:shadow-none print:rounded-none print:bg-white">
-            {/* ── Header ── */}
-            <div className="px-8 pt-8 pb-4 border-b border-slate-100 print:hidden">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
-                    Reporte de Libro Mayor
-                </h2>
-            </div>
-
-            {/* ── Filtros ── */}
-            <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 mb-3 print:hidden">
-                <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de consulta</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
+        <div className="bg-white border border-zinc-200 rounded-lg print:shadow-none print:rounded-none print:border-none">
+            {/* ── Header / Filtros ── */}
+            <div className="px-6 py-5 border-b border-zinc-200 print:hidden">
+                <h2 className="text-xl font-semibold text-zinc-900 mb-4 print:hidden">Reporte de Libro Mayor</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     <Select
                         label="Año"
                         name="anio"
@@ -171,7 +164,7 @@ const LibroMayorReporte = () => {
                         options={MESES}
                     />
                 </div>
-                <div className="flex justify-end gap-3">
+                <div className="flex items-center justify-end gap-3">
                     <Button className="" onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar Libro Mayor'}
                     </Button>
@@ -185,14 +178,14 @@ const LibroMayorReporte = () => {
 
             {/* ── Error ── */}
             {error && (
-                <div className="mx-8 mb-4 px-4 py-3 rounded-lg text-sm font-medium bg-red-50 text-red-700 border border-red-200 print:hidden">
+                <div className="mx-6 my-3 px-4 py-3 rounded border border-red-200 bg-red-50 text-red-700 text-sm print:hidden">
                     {error}
                 </div>
             )}
 
             {/* ── Loading spinner ── */}
             {isLoading && (
-                <div className="flex justify-center py-12 print:hidden">
+                <div className="flex justify-center py-16 print:hidden">
                     <svg className="animate-spin h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
@@ -202,7 +195,7 @@ const LibroMayorReporte = () => {
 
             {/* ── Mensaje vacío ── */}
             {!isLoading && data !== null && data.length === 0 && (
-                <div className="mx-8 mb-6 px-4 py-3 rounded-lg text-sm font-medium bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-2 print:hidden">
+                <div className="mx-6 my-3 px-4 py-3 rounded border border-amber-200 bg-amber-50 text-amber-800 text-sm flex items-center gap-2 print:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l6.518 11.6c.75 1.334-.213 2.99-1.742 2.99H3.481c-1.53 0-2.493-1.656-1.742-2.99l6.518-11.6zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-2a1 1 0 01-1-1V8a1 1 0 112 0v2a1 1 0 01-1 1z" clipRule="evenodd" />
                     </svg>
@@ -212,9 +205,9 @@ const LibroMayorReporte = () => {
 
             {/* ── Tabla de resultados agrupada por Cuenta ── */}
             {!isLoading && data !== null && data.length > 0 && (
-                <div ref={contentRef} className="px-8 pb-8 print:px-0 print:pb-0 overflow-x-auto print:shadow-none print:bg-white flex flex-col gap-6">
+                <div ref={contentRef} className="px-6 pb-8 print:px-4 print:pb-4 flex flex-col gap-6">
                     {/* ── Encabezado visible solo al imprimir ── */}
-                            <div className="hidden print:block text-center mb-6 pt-4">
+                    <div className="hidden print:block text-center mb-6 pt-4">
                         <h2 className="text-xl font-bold text-slate-900">Reporte de Libro Mayor</h2>
                         <p className="text-sm text-slate-600">
                             Periodo: {MESES.find(m => m.value === mes)?.label || mes} - {anio}
@@ -222,64 +215,72 @@ const LibroMayorReporte = () => {
                         <p className="text-xs italic text-slate-500">(Cifras expresadas en Quetzales)</p>
                     </div>
                     {cuentas.map((cuenta) => (
-                        <div key={cuenta.codigo} className="border border-slate-200 rounded-lg overflow-hidden bg-white print:border-none print:mb-8">
+                        <div key={cuenta.codigo} className="border border-zinc-200 rounded-lg overflow-hidden print:border-none print:mb-8">
                             {/* ── Cabecera de Cuenta ── */}
-                            <div className="bg-slate-100 px-4 py-3 border-b border-slate-200 break-inside-avoid print:bg-white print:border-b-2 print:border-slate-800">
-                                <h3 className="text-lg font-bold text-slate-800">
+                            <div className="px-4 py-3 border-b border-zinc-200 break-inside-avoid print:border-b-2 print:border-slate-800">
+                                <h3 className="text-lg font-bold text-zinc-900">
                                     Cuenta: {cuenta.codigo} - {cuenta.nombre}
                                 </h3>
                             </div>
-                            <table className="w-full border-collapse text-sm print:text-black">
-                                <thead>
-                                    <tr className="bg-slate-50 text-left text-slate-700">
-                                        <th className="px-3 py-2 font-semibold border-b border-slate-200 whitespace-nowrap">Fecha</th>
-                                        <th className="px-3 py-2 font-semibold border-b border-slate-200">Descripción (Glosa)</th>
-                                        <th className="px-3 py-2 font-semibold border-b border-slate-200 whitespace-nowrap text-right">Debe</th>
-                                        <th className="px-3 py-2 font-semibold border-b border-slate-200 whitespace-nowrap text-right">Haber</th>
-                                        <th className="px-3 py-2 font-semibold border-b border-slate-200 whitespace-nowrap text-right">Saldo Acumulado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {cuenta.detalles.map((det, idx) => (
-                                        <tr
-                                            key={`${cuenta.codigo}-${idx}`}
-                                            className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors duration-150 break-inside-avoid print:break-inside-avoid"
-                                        >
-                                            <td className="px-3 py-2 text-slate-600 whitespace-nowrap">
-                                                {formatFecha(det.FECHA_POLIZA)}
+                            <div className="overflow-x-auto border-zinc-200">
+                                <table className="w-full border-collapse text-sm table-fixed">
+                                    <colgroup>
+                                        <col style={{ width: '10%' }} />
+                                        <col style={{ width: '40%' }} />
+                                        <col style={{ width: '17%' }} />
+                                        <col style={{ width: '17%' }} />
+                                        <col style={{ width: '16%' }} />
+                                    </colgroup>
+                                    <thead>
+                                        <tr className="bg-zinc-50 border-b border-zinc-200">
+                                            <th className="px-3 py-2 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap">Fecha</th>
+                                            <th className="px-3 py-2 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Descripción (Glosa)</th>
+                                            <th className="px-3 py-2 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap">Debe</th>
+                                            <th className="px-3 py-2 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap">Haber</th>
+                                            <th className="px-3 py-2 text-right text-xs font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap">Saldo Acumulado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-zinc-100">
+                                        {cuenta.detalles.map((det, idx) => (
+                                            <tr
+                                                key={`${cuenta.codigo}-${idx}`}
+                                                className="bg-white hover:bg-zinc-50 transition-colors break-inside-avoid print:break-inside-avoid"
+                                            >
+                                                <td className="px-3 py-2 text-sm text-zinc-700 whitespace-nowrap">
+                                                    {formatFecha(det.FECHA_POLIZA)}
+                                                </td>
+                                                <td className="px-3 py-2 text-sm text-zinc-700 truncate">
+                                                    {det.DESCRIPCION}
+                                                </td>
+                                                <td className="px-3 py-2 text-sm font-mono text-zinc-700 text-right whitespace-nowrap">
+                                                    {formatCurrency(det.DEBE)}
+                                                </td>
+                                                <td className="px-3 py-2 text-sm font-mono text-zinc-700 text-right whitespace-nowrap">
+                                                    {formatCurrency(det.HABER)}
+                                                </td>
+                                                <td className={`px-3 py-2 text-sm font-mono font-medium text-right whitespace-nowrap ${det.SALDO_CALCULADO < 0 ? 'text-red-600' : 'text-zinc-700'}`}>
+                                                    {formatSaldo(det.SALDO_CALCULADO)}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {/* ── Fila de Cierre: Sumas de la Cuenta ── */}
+                                        <tr className="bg-zinc-50 border-t border-zinc-200 font-semibold break-inside-avoid print:break-inside-avoid">
+                                            <td colSpan={2} className="px-3 py-2 text-sm text-zinc-900 text-right font-mono font-semibold">
+                                                Totales de la cuenta:
                                             </td>
-                                            <td className="px-3 py-2 text-slate-600">
-                                                {det.DESCRIPCION}
+                                            <td className="px-3 py-2 text-sm text-zinc-900 text-right font-mono font-semibold whitespace-nowrap">
+                                                Q {(cuenta.totalDebe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </td>
-                                            <td className="px-3 py-2 text-right font-mono text-slate-600">
-                                                {formatCurrency(det.DEBE)}
+                                            <td className="px-3 py-2 text-sm text-zinc-900 text-right font-mono font-semibold whitespace-nowrap">
+                                                Q {(cuenta.totalHaber || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </td>
-                                            <td className="px-3 py-2 text-right font-mono text-slate-600">
-                                                {formatCurrency(det.HABER)}
-                                            </td>
-                                            <td className={`px-3 py-2 text-right font-mono font-medium ${det.SALDO_CALCULADO < 0 ? 'text-red-600' : 'text-slate-800'}`}>
-                                                {formatSaldo(det.SALDO_CALCULADO)}
+                                            <td className="px-3 py-2 text-sm text-right">
+                                                {/* Saldo Final */}
                                             </td>
                                         </tr>
-                                    ))}
-                                    {/* ── Fila de Cierre: Sumas de la Cuenta ── */}
-                                    <tr className="bg-slate-50 border-t-2 border-slate-300 break-inside-avoid print:break-inside-avoid">
-                                        <td colSpan={2} className="px-3 py-3 text-right font-bold text-slate-700">
-                                            Totales de la cuenta:
-                                        </td>
-                                        <td className="px-3 py-3 text-right font-mono font-bold text-slate-800">
-                                            Q {(cuenta.totalDebe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </td>
-                                        <td className="px-3 py-3 text-right font-mono font-bold text-slate-800">
-                                            Q {(cuenta.totalHaber || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                        </td>
-
-                                        <td className="px-3 py-3 text-right">
-                                            {/* Saldo Final */}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     ))}
                 </div>

@@ -89,8 +89,8 @@ const CON_CUENTACrud = () => {
         <Card title="Gestión de cuentas" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }}
             columns={[
                 { header: 'Cuenta', accessor: 'CUE_CUENTA' },
-                { header: 'Cuenta padre', accessor: 'CUE_CUENTA_PADRE' },
-                { header: 'Tipo Cuenta', accessor: 'TCU_TIPO_CUENTA' },
+                { header: 'Cuenta padre', accessor: 'CUE_NOMBRE_PADRE' },
+                { header: 'Tipo Cuenta', accessor: 'TCU_NOMBRE' },
                 { header: 'Código', accessor: 'CUE_CODIGO' },
                 { header: 'Nombre', accessor: 'CUE_NOMBRE' },
                 { header: 'Descripción', accessor: 'CUE_DESCRIPCION' },

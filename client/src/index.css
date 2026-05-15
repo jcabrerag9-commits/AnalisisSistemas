@@ -1,190 +1,125 @@
 @import "tailwindcss";
 
+/* ── Design tokens ── */
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --color-border: #e4e4e7;
+  --color-surface: #ffffff;
+  --color-bg: #fafafa;
+  --color-accent: #2563eb;
+  --color-text-primary: #18181b;
+  --color-text-secondary: #71717a;
+  --color-text-muted: #a1a1aa;
+}
 
-  color-scheme: dark light;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0f172a;
+/* ── Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
+  background-color: #fafafa;
+  color: #18181b;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background: radial-gradient(circle at top right, #1e293b, #0f172a);
+  -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  text-align: left;
+/* ── Scrollbar (webkit) ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f4f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
 }
 
-.card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 3rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 48px 0 rgba(0, 0, 0, 0.5);
-}
-
-h1 {
-  font-size: 3.5rem;
-  line-height: 1.1;
-  background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-/*button {
-  border-radius: 12px;
-  border: 1px solid transparent;
-  padding: 0.8em 1.5em;
-  font-size: 1em;
-  font-weight: 600;
-  font-family: inherit;
-  background-color: #3b82f6;
-  color: white;
-  cursor: pointer;
-  transition: all 0.25s;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-button:hover {
-  background-color: #2563eb;
-  transform: scale(1.05);
-}
-
-button:active {
-  transform: scale(0.95);
-}*/
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 1.5rem;
-}
-
-.status-online {
-  background-color: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.status-offline {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 3rem;
-}
-
-.user-card {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.user-card h3 {
-  margin: 0;
-  color: #f1f5f9;
-}
-
-.user-card p {
-  margin: 0.5rem 0 0;
-  color: #94a3b8;
-  font-size: 0.9rem;
-}
-
-/* ═══════════════════════════════════════════════
-   Estilos para impresión / exportar a PDF
-   ═══════════════════════════════════════════════ */
+/* ── Print ── */
 @media print {
+  @page {
+    margin: 1.2cm 1.5cm;
+    size: A4;
+  }
 
-  /* ── Fondo blanco en toda la página ── */
-  :root,
-  html,
-  body,
-  #root {
-    background: #fff !important;
-    background-color: #fff !important;
-    color: #000 !important;
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 10pt;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* ── Eliminar márgenes del layout para usar toda la página ── */
-  body {
-    margin: 0 !important;
-    padding: 1.5cm !important;
-    min-height: auto !important;
-    display: block !important;
+  /* Hide UI chrome */
+  nav,
+  aside,
+  .print\:hidden,
+  button {
+    display: none !important;
   }
 
-  #root {
-    margin: 0 !important;
-    padding: 0 !important;
+  /* Tailwind print utilities */
+  .print\:block        { display: block !important; }
+  .print\:shadow-none  { box-shadow: none !important; }
+  .print\:rounded-none { border-radius: 0 !important; }
+  .print\:border-none  { border: none !important; }
+  .print\:px-4  { padding-left: 1rem !important; padding-right: 1rem !important; }
+  .print\:pb-4  { padding-bottom: 1rem !important; }
+  .print\:gap-4 { gap: 1rem !important; }
+
+  /* Force 2-column grid for Balance General */
+  .print\:grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  /* ── Configuración de página ── */
-  @page {
-    size: auto;
-    margin: 0mm;
-  }
-
-  /* ── Evitar cortes dentro de filas de tabla ── */
-  tr {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* ── Mantener grupos de partida juntos cuando es posible ── */
-  tbody {
-    break-inside: auto;
-  }
-
-  /* ── Remover sombras y bordes decorativos ── */
-  .shadow-md,
-  .shadow-lg,
-  .hover\:shadow-lg {
-    box-shadow: none !important;
-  }
-
-  /* ── Tabla ocupa todo el ancho disponible ── */
+  /* Tables — general reset (no forced borders; components manage their own) */
   table {
     width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed;
   }
+
+  /* Fixed-layout tables respect column widths */
+  table.table-fixed {
+    table-layout: fixed !important;
+  }
+
+  th, td {
+    padding: 3pt 5pt !important;
+    font-size: 8pt !important;
+    word-break: break-word;
+  }
+
+  /* Amounts: never wrap Q and the number */
+  .whitespace-nowrap {
+    white-space: nowrap !important;
+  }
+
+  th {
+    font-weight: 600;
+    background-color: #f4f4f5 !important;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+
+  /* Report content containers */
+  .print\:px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
 }

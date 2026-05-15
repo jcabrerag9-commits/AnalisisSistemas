@@ -42,7 +42,6 @@ exports.getBalanceGeneral = async (req, res) => {
 
         const result = await db.executeQuery(SQL, binds);
         res.json(result.rows);
-
     } catch (err) {
         console.error('Error en getBalanceGeneral:', err);
         res.status(500).json({ error: err.message });

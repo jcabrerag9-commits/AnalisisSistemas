@@ -36,10 +36,12 @@ exports.update = async (req, res) => {
     try {
         const id = req.params.id;
         const { MON_CODIGO_ISO, MON_NOMBRE, MON_SIMBOLO } = req.body;
+        console.log('Backend: Intentando actualizar moneda ID:', id, 'con datos:', { MON_CODIGO_ISO, MON_NOMBRE, MON_SIMBOLO });
         const sql = `UPDATE CON_MONEDA SET MON_CODIGO_ISO = :MON_CODIGO_ISO, MON_NOMBRE = :MON_NOMBRE, MON_SIMBOLO = :MON_SIMBOLO WHERE MON_MONEDA = :id`;
         await db.executeQuery(sql, { MON_CODIGO_ISO, MON_NOMBRE, MON_SIMBOLO, id });
         res.json({ message: 'Updated successfully' });
     } catch (err) {
+        console.error('Backend Error (CON_MONEDA.update):', err);
         res.status(500).json({ error: err.message });
     }
 };

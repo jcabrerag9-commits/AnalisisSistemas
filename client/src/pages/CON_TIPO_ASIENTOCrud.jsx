@@ -66,10 +66,8 @@ const CON_TIPO_ASIENTOCrud = () => {
     };
 
     return (
-        <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-            <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Tipo Asiento</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
+        <div className="min-h-screen bg-zinc-50 p-8">
+            <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Tipo Asiento</h2>
 
 
                     <div>
@@ -80,48 +78,57 @@ const CON_TIPO_ASIENTOCrud = () => {
                         <Input label="Descripción" helpText="Explicación del uso de este tipo de asiento. Ej: Asiento de apertura del ejercicio fiscal." name="TPA_DESCRIPCION" value={formData.TPA_DESCRIPCION || ''} onChange={handleChange}
                             type="text" required />
                     </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ TPA_CODIGO: '', TPA_DESCRIPCION: '' }); }} >
-                            Cancelar
+                    <div className="flex items-center gap-2 pt-2">
+                        <Button type='submit' size='lg'>
+                            {editingId ? 'Actualizar' : 'Crear'}
                         </Button>
-                    )}
-                </div>
-            </form>
+                        {editingId && (
+                            <Button type='button' size='lg' variant='secondary'
+                                onClick={() => { setEditingId(null); setFormData({ TPA_CODIGO: '', TPA_DESCRIPCION: '' }); }}>
+                                Cancelar
+                            </Button>
+                        )}
+                    </div>
+                </form>
+            </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Tipo Asiento</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Descripción</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.TPA_TIPO_ASIENTO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPA_TIPO_ASIENTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPA_CODIGO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TPA_DESCRIPCION}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.TPA_TIPO_ASIENTO)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-sm">
+                        <thead>
+                            <tr className="bg-zinc-50 border-b border-zinc-200">
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Tipo Asiento</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Código</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Descripción</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {data.map(item => (
+                                <tr key={item.TPA_TIPO_ASIENTO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPA_TIPO_ASIENTO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPA_CODIGO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TPA_DESCRIPCION}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>
+                                                Editar
+                                            </button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.TPA_TIPO_ASIENTO)}>
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {data.length === 0 && (
+                                <tr>
+                                    <td colSpan={4} className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

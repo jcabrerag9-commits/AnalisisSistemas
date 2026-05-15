@@ -39,20 +39,40 @@ const CON_IMPUESTOCrud = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // Si el porcentaje es mayor a 1, asumimos que el usuario ingresó el valor entero (ej. 12 para 12%)
+            // y lo dividimos por 100 para guardarlo como decimal (0.12)
+            const processedData = {
+                ...formData,
+                IMP_PORCENTAJE: parseFloat(formData.IMP_PORCENTAJE) > 1 
+                    ? parseFloat(formData.IMP_PORCENTAJE) / 100 
+                    : formData.IMP_PORCENTAJE
+            };
+
             if (editingId) {
-                await axios.put(`${API_URL}/${editingId}`, formData);
+                await axios.put(`${API_URL}/${editingId}`, processedData);
             } else {
-                await axios.post(API_URL, formData);
+                await axios.post(API_URL, processedData);
             }
             setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' });
             setEditingId(null);
-            fetc
-            hData();
-        } catch (err) { console.error(err); }
+            fetchData();
+        } catch (err) {
+            console.error('Error al guardar:', err);
+            const msg = err.response?.data?.error || err.message;
+            alert(`Error: ${msg}`);
+        }
     };
 
     const handleEdit = (item) => {
-        setFormData({ CUE_CUENTA: item.CUE_CUENTA, IMP_CODIGO: item.IMP_CODIGO, IMP_NOMBRE: item.IMP_NOMBRE, IMP_PORCENTAJE: item.IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO: item.IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN: item.IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO: item.IMP_ESTADO });
+        setFormData({ 
+            CUE_CUENTA: item.CUE_CUENTA, 
+            IMP_CODIGO: item.IMP_CODIGO, 
+            IMP_NOMBRE: item.IMP_NOMBRE, 
+            IMP_PORCENTAJE: item.IMP_PORCENTAJE * 100, 
+            IMP_FECHA_VIGENCIA_INICIO: item.IMP_FECHA_VIGENCIA_INICIO_ISO, 
+            IMP_FECHA_VIGENCIA_FIN: item.IMP_FECHA_VIGENCIA_FIN_ISO, 
+            IMP_ESTADO: item.IMP_ESTADO 
+        });
         setEditingId(item.IMP_IMPUESTO);
     };
 
@@ -122,10 +142,41 @@ const CON_IMPUESTOCrud = () => {
                                     <Button variant='danger' size='sm' onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</Button>
                                 </td>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {data.map(item => (
+                                <tr key={item.IMP_IMPUESTO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_IMPUESTO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700 font-medium">
+                                        <div className="text-zinc-900">{item.CUE_NOMBRE}</div>
+                                        <div className="text-zinc-400 text-xs">{item.CUE_CODIGO}</div>
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_CODIGO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_NOMBRE}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700 font-semibold">{item.IMP_PORCENTAJE * 100}%</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_FECHA_VIGENCIA_INICIO_ISO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_FECHA_VIGENCIA_FIN_ISO || 'N/A'}</td>
+                                    <td className="px-4 py-3 text-sm">
+                                        <span className={`px-2 py-1 rounded-full text-xs ${item.IMP_ESTADO === 1 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                            {item.IMP_ESTADO === 1 ? 'Activo' : 'Inactivo'}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {data.length === 0 && (
+                                <tr>
+                                    <td colSpan={9} className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

@@ -2,7 +2,14 @@ const db = require('../db');
 
 exports.getAll = async (req, res) => {
     try {
-        const result = await db.executeQuery('SELECT * FROM CON_IMPUESTO');
+        const sql = `
+            SELECT i.*, c.CUE_NOMBRE, c.CUE_CODIGO,
+                   TO_CHAR(i.IMP_FECHA_VIGENCIA_INICIO, 'YYYY-MM-DD') as IMP_FECHA_VIGENCIA_INICIO_ISO,
+                   TO_CHAR(i.IMP_FECHA_VIGENCIA_FIN, 'YYYY-MM-DD') as IMP_FECHA_VIGENCIA_FIN_ISO
+            FROM CON_IMPUESTO i
+            JOIN CON_CUENTA c ON i.CUE_CUENTA = c.CUE_CUENTA
+        `;
+        const result = await db.executeQuery(sql);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -23,6 +30,7 @@ exports.getById = async (req, res) => {
 exports.create = async (req, res) => {
     try {
         const { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO } = req.body;
+        console.log('Backend: Creando Impuesto:', { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO });
         const sql = `INSERT INTO CON_IMPUESTO (CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO) 
                      VALUES (:CUE_CUENTA, :IMP_CODIGO, :IMP_NOMBRE, :IMP_PORCENTAJE, 
                      TO_DATE(:IMP_FECHA_VIGENCIA_INICIO, 'YYYY-MM-DD'), 
@@ -31,6 +39,7 @@ exports.create = async (req, res) => {
         await db.executeQuery(sql, { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO });
         res.status(201).json({ message: 'Created successfully' });
     } catch (err) {
+        console.error('Backend Error (CON_IMPUESTO.create):', err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -39,6 +48,7 @@ exports.update = async (req, res) => {
     try {
         const id = req.params.id;
         const { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO } = req.body;
+        console.log('Backend: Actualizando Impuesto ID:', id, 'con:', { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO });
         const sql = `UPDATE CON_IMPUESTO SET CUE_CUENTA = :CUE_CUENTA, IMP_CODIGO = :IMP_CODIGO, 
                      IMP_NOMBRE = :IMP_NOMBRE, IMP_PORCENTAJE = :IMP_PORCENTAJE, 
                      IMP_FECHA_VIGENCIA_INICIO = TO_DATE(:IMP_FECHA_VIGENCIA_INICIO, 'YYYY-MM-DD'), 
@@ -47,6 +57,7 @@ exports.update = async (req, res) => {
         await db.executeQuery(sql, { CUE_CUENTA, IMP_CODIGO, IMP_NOMBRE, IMP_PORCENTAJE, IMP_FECHA_VIGENCIA_INICIO, IMP_FECHA_VIGENCIA_FIN, IMP_ESTADO, id });
         res.json({ message: 'Updated successfully' });
     } catch (err) {
+        console.error('Backend Error (CON_IMPUESTO.update):', err);
         res.status(500).json({ error: err.message });
     }
 };
