@@ -69,7 +69,7 @@ const CON_TIPO_ASIENTOCrud = () => {
         <div className="min-h-screen bg-zinc-50 p-8">
             <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Tipo Asiento</h2>
 
-
+            <form onSubmit={handleSubmit} className="bg-white border border-zinc-200 rounded-lg p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <Input label="Código" helpText="Código corto e identificador único del tipo de asiento. Ej: DIARIO, APERTURA, AJUSTE, CIERRE." name="TPA_CODIGO" value={formData.TPA_CODIGO || ''} onChange={handleChange}
                             type="text" required />
@@ -90,7 +90,6 @@ const CON_TIPO_ASIENTOCrud = () => {
                         )}
                     </div>
                 </form>
-            </div>
 
             <div className="bg-white border border-zinc-200 rounded-lg">
                 <div className="overflow-x-auto">

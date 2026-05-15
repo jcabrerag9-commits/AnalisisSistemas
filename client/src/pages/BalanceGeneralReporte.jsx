@@ -66,9 +66,12 @@ const BalanceGeneralReporte = () => {
     // ── Agrupar filas por GRUPO_PRINCIPAL → SUBTIPO_CUENTA (ambos vienen del backend) ──
     const secciones = data
         ? SECCIONES.map(sec => {
-            const cuentasRaw = data.filter(row =>
-                (row.GRUPO_PRINCIPAL || '').toUpperCase() === sec.tipo
-            );
+            const cuentasRaw = data.filter(row => {
+                const tipoRow = (row.TIPO_CUENTA || '').toUpperCase();
+                // Aceptar tanto CAPITAL como PATRIMONIO para la sección de CAPITAL
+                if (sec.tipo === 'CAPITAL') return tipoRow === 'CAPITAL' || tipoRow === 'PATRIMONIO';
+                return tipoRow === sec.tipo;
+            });
 
             // Consolidar debe/haber por cuenta
             const cuentasMap = cuentasRaw.reduce((acc, row) => {
@@ -77,7 +80,7 @@ const BalanceGeneralReporte = () => {
                     acc[key] = {
                         codigo:    row.CODIGO_CUENTA,
                         nombre:    row.NOMBRE_CUENTA,
-                        subtipo:   row.SUBTIPO_CUENTA || sec.tipo,
+                        subtipo:   row.NOMBRE_GRUPO || sec.tipo,
                         debe:  0,
                         haber: 0,
                         saldo: 0,
@@ -111,17 +114,16 @@ const BalanceGeneralReporte = () => {
                 subgruposMap[sub].totalSaldo += c.saldo;
             });
 
-            // Orden canónico de sub-tipos
-            const ORDEN_SUBTIPOS = {
-                'Activo Circulante': 1, 'Activo Fijo': 2, 'Activo Diferido': 3,
-                'Pasivo Circulante': 1, 'Pasivo Fijo': 2, 'Pasivo Diferido': 3,
-                'Capital': 1, 'Patrimonio': 1,
-                'Activo': 0, 'Pasivo': 0,
+            const getSortWeight = (name) => {
+                const n = name.toUpperCase();
+                if (n.includes('CIRCULANTE') || n.includes('CORRIENTE')) return 1;
+                if (n.includes('FIJO') || n.includes('NO CORRIENTE')) return 2;
+                if (n.includes('DIFERIDO')) return 3;
+                return 99;
             };
 
             const subgrupos = Object.values(subgruposMap).sort((a, b) =>
-                (ORDEN_SUBTIPOS[a.nombre] ?? 99) - (ORDEN_SUBTIPOS[b.nombre] ?? 99)
-                || a.nombre.localeCompare(b.nombre)
+                getSortWeight(a.nombre) - getSortWeight(b.nombre) || a.nombre.localeCompare(b.nombre)
             );
 
             const total = cuentas.reduce((s, c) => s + c.saldo, 0);
@@ -132,8 +134,8 @@ const BalanceGeneralReporte = () => {
 
     const totalActivo = secciones.find(s => s.tipo === 'ACTIVO')?.total || 0;
     const totalPasivo = secciones.find(s => s.tipo === 'PASIVO')?.total || 0;
-    const totalPatrimonio = secciones.find(s => s.tipo === 'PATRIMONIO')?.total || 0;
-    const totalPasivoPatrimonio = totalPasivo + totalPatrimonio;
+    const totalCapital = secciones.find(s => s.tipo === 'CAPITAL')?.total || 0;
+    const totalPasivoPatrimonio = totalPasivo + totalCapital;
     const cuadra = Math.abs(totalActivo - totalPasivoPatrimonio) < 0.01;
 
     const fmt = (n) =>
@@ -229,16 +231,49 @@ const BalanceGeneralReporte = () => {
                     </div>
 
                     {/* Layout de una sola columna para todas las secciones (ACTIVO, PASIVO, CAPITAL) */}
-                    <div className="flex flex-col gap-6 print:gap-8">
-                        {/* Secciones individuales en orden */}
+                    <div className="flex flex-col gap-2 print:gap-4">
                         {secciones.map(sec => (
-                            <SeccionBalance key={sec.tipo} sec={sec} fmt={fmt} />
+                            <div key={sec.tipo} className="mb-4">
+                                {/* Subgrupos de la sección */}
+                                {sec.subgrupos.map((sub) => {
+                                    const subName = sub.nombre.toUpperCase();
+                                    const tipoCorto = subName.replace('ACTIVO ', '').replace('PASIVO ', '');
+                                    
+                                    return (
+                                        <div key={sub.nombre} className="mb-4">
+                                            <div className="bg-[#b4c6e7] text-[#1f4e79] font-bold text-center py-1 mb-2 text-sm print:text-xs uppercase">
+                                                {subName}
+                                            </div>
+                                            <div className="px-4 mb-1">
+                                                {sub.cuentas.map((cuenta) => (
+                                                    <div key={cuenta.codigo} className="flex justify-between py-0.5 text-sm print:text-xs text-zinc-900">
+                                                        <span className="uppercase">{cuenta.nombre}</span>
+                                                        <span className="font-mono">{fmt(cuenta.saldo)}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="flex justify-between py-1 px-4 bg-[#fff2cc] font-bold text-sm print:text-xs text-zinc-900 border-t border-zinc-300">
+                                                <span>TOTAL {tipoCorto}</span>
+                                                <span className="font-mono">{fmt(sub.totalSaldo)}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                {/* Barra de Total de Sección (Solo para ACTIVO y PASIVO) */}
+                                {(sec.tipo === 'ACTIVO' || sec.tipo === 'PASIVO') && (
+                                    <div className="flex justify-between py-2 px-4 bg-[#1f2937] text-[#38bdf8] font-bold text-sm print:text-xs print:bg-zinc-800 uppercase mt-2">
+                                        <span>TOTAL DEL {sec.tipo}</span>
+                                        <span className="font-mono">{fmt(sec.total)}</span>
+                                    </div>
+                                )}
+                            </div>
                         ))}
 
-                        {/* Total Pasivo + Patrimonio (si cuadra o para mostrar la suma final) */}
-                        <div className="flex justify-between py-2 px-4 bg-[#1f2937] text-white font-bold text-sm print:text-xs print:bg-zinc-800 uppercase mt-2">
-                            <span>TOTAL PASIVO + PATRIMONIO (CAPITAL)</span>
-                            <span>{fmt(totalPasivoPatrimonio)}</span>
+                        {/* Fila Final: Pasivo + Capital */}
+                        <div className="flex justify-between py-2 px-4 bg-[#1f2937] text-white font-bold text-sm print:text-xs print:bg-zinc-800 uppercase mt-4">
+                            <span>TOTAL PASIVO + CAPITAL</span>
+                            <span className="font-mono">{fmt(totalPasivoPatrimonio)}</span>
                         </div>
                     </div>
 
@@ -262,52 +297,11 @@ const BalanceGeneralReporte = () => {
                                 )
                             }
                         </div>
+                    </div>
                 </div>
             )}
         </div>
     );
 };
-
-// ── Componente de sección (ACTIVO / PASIVO / CAPITAL) ──
-const SeccionBalance = ({ sec, fmt }) => (
-    <div className="mb-6">
-        {sec.subgrupos.map((sub) => {
-            const subName = sub.nombre.toUpperCase();
-            // Para "Activo Circulante" -> "CIRCULANTE", etc.
-            const tipoCorto = subName.replace('ACTIVO ', '').replace('PASIVO ', '');
-            
-            return (
-                <div key={sub.nombre} className="mb-6">
-                    {/* Cabecera del subgrupo (Ej: ACTIVO CIRCULANTE) */}
-                    <div className="bg-[#b4c6e7] text-[#1f4e79] font-bold text-center py-1.5 mb-2 text-sm print:text-xs">
-                        {subName}
-                    </div>
-                    
-                    {/* Cuentas */}
-                    <div className="px-4">
-                        {sub.cuentas.map((cuenta) => (
-                            <div key={cuenta.codigo} className="flex justify-between py-1 text-sm print:text-xs text-zinc-900 font-semibold">
-                                <span className="uppercase">{cuenta.nombre}</span>
-                                <span>{fmt(cuenta.saldo)}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Subtotal del subgrupo */}
-                    <div className="flex justify-between py-1.5 px-4 mt-2 bg-[#fff2cc] font-bold text-sm print:text-xs text-zinc-900 border-t border-zinc-200">
-                        <span>TOTAL {tipoCorto}</span>
-                        <span>{fmt(sub.totalSaldo)}</span>
-                    </div>
-                </div>
-            );
-        })}
-
-        {/* Total de la sección (ACTIVO, PASIVO, CAPITAL) */}
-        <div className="flex justify-between py-2 px-4 mt-4 bg-[#1f2937] text-[#38bdf8] font-bold text-sm print:text-xs print:bg-zinc-800">
-            <span>TOTAL DEL {sec.tipo}</span>
-            <span>{fmt(sec.total)}</span>
-        </div>
-    </div>
-);
 
 export default BalanceGeneralReporte;

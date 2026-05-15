@@ -132,7 +132,6 @@ const CON_TIPO_CAMBIOCrud = () => {
                     {data.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
                 </div>
             </div>
-        </div>
     );
 };
 

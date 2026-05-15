@@ -69,6 +69,7 @@ const CON_ESTADO_PERIODOCrud = () => {
         <div className="min-h-screen bg-zinc-50 p-8">
             <h2 className="text-xl font-semibold text-zinc-900 mb-6">Gestión de Estado Periodo</h2>
 
+            <form onSubmit={handleSubmit} className="bg-white border border-zinc-200 rounded-lg p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <Input label="Nombre del Estado" helpText="Estado del período contable. Valores estándar: ABIERTO (acepta asientos), CERRADO (no acepta modificaciones), BLOQUEADO (auditoría)." name="ESP_NOMBRE" value={formData.ESP_NOMBRE || ''} onChange={handleChange}
                             type="text" required />
@@ -89,7 +90,6 @@ const CON_ESTADO_PERIODOCrud = () => {
                         )}
                     </div>
                 </form>
-            </div>
 
             <div className="bg-white border border-zinc-200 rounded-lg">
                 <div className="overflow-x-auto">

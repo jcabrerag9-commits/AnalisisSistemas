@@ -67,33 +67,46 @@ const CON_PERIODOCrud = () => {
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Select label="Estado del Periodo" helpText="ABIERTO: permite registrar asientos. CERRADO: no acepta modificaciones. BLOQUEADO: bloqueado por auditoría." name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
+            <form onSubmit={handleSubmit} className="mb-10 p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-inner">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Select 
+                        label="Estado del Periodo" 
+                        helpText="ABIERTO: permite registrar asientos. CERRADO: no acepta modificaciones. BLOQUEADO: bloqueado por auditoría." 
+                        name="ESP_ESTADO_PERIODO" 
+                        value={formData.ESP_ESTADO_PERIODO || ''} 
+                        onChange={handleChange}
                         options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
-                        required />
-                    <Input label="Año" helpText="Año fiscal del período contable. Ej: 2026. No puede existir el mismo mes dos veces en el mismo año." name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
-                    <Input label="Mes" helpText="Número del mes: 1 = Enero, 2 = Febrero ... 12 = Diciembre. Cada mes del año es un período independiente." name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
+                        required 
+                    />
+                    <Input 
+                        label="Año" 
+                        helpText="Año fiscal del período contable. Ej: 2026." 
+                        name="PER_AÑO" 
+                        value={formData.PER_AÑO || ''} 
+                        onChange={handleChange} 
+                        type="number" 
+                        required 
+                    />
+                    <Input 
+                        label="Mes" 
+                        helpText="Número del mes: 1 = Enero, ... 12 = Diciembre." 
+                        name="PER_MES" 
+                        value={formData.PER_MES || ''} 
+                        onChange={handleChange} 
+                        type="number" 
+                        required 
+                    />
                 </div>
-                <form onSubmit={handleSubmit} className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Select label="Estado del Periodo" name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
-                            options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
-                            required />
-                        <Input label="Año" name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
-                        <Input label="Mes" name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
-                    </div>
-                    <div className="mt-6 flex gap-3">
-                        <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
-                        {editingId && (
-                            <Button type='button' size='lg' variant='secondary' className='ml-2'
-                                onClick={() => { setEditingId(null); setFormData({ ESP_ESTADO_PERIODO: '', PER_AÑO: '', PER_MES: '' }); }}>
-                                Cancelar
-                            </Button>
-                        )}
-                    </div>
-                </form>
-            </div>
+                <div className="mt-6 flex gap-3">
+                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    {editingId && (
+                        <Button type='button' size='lg' variant='secondary'
+                            onClick={() => { setEditingId(null); setFormData({ ESP_ESTADO_PERIODO: '', PER_AÑO: '', PER_MES: '' }); }}>
+                            Cancelar
+                        </Button>
+                    )}
+                </div>
+            </form>
 
             {/* Tabla */}
             <div className="bg-white border border-zinc-200 rounded-lg">

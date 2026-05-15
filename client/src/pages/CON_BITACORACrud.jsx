@@ -291,7 +291,7 @@ const CON_BITACORACrud = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </form>
         </div>
     );
 };

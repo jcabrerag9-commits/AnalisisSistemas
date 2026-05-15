@@ -111,39 +111,14 @@ const CON_IMPUESTOCrud = () => {
                 </div>
             </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Impuesto</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Código</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Porcentaje</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Inicial De Vigencia</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Fecha Final De Vigencia</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.IMP_IMPUESTO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_IMPUESTO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.CUE_CUENTA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_CODIGO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_NOMBRE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_PORCENTAJE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_FECHA_VIGENCIA_INICIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_FECHA_VIGENCIA_FIN}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.IMP_ESTADO}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</Button>
-                                </td>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-zinc-100">
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <div className="px-6 py-4 border-b border-zinc-200">
+                    <span className="text-sm font-semibold text-zinc-700">Listado de Impuestos</span>
+                </div>
+                <div className="p-6">
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse text-sm">
+                            <tbody className="divide-y divide-zinc-100">
                             {data.map(item => (
                                 <tr key={item.IMP_IMPUESTO} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_IMPUESTO}</td>
@@ -179,6 +154,7 @@ const CON_IMPUESTOCrud = () => {
                 </div>
             </div>
         </div>
+    </div>
     );
 };
 
