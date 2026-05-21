@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Select from '../components/Select';
 import Button from '../components/Button';
 const CON_USUARIO_ROLCrud = () => {
@@ -96,7 +97,7 @@ const CON_USUARIO_ROLCrud = () => {
                             name="USU_USUARIO"
                             value={formData.USU_USUARIO || ''}
                             onChange={handleChange}
-                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: opt.USU_USER }))}
                             required
                         />
                     </div>
@@ -106,16 +107,16 @@ const CON_USUARIO_ROLCrud = () => {
                             name="ROL_ROL"
                             value={formData.ROL_ROL || ''}
                             onChange={handleChange}
-                            options={CON_ROLData.map(opt => ({ value: opt.ROL_ROL, label: `${opt.ROL_ROL} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_ROLData.map(opt => ({ value: opt.ROL_ROL, label: opt.ROL_NOMBRE }))}
                             required
                         />
                     </div>
                     <div className="flex items-center gap-2 pt-2">
-                        <Button type='submit' size='md'>
+                        <Button type='submit' size='md' icon={editingId ? Pencil : Plus}>
                             {editingId ? 'Actualizar' : 'Crear'}
                         </Button>
                         {editingId && (
-                            <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
+                            <Button type='button' size='md' variant='secondary' icon={X} className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
                                 Cancelar
                             </Button>
                         )}
@@ -141,12 +142,8 @@ const CON_USUARIO_ROLCrud = () => {
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.ROL_NOMBRE || item.ROL_ROL}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>
-                                                Editar
-                                            </button>
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.USR_USUARIO_ROL)}>
-                                                Eliminar
-                                            </button>
+                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
+                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.USR_USUARIO_ROL)}>Eliminar</Button>
                                         </div>
                                     </td>
                                 </tr>

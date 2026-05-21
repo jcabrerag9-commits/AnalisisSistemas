@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
@@ -75,7 +76,7 @@ const CON_PERIODOCrud = () => {
                         name="ESP_ESTADO_PERIODO" 
                         value={formData.ESP_ESTADO_PERIODO || ''} 
                         onChange={handleChange}
-                        options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
+                        options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: opt.ESP_NOMBRE }))}
                         required 
                     />
                     <Input 
@@ -98,9 +99,9 @@ const CON_PERIODOCrud = () => {
                     />
                 </div>
                 <div className="mt-6 flex gap-3">
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary'
+                        <Button type='button' size='lg' variant='secondary' icon={X}
                             onClick={() => { setEditingId(null); setFormData({ ESP_ESTADO_PERIODO: '', PER_AÑO: '', PER_MES: '' }); }}>
                             Cancelar
                         </Button>
@@ -133,8 +134,8 @@ const CON_PERIODOCrud = () => {
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_AÑO}</td>
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_MES}</td>
                                         <td className="px-4 py-3 text-right space-x-3">
-                                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors" onClick={() => handleEdit(item)}>Editar</button>
-                                            <button className="text-red-600 hover:text-red-800 text-sm font-medium transition-colors" onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</button>
+                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
+                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</Button>
                                         </td>
                                     </tr>
                                 ))}

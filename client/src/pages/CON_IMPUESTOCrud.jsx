@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
@@ -91,7 +92,7 @@ const CON_IMPUESTOCrud = () => {
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     <Select label="Cuenta Contable" helpText="Cuenta de Pasivo o Activo donde se registra el impuesto. Ej: IVA por Pagar, IVA Crédito Fiscal." name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
-                        options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                        options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                         required />
                     <Input label="Código" helpText="Código corto e identificador único del impuesto. Ej: IVA, ISR, IUSI." name="IMP_CODIGO" value={formData.IMP_CODIGO || ''} onChange={handleChange} required />
                     <Input label="Nombre" name="IMP_NOMBRE" value={formData.IMP_NOMBRE || ''} onChange={handleChange} required />
@@ -101,9 +102,9 @@ const CON_IMPUESTOCrud = () => {
                     <Input label="Estado" helpText="1 = Activo (se aplica en nuevos movimientos). 0 = Inactivo (ya no se aplica pero conserva el historial)." name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                        <Button type='button' size='lg' variant='secondary' icon={X} className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' }); }}>
                             Cancelar
                         </Button>
@@ -138,8 +139,8 @@ const CON_IMPUESTOCrud = () => {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</button>
+                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
+                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</Button>
                                         </div>
                                     </td>
                                 </tr>

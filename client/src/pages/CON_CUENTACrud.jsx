@@ -100,11 +100,11 @@ const CON_CUENTACrud = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}>
             <Select label="Cuenta padre" helpText="Cuenta de nivel superior en el plan de cuentas. Déjala vacía si esta es una cuenta principal. Las subcuentas heredan el tipo de la cuenta padre." name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
-                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                 required />
 
             <Select label="Tipo Cuenta" helpText="Clasifica la cuenta: ACTIVO (bienes y derechos), PASIVO (deudas), CAPITAL/PATRIMONIO (recursos propios), INGRESO o GASTO." name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
-                options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: opt.TCU_NOMBRE }))}
                 required />
 
             <Input label="Código" helpText="Código único del plan de cuentas. Ej: 1.1.01 para Caja, 2.1 para Cuentas por Pagar. Sigue la estructura numérica de tu catálogo." name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />

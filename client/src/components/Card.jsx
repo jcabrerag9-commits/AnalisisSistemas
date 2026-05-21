@@ -15,6 +15,7 @@
  *  - submitSize  (string)  – Tamaño para los botones Crear/Cancelar ("sm" | "md" | "lg"). Por defecto "lg".
  */
 
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Button from './Button';
 
 const Card = ({
@@ -46,7 +47,7 @@ const Card = ({
 
         {/* Botones del formulario */}
         <div className="flex items-center gap-2 mt-4">
-          <Button type="submit" size={submitSize} variant="primary">
+          <Button type="submit" size={submitSize} variant="primary" icon={editingId ? Pencil : Plus}>
             {editingId ? 'Actualizar' : 'Crear'}
           </Button>
 
@@ -55,6 +56,7 @@ const Card = ({
               type="button"
               size={submitSize}
               variant="secondary"
+              icon={X}
               onClick={onCancel}
             >
               Cancelar
@@ -98,20 +100,12 @@ const Card = ({
                 ))}
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <button
-                      type="button"
-                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
-                      onClick={() => onEdit(item)}
-                    >
+                    <Button type="button" variant="secondary" size="sm" icon={Pencil} onClick={() => onEdit(item)}>
                       Editar
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
-                      onClick={() => onDelete(item[rowKey])}
-                    >
+                    </Button>
+                    <Button type="button" variant="danger" size="sm" icon={Trash2} onClick={() => onDelete(item[rowKey])}>
                       Eliminar
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>
