@@ -87,7 +87,7 @@ const CON_CENTRO_COSTOCrud = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}>
             <Select label="Centro Costo Padre" helpText="Centro de costo del que depende este. Déjalo vacío si es un centro raíz o de nivel superior." name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
-                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: opt.CTC_NOMBRE }))}
                 required />
 
             <Input label="Código Departamento" helpText="Código único que identifica al departamento. Ej: ADM-001, VENTAS-01. No se puede repetir." name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
@@ -79,16 +80,16 @@ const CON_TIPO_CAMBIOCrud = () => {
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
                     <Select label="Moneda" helpText="Moneda extranjera para la que se registra el tipo de cambio. La moneda local (GTQ) no necesita registro." name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
-                        options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                        options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: opt.MON_NOMBRE }))}
                         required />
                     <Input label="Fecha de la Tasa" helpText="Fecha en que aplica este tipo de cambio. Solo puede existir una tasa por moneda por día." name="TPC_FECHA_TASA" value={formData.TPC_FECHA_TASA || ''} onChange={handleChange} required />
                     <Input label="Tasa de Compra" helpText="Precio al que el banco compra la moneda extranjera. Ej: si el banco compra USD a Q7.72, ingresa 7.72." name="TPC_TASA_COMPRA" value={formData.TPC_TASA_COMPRA || ''} onChange={handleChange} type="number" required />
                     <Input label="Tasa de Venta" helpText="Precio al que el banco vende la moneda extranjera. Generalmente mayor a la tasa de compra. Ej: 7.78." name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                        <Button type='button' size='lg' variant='secondary' icon={X} className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }}>
                             Cancelar
                         </Button>
@@ -121,8 +122,8 @@ const CON_TIPO_CAMBIOCrud = () => {
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TASA_VENTA}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
-                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</button>
+                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
+                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</Button>
                                         </div>
                                     </td>
                                 </tr>

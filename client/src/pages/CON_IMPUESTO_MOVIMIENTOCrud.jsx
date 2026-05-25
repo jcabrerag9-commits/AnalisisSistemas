@@ -100,10 +100,10 @@ const CON_IMPUESTO_MOVIMIENTOCrud = () => {
             onDelete={handleDelete}
         >
             <Select label="Asiento Detalle" helpText="Línea del asiento contable a la que se le aplica este impuesto." name="ASD_ASIENTO_DETALLE" value={formData.ASD_ASIENTO_DETALLE || ''} onChange={handleChange}
-                options={CON_ASIENTO_DETALLEData.map(opt => ({ value: opt.ASD_ASIENTO_DETALLE, label: `${opt.ASD_ASIENTO_DETALLE} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_ASIENTO_DETALLEData.map(opt => ({ value: opt.ASD_ASIENTO_DETALLE, label: `Detalle #${opt.ASD_ASIENTO_DETALLE} — Asiento #${opt.ASI_ASIENTO}` }))}
                 required />
             <Select label="Impuesto" helpText="Tipo de impuesto que se generó o soportó en este movimiento. Ej: IVA, ISR." name="IMP_IMPUESTO" value={formData.IMP_IMPUESTO || ''} onChange={handleChange}
-                options={CON_IMPUESTOData.map(opt => ({ value: opt.IMP_IMPUESTO, label: `${opt.IMP_IMPUESTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_IMPUESTOData.map(opt => ({ value: opt.IMP_IMPUESTO, label: opt.IMP_NOMBRE }))}
                 required />
             <Input label="Base Imponible" helpText="Monto sobre el que se calcula el impuesto, antes de aplicar la tasa. Ej: si la factura es Q1,120 con IVA 12%, la base es Q1,000." name="IMM_BASE_IMPONIBLE" value={formData.IMM_BASE_IMPONIBLE || ''} onChange={handleChange} required />
             <Input label="Monto Impuesto" helpText="Resultado de aplicar la tasa al monto base. Ej: Q1,000 × 12% = Q120." name="IMM_MONTO_IMPUESTO" value={formData.IMM_MONTO_IMPUESTO || ''} onChange={handleChange} required />

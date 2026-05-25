@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { Ban, Clock, Eye, Pencil, Plus, Save, Trash2, X } from 'lucide-react';
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
@@ -61,6 +62,10 @@ const CON_ASIENTOCrud = () => {
 
     // ── Feedback ──
     const [mensaje, setMensaje] = useState(null); // { tipo: 'success' | 'error', texto }
+
+    // ── Límites de fecha según periodo seleccionado ──
+    const [dateLimits, setDateLimits] = useState({ min: '', max: '' });
+    const [dateError, setDateError] = useState('');
 
     const API_URL = 'http://localhost:5000/api/con-asiento';
 
@@ -135,14 +140,37 @@ const CON_ASIENTOCrud = () => {
     // ══════════════════════════════════════════
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
 
-        // Si cambia el periodo, verificar si está cerrado (Modo solo lectura)
         if (name === 'PER_PERIODO') {
             const idCerrado = CON_ESTADO_PERIODOData.find(st => st.ESP_NOMBRE?.toUpperCase() === 'CERRADO')?.ESP_ESTADO_PERIODO;
             const periodoSel = CON_PERIODOData.find(p => p.PER_PERIODO === Number(value));
             setIsPeriodoCerrado(periodoSel?.ESP_ESTADO_PERIODO === idCerrado);
+
+            if (periodoSel) {
+                const anio = periodoSel.PER_AÑO;
+                const mes = periodoSel.PER_MES;
+                const pad = (n) => String(n).padStart(2, '0');
+                const min = `${anio}-${pad(mes)}-01`;
+                const max = `${anio}-${pad(mes)}-${pad(new Date(anio, mes, 0).getDate())}`;
+                setDateLimits({ min, max });
+                setFormData(prev => ({ ...prev, PER_PERIODO: value, ASI_FECHA: '' }));
+            } else {
+                setDateLimits({ min: '', max: '' });
+                setFormData(prev => ({ ...prev, PER_PERIODO: value }));
+            }
+            setDateError('');
+            return;
         }
+
+        if (name === 'ASI_FECHA' && dateLimits.min) {
+            if (value && (value < dateLimits.min || value > dateLimits.max)) {
+                setDateError(`La fecha debe estar dentro del periodo: ${dateLimits.min} al ${dateLimits.max}`);
+            } else {
+                setDateError('');
+            }
+        }
+
+        setFormData({ ...formData, [name]: value });
     };
 
     // ══════════════════════════════════════════
@@ -194,6 +222,8 @@ const CON_ASIENTOCrud = () => {
         setEditingId(null);
         setIsPeriodoCerrado(false);
         setIsViewMode(false);
+        setDateLimits({ min: '', max: '' });
+        setDateError('');
     };
 
     const handleSubmit = async (e) => {
@@ -314,6 +344,19 @@ const CON_ASIENTOCrud = () => {
             || item.ESP_ESTADO_PERIODO === idCerrado;
         setIsPeriodoCerrado(cerrado);
 
+        if (periodoDelAsiento) {
+            const anio = periodoDelAsiento.PER_AÑO;
+            const mes = periodoDelAsiento.PER_MES;
+            const pad = (n) => String(n).padStart(2, '0');
+            setDateLimits({
+                min: `${anio}-${pad(mes)}-01`,
+                max: `${anio}-${pad(mes)}-${pad(new Date(anio, mes, 0).getDate())}`,
+            });
+        } else {
+            setDateLimits({ min: '', max: '' });
+        }
+        setDateError('');
+
         // Cargar los detalles relacionados con este asiento
         try {
             const res = await axios.get(`http://localhost:5000/api/con-asiento-detalle/asiento/${item.ASI_ASIENTO}`);
@@ -407,15 +450,19 @@ const CON_ASIENTOCrud = () => {
                             })()}
                             required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Tipo de Asiento" name="TPA_TIPO_ASIENTO" value={formData.TPA_TIPO_ASIENTO || ''} onChange={handleChange}
-                            options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: `${opt.TPA_TIPO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_TIPO_ASIENTOData.map(opt => ({ value: opt.TPA_TIPO_ASIENTO, label: opt.TPA_DESCRIPCION }))}
                             required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Estado" name="ESA_ESTADO_ASIENTO" value={formData.ESA_ESTADO_ASIENTO || ''} onChange={handleChange}
-                            options={CON_ESTADO_ASIENTOData.map(opt => ({ value: opt.ESA_ESTADO_ASIENTO, label: `${opt.ESA_ESTADO_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_ESTADO_ASIENTOData.map(opt => ({ value: opt.ESA_ESTADO_ASIENTO, label: opt.ESA_NOMBRE }))}
                             required disabled={isPeriodoCerrado || isViewMode} />
                         <Select label="Usuario" name="USU_USUARIO" value={formData.USU_USUARIO || ''} onChange={handleChange}
-                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: opt.USU_USER }))}
                             required disabled={isPeriodoCerrado} />
-                        <Input label="Fecha" name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} type="date" required disabled={isPeriodoCerrado} />
+                        <Input label="Fecha" name="ASI_FECHA" value={formData.ASI_FECHA || ''} onChange={handleChange} type="date" required disabled={isPeriodoCerrado}
+                            min={dateLimits.min || undefined}
+                            max={dateLimits.max || undefined}
+                            error={dateError || undefined}
+                        />
                         <Input label="Glosa (Descripción)" name="ASI_GLOSA" value={formData.ASI_GLOSA || ''} onChange={handleChange} required disabled={isPeriodoCerrado} hint="Descripción breve del movimiento contable. Ej: Pago a proveedor, Compra de equipo." />
                     </div>
                 </div>
@@ -427,8 +474,8 @@ const CON_ASIENTOCrud = () => {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2"><h3 className="text-lg font-semibold text-slate-700">Movimientos (Detalle)</h3><HelpIcon text="Cada fila es una línea contable. La suma del Debe debe ser igual a la suma del Haber (partida doble). Mínimo 2 líneas." position="right" /></div>
                         {!isPeriodoCerrado && (
-                            <Button type="button" variant="success" size="sm" onClick={agregarDetalle}>
-                                + Agregar Movimiento
+                            <Button type="button" variant="success" size="sm" icon={Plus} onClick={agregarDetalle}>
+                                Agregar Movimiento
                             </Button>
                         )}
                     </div>
@@ -460,7 +507,7 @@ const CON_ASIENTOCrud = () => {
                                             <td className="px-4 py-3 text-sm text-zinc-700">{idx + 1}</td>
                                             <td className="px-2 py-2">
                                                 <Select name="CUE_CUENTA" value={det.CUE_CUENTA || ''} onChange={(e) => handleDetalleChange(idx, e)}
-                                                    options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt.CUE_NOMBRE || opt[Object.keys(opt)[1]]}` }))}
+                                                    options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                                                     required disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-2 py-2">
@@ -477,20 +524,20 @@ const CON_ASIENTOCrud = () => {
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Select name="CTC_CENTRO_COSTO" value={det.CTC_CENTRO_COSTO || ''} onChange={(e) => handleDetalleChange(idx, e)}
-                                                    options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt.CTC_NOMBRE}` }))}
+                                                    options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: opt.CTC_NOMBRE }))}
                                                     disabled={isPeriodoCerrado || isViewMode}
                                                 />
                                             </td>
                                             <td className="px-2 py-2">
                                                 <Select name="MON_MONEDA" value={det.MON_MONEDA || ''} onChange={(e) => handleDetalleChange(idx, e)}
-                                                    options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                                                    options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: opt.MON_NOMBRE }))}
                                                     required disabled={isPeriodoCerrado || isViewMode} />
                                             </td>
                                             <td className="px-4 py-3 text-sm text-zinc-700 text-right font-mono">{debeCal}</td>
                                             <td className="px-4 py-3 text-sm text-zinc-700 text-right font-mono">{haberCal}</td>
                                             <td className="px-4 py-3 text-sm text-zinc-700">
                                                 {!isPeriodoCerrado && !isViewMode && (
-                                                    <Button type="button" variant="danger" size="sm"
+                                                    <Button type="button" variant="danger" size="sm" icon={Trash2}
                                                         onClick={() => eliminarDetalle(idx)}
                                                         disabled={detalles.length <= 2}>
                                                         Eliminar
@@ -530,12 +577,12 @@ const CON_ASIENTOCrud = () => {
                 {/* ── Botones de acción ── */}
                 <div className="flex items-center gap-2 pt-2 mb-8">
                     {!isPeriodoCerrado && !isViewMode && (
-                        <Button type="submit" size="lg" disabled={!puedeGuardar}>
+                        <Button type="submit" size="lg" icon={editingId ? Pencil : Save} disabled={!puedeGuardar}>
                             {editingId ? 'Actualizar Asiento' : 'Guardar Asiento'}
                         </Button>
                     )}
                     {editingId && (
-                        <Button type="button" size="lg" variant="secondary" onClick={resetFormulario}>
+                        <Button type="button" size="lg" variant="secondary" icon={X} onClick={resetFormulario}>
                             {isPeriodoCerrado || isViewMode ? 'Cerrar Vista' : 'Cancelar'}
                         </Button>
                     )}
@@ -558,7 +605,7 @@ const CON_ASIENTOCrud = () => {
             <div className="bg-white border border-zinc-200 rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-semibold text-zinc-900 mb-5">Asientos Registrados</h3>
-                    <Button type="button" variant="secondary" size="sm" onClick={handleVerHistorial}>
+                    <Button type="button" variant="secondary" size="sm" icon={Clock} onClick={handleVerHistorial}>
                         Ver Historial de Anulaciones
                     </Button>
                 </div>
@@ -582,13 +629,13 @@ const CON_ASIENTOCrud = () => {
                                 const periodoStr = periodoObj ? `${NOMBRES_MESES[periodoObj.PER_MES]} - ${periodoObj.PER_AÑO}` : item.PER_PERIODO;
 
                                 const tipoObj = CON_TIPO_ASIENTOData.find(t => t.TPA_TIPO_ASIENTO === item.TPA_TIPO_ASIENTO);
-                                const tipoStr = tipoObj ? tipoObj[Object.keys(tipoObj)[1]] : item.TPA_TIPO_ASIENTO;
+                                const tipoStr = tipoObj ? tipoObj.TPA_DESCRIPCION : item.TPA_TIPO_ASIENTO;
 
                                 const estadoObj = CON_ESTADO_ASIENTOData.find(e => e.ESA_ESTADO_ASIENTO === item.ESA_ESTADO_ASIENTO);
-                                const estadoStr = estadoObj ? estadoObj[Object.keys(estadoObj)[1]] : item.ESA_ESTADO_ASIENTO;
+                                const estadoStr = estadoObj ? estadoObj.ESA_NOMBRE : item.ESA_ESTADO_ASIENTO;
 
                                 const usuarioObj = CON_USUARIOData.find(u => u.USU_USUARIO === item.USU_USUARIO);
-                                const usuarioStr = usuarioObj ? usuarioObj[Object.keys(usuarioObj)[1]] : item.USU_USUARIO;
+                                const usuarioStr = usuarioObj ? usuarioObj.USU_USER : item.USU_USUARIO;
 
                                 let fechaStr = item.ASI_FECHA;
                                 if (fechaStr) {
@@ -618,19 +665,19 @@ const CON_ASIENTOCrud = () => {
 
                                                 return abierto && !protegido ? (
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item, true)}>
+                                                        <Button variant="secondary" size="sm" icon={Eye} onClick={() => handleEdit(item, true)}>
                                                             Ver
                                                         </Button>
-                                                        <button type="button" className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item, false)}>
+                                                        <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item, false)}>
                                                             Editar
-                                                        </button>
-                                                        <button type="button" className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleAbrirModalAnular(item)}>
+                                                        </Button>
+                                                        <Button variant="danger" size="sm" icon={Ban} onClick={() => handleAbrirModalAnular(item)}>
                                                             Anular
-                                                        </button>
+                                                        </Button>
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <Button variant="secondary" size="sm" onClick={() => handleEdit(item, true)}>
+                                                        <Button variant="secondary" size="sm" icon={Eye} onClick={() => handleEdit(item, true)}>
                                                             Ver
                                                         </Button>
                                                         {protegido && (
@@ -679,8 +726,8 @@ const CON_ASIENTOCrud = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-2 pt-2 border-t border-zinc-200">
-                            <Button type="button" variant="secondary" onClick={handleCerrarModal} disabled={procesandoAnulacion}>Cancelar</Button>
-                            <Button type="button" variant="danger" disabled={procesandoAnulacion || motivoAnulacion.trim().length < 10} onClick={handleAnularAsiento}>
+                            <Button type="button" variant="secondary" icon={X} onClick={handleCerrarModal} disabled={procesandoAnulacion}>Cancelar</Button>
+                            <Button type="button" variant="danger" icon={Ban} disabled={procesandoAnulacion || motivoAnulacion.trim().length < 10} onClick={handleAnularAsiento}>
                                 {procesandoAnulacion ? 'Procesando...' : 'Confirmar Anulación'}
                             </Button>
                         </div>

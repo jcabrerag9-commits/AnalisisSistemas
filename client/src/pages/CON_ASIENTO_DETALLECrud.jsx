@@ -127,16 +127,16 @@ const CON_ASIENTO_DETALLECrud = () => {
             onDelete={handleDelete}
         >
             <Select label="Asiento" helpText="Número del asiento contable al que pertenece este detalle." name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
-                options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `#${opt.ASI_ASIENTO} — ${opt.ASI_GLOSA || ''}` }))}
                 required />
             <Select label="Cuenta" helpText="Cuenta contable del plan de cuentas que se ve afectada por este movimiento." name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
-                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                 required />
             <Select label="Centro de Costo" helpText="Departamento al que se imputa el gasto. Es opcional para cuentas de balance (bancos, proveedores)." name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
-                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: opt.CTC_NOMBRE }))}
                 required />
             <Select label="Moneda" helpText="Moneda en la que se registra el monto de origen. Si es GTQ, la tasa de cambio debe ser 1." name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
-                options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+                options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: opt.MON_NOMBRE }))}
                 required />
             <Input label="Tasa de Cambio" helpText="Factor de conversión a moneda local (GTQ). Ej: si usas USD, ingresa el tipo de cambio del día (7.75). Para GTQ usa 1." name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
                 type="number" required />
