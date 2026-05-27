@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+
 import Select from '../components/Select';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 import Button from '../components/Button';
 const CON_USUARIO_ROLCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ USU_USUARIO: '', ROL_ROL: '' });
     const [editingId, setEditingId] = useState(null);
+
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['USR_USUARIO_ROL', 'USU_USER', 'USU_USUARIO', 'ROL_NOMBRE', 'ROL_ROL']);
+
 
     const [CON_USUARIOData, setCON_USUARIOData] = useState([]);
     const [CON_ROLData, setCON_ROLData] = useState([]);
@@ -112,11 +117,11 @@ const CON_USUARIO_ROLCrud = () => {
                         />
                     </div>
                     <div className="flex items-center gap-2 pt-2">
-                        <Button type='submit' size='md' icon={editingId ? Pencil : Plus}>
+                        <Button type='submit' size='md'>
                             {editingId ? 'Actualizar' : 'Crear'}
                         </Button>
                         {editingId && (
-                            <Button type='button' size='md' variant='secondary' icon={X} className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
+                            <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
                                 Cancelar
                             </Button>
                         )}
@@ -125,6 +130,7 @@ const CON_USUARIO_ROLCrud = () => {
             </form>
 
                 <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                     <table className="w-full border-collapse text-sm">
                         <thead className="bg-zinc-50 border-b border-zinc-200">
                             <tr>
@@ -135,22 +141,22 @@ const CON_USUARIO_ROLCrud = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
-                            {data.map(item => (
+                            {filteredData.map(item => (
                                 <tr key={item.USR_USUARIO_ROL} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.USR_USUARIO_ROL}</td>
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USER || item.USU_USUARIO}</td>
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.ROL_NOMBRE || item.ROL_ROL}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
-                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.USR_USUARIO_ROL)}>Eliminar</Button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.USR_USUARIO_ROL)}>Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    {data.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                    {filteredData.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
                 </div>
             </div>
     );

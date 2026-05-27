@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
+
 const CON_USUARIOCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ USU_USER: '', USU_CONTRASEÑA: '' });
@@ -63,6 +66,8 @@ const CON_USUARIOCrud = () => {
         }
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['USU_USUARIO', 'USU_USER']);
+
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Usuarios</h2>
@@ -89,6 +94,7 @@ const CON_USUARIOCrud = () => {
             </form>
 
                 <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                     <table className="w-full border-collapse text-sm">
                         <thead className="bg-zinc-50 border-b border-zinc-200">
                             <tr>
@@ -98,7 +104,7 @@ const CON_USUARIOCrud = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
-                            {data.map(item => (
+                            {filteredData.map(item => (
                                 <tr key={item.USU_USUARIO} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USUARIO}</td>
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USER}</td>

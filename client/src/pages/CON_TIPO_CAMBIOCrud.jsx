@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 const CON_TIPO_CAMBIOCrud = () => {
     const [data, setData] = useState([]);
@@ -74,6 +76,8 @@ const CON_TIPO_CAMBIOCrud = () => {
         }
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['TPC_TIPO_CAMBIO', 'MON_CODIGO_ISO', 'MON_SIMBOLO', 'TPC_FECHA_TASA_ISO', 'TPC_TASA_COMPRA', 'TPC_TASA_VENTA']);
+
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cambios</h2>
@@ -87,9 +91,9 @@ const CON_TIPO_CAMBIOCrud = () => {
                     <Input label="Tasa de Venta" helpText="Precio al que el banco vende la moneda extranjera. Generalmente mayor a la tasa de compra. Ej: 7.78." name="TPC_TASA_VENTA" value={formData.TPC_TASA_VENTA || ''} onChange={handleChange} type="number" required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' icon={X} className='ml-2'
+                        <Button type='button' size='md' variant='secondary' className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ MON_MONEDA: '', TPC_FECHA_TASA: '', TPC_TASA_COMPRA: '', TPC_TASA_VENTA: '' }); }}>
                             Cancelar
                         </Button>
@@ -98,6 +102,7 @@ const CON_TIPO_CAMBIOCrud = () => {
             </form>
 
                 <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                     <table className="w-full border-collapse text-sm">
                         <thead className="bg-zinc-50 border-b border-zinc-200">
                             <tr>
@@ -110,7 +115,7 @@ const CON_TIPO_CAMBIOCrud = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
-                            {data.map(item => (
+                            {filteredData.map(item => (
                                 <tr key={item.TPC_TIPO_CAMBIO} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TIPO_CAMBIO}</td>
                                     <td className="px-4 py-3 text-sm font-medium text-zinc-900">
@@ -122,8 +127,8 @@ const CON_TIPO_CAMBIOCrud = () => {
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.TPC_TASA_VENTA}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
-                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</Button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.TPC_TIPO_CAMBIO)}>Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>

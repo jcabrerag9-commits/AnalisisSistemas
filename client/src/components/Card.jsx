@@ -15,7 +15,8 @@
  *  - submitSize  (string)  – Tamaño para los botones Crear/Cancelar ("sm" | "md" | "lg"). Por defecto "lg".
  */
 
-import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
+import { X, Search } from 'lucide-react';
 import Button from './Button';
 
 const Card = ({
@@ -29,8 +30,32 @@ const Card = ({
   rowKey,
   onEdit,
   onDelete,
-  submitSize = 'lg',
+  submitSize = 'md',
 }) => {
+  const [filterText, setFilterText] = useState('');
+
+  // Accent-insensitive and case-insensitive string normalization
+  const norm = (s) =>
+    String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  const filteredData = data.filter((item) => {
+    if (!filterText) return true;
+
+    // Split search term into normalized tokens for multi-word search
+    const tokens = norm(filterText).split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) return true;
+
+    // Concatenate all visible column values into a single search string
+    const searchString = columns
+      .map((col) => {
+        const val = item[col.accessor];
+        return val !== null && val !== undefined ? norm(val) : '';
+      })
+      .join(' ');
+
+    // Match if all search tokens are found anywhere in the combined string
+    return tokens.every((token) => searchString.includes(token));
+  });
   return (
     <div className="bg-white border border-zinc-200 rounded-lg">
       {/* ── Header ── */}
@@ -47,7 +72,7 @@ const Card = ({
 
         {/* Botones del formulario */}
         <div className="flex items-center gap-2 mt-4">
-          <Button type="submit" size={submitSize} variant="primary" icon={editingId ? Pencil : Plus}>
+          <Button type="submit" size={submitSize} variant="primary">
             {editingId ? 'Actualizar' : 'Crear'}
           </Button>
 
@@ -56,7 +81,6 @@ const Card = ({
               type="button"
               size={submitSize}
               variant="secondary"
-              icon={X}
               onClick={onCancel}
             >
               Cancelar
@@ -66,7 +90,37 @@ const Card = ({
       </form>
 
       {/* ── Table section ── */}
-      <div className="border-t border-zinc-200 overflow-hidden">
+      <div className="border-t border-zinc-200 overflow-hidden bg-white">
+        {/* Real-time search filter */}
+        <div className="px-6 py-3 bg-zinc-50/50 border-b border-zinc-200 flex items-center justify-between gap-4 flex-wrap">
+          <div className="relative flex-1 max-w-sm">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <Search className="h-4 w-4 text-zinc-400" />
+            </span>
+            <input
+              type="text"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              placeholder="Buscar en la tabla..."
+              className="w-full pl-9 pr-8 h-9 bg-white border border-zinc-300 rounded-lg text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-200"
+            />
+            {filterText && (
+              <button
+                type="button"
+                onClick={() => setFilterText('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 focus:outline-none"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          {filterText && (
+            <span className="text-xs text-zinc-500 font-medium">
+              Mostrando {filteredData.length} de {data.length} registros
+            </span>
+          )}
+        </div>
+
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-zinc-50">
@@ -85,7 +139,7 @@ const Card = ({
           </thead>
 
           <tbody className="divide-y divide-zinc-100">
-            {data.map((item) => (
+            {filteredData.map((item) => (
               <tr
                 key={item[rowKey]}
                 className="bg-white hover:bg-zinc-50 transition-colors duration-100"
@@ -100,24 +154,32 @@ const Card = ({
                 ))}
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <Button type="button" variant="secondary" size="sm" icon={Pencil} onClick={() => onEdit(item)}>
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
+                      onClick={() => onEdit(item)}
+                    >
                       Editar
-                    </Button>
-                    <Button type="button" variant="danger" size="sm" icon={Trash2} onClick={() => onDelete(item[rowKey])}>
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
+                      onClick={() => onDelete(item[rowKey])}
+                    >
                       Eliminar
-                    </Button>
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
 
-            {data.length === 0 && (
+            {filteredData.length === 0 && (
               <tr>
                 <td
                   colSpan={columns.length + 1}
                   className="py-12 text-center text-zinc-400 text-sm"
                 >
-                  No hay registros disponibles.
+                  {data.length === 0 ? 'No hay registros disponibles.' : 'No se encontraron resultados para la búsqueda.'}
                 </td>
               </tr>
             )}

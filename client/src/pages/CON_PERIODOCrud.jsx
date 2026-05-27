@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 const CON_PERIODOCrud = () => {
     const [data, setData] = useState([]);
@@ -65,6 +67,8 @@ const CON_PERIODOCrud = () => {
         }
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['PER_PERIODO', 'ESP_ESTADO_PERIODO', 'PER_AÑO', 'PER_MES']);
+
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
@@ -99,9 +103,9 @@ const CON_PERIODOCrud = () => {
                     />
                 </div>
                 <div className="mt-6 flex gap-3">
-                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' icon={X}
+                        <Button type='button' size='md' variant='secondary'
                             onClick={() => { setEditingId(null); setFormData({ ESP_ESTADO_PERIODO: '', PER_AÑO: '', PER_MES: '' }); }}>
                             Cancelar
                         </Button>
@@ -116,6 +120,7 @@ const CON_PERIODOCrud = () => {
                 </div>
                 <div className="p-6">
                     <div className="overflow-x-auto">
+                        <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                         <table className="w-full border-collapse text-sm">
                             <thead>
                                 <tr className="bg-zinc-50 border-b border-zinc-200">
@@ -127,22 +132,24 @@ const CON_PERIODOCrud = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100">
-                                {data.map(item => (
+                                {filteredData.map(item => (
                                     <tr key={item.PER_PERIODO} className="bg-white hover:bg-zinc-50 transition-colors">
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_PERIODO}</td>
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.ESP_ESTADO_PERIODO}</td>
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_AÑO}</td>
                                         <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_MES}</td>
-                                        <td className="px-4 py-3 text-right space-x-3">
-                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
-                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</Button>
-                                        </td>
+                                        <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</button>
+                                        </div>
+                                    </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                    {data.length === 0 && (
+                    {filteredData.length === 0 && (
                         <div className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</div>
                     )}
                 </div>
