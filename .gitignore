@@ -144,4 +144,4 @@ CLAUDE.md
 skills-lock.json
 .claude-flow
 .mcp.json
-./server/wallet_contabilidad/
+server/wallet_contabilidad/
