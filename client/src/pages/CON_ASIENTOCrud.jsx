@@ -5,6 +5,8 @@ import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
 import HelpIcon from '../components/HelpIcon';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 // Fila de detalle vacía por defecto
 const DETALLE_VACIO = {
@@ -402,6 +404,8 @@ const CON_ASIENTOCrud = () => {
         return ['ANULADO', 'REVERTIDO', 'REVERSION', 'REVERSIÓN'].includes(nombreEstado);
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['ASI_ASIENTO', 'PER_PERIODO', 'TPA_TIPO_ASIENTO', 'ESA_ESTADO_ASIENTO', 'USU_USUARIO', 'ASI_FECHA', 'ASI_GLOSA']);
+
     // ══════════════════════════════════════════
     //  RENDER
     // ══════════════════════════════════════════
@@ -610,6 +614,7 @@ const CON_ASIENTOCrud = () => {
                     </Button>
                 </div>
                 <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                     <table className="w-full border-collapse text-sm">
                         <thead>
                             <tr className="bg-zinc-50 border-b border-zinc-200">
@@ -624,7 +629,7 @@ const CON_ASIENTOCrud = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
-                            {[...data].sort((a, b) => b.ASI_ASIENTO - a.ASI_ASIENTO).map(item => {
+                            {[...filteredData].sort((a, b) => b.ASI_ASIENTO - a.ASI_ASIENTO).map(item => {
                                 const periodoObj = CON_PERIODOData.find(p => p.PER_PERIODO === item.PER_PERIODO);
                                 const periodoStr = periodoObj ? `${NOMBRES_MESES[periodoObj.PER_MES]} - ${periodoObj.PER_AÑO}` : item.PER_PERIODO;
 
@@ -692,7 +697,7 @@ const CON_ASIENTOCrud = () => {
                                     </tr>
                                 );
                             })}
-                            {data.length === 0 && (
+                            {filteredData.length === 0 && (
                                 <tr>
                                     <td colSpan={8} className="px-4 py-10 text-center text-zinc-400 text-sm">No hay asientos registrados.</td>
                                 </tr>

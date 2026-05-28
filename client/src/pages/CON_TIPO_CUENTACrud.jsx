@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 
 const CON_TIPO_CUENTACrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' });
     const [editingId, setEditingId] = useState(null);
+
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['TCU_TIPO_CUENTA', 'TCU_NOMBRE', 'TCU_DESCRIPCION']);
 
     const API_URL = 'http://localhost:5000/api/con-tipo-cuenta';
 
@@ -63,9 +67,9 @@ const CON_TIPO_CUENTACrud = () => {
                     <Input label="Descripción" helpText="Explica qué tipo de cuentas pertenecen a esta clasificación y cómo afectan el balance." name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                        <Button type='button' size='md' variant='secondary' className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }}>
                             Cancelar
                         </Button>
@@ -74,6 +78,7 @@ const CON_TIPO_CUENTACrud = () => {
             </form>
 
                 <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                     <table className="w-full border-collapse text-sm">
                         <thead className="bg-zinc-50 border-b border-zinc-200">
                             <tr>
@@ -84,7 +89,7 @@ const CON_TIPO_CUENTACrud = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-100">
-                            {data.map(item => (
+                            {filteredData.map(item => (
                                 <tr key={item.TCU_TIPO_CUENTA} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.TCU_TIPO_CUENTA}</td>
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.TCU_NOMBRE}</td>
@@ -99,7 +104,7 @@ const CON_TIPO_CUENTACrud = () => {
                             ))}
                         </tbody>
                     </table>
-                    {data.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                    {filteredData.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
                 </div>
             </div>
     );

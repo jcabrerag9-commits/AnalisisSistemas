@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pencil, Plus, Save, Trash2, X } from 'lucide-react';
+
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 const CON_IMPUESTOCrud = () => {
     const [data, setData] = useState([]);
@@ -86,6 +88,8 @@ const CON_IMPUESTOCrud = () => {
         }
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['IMP_IMPUESTO', 'CUE_NOMBRE', 'CUE_CODIGO', 'IMP_CODIGO', 'IMP_NOMBRE', 'IMP_PORCENTAJE', 'IMP_FECHA_VIGENCIA_INICIO_ISO', 'IMP_FECHA_VIGENCIA_FIN_ISO', 'IMP_ESTADO']);
+
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Impuestos</h2>
@@ -102,9 +106,9 @@ const CON_IMPUESTOCrud = () => {
                     <Input label="Estado" helpText="1 = Activo (se aplica en nuevos movimientos). 0 = Inactivo (ya no se aplica pero conserva el historial)." name="IMP_ESTADO" value={formData.IMP_ESTADO || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg' icon={editingId ? Pencil : Plus}>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' icon={X} className='ml-2'
+                        <Button type='button' size='md' variant='secondary' className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ CUE_CUENTA: '', IMP_CODIGO: '', IMP_NOMBRE: '', IMP_PORCENTAJE: '', IMP_FECHA_VIGENCIA_INICIO: '', IMP_FECHA_VIGENCIA_FIN: '', IMP_ESTADO: '' }); }}>
                             Cancelar
                         </Button>
@@ -118,9 +122,10 @@ const CON_IMPUESTOCrud = () => {
                 </div>
                 <div className="p-6">
                     <div className="overflow-x-auto">
+                        <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                         <table className="w-full border-collapse text-sm">
                             <tbody className="divide-y divide-zinc-100">
-                            {data.map(item => (
+                            {filteredData.map(item => (
                                 <tr key={item.IMP_IMPUESTO} className="bg-white hover:bg-zinc-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-zinc-700">{item.IMP_IMPUESTO}</td>
                                     <td className="px-4 py-3 text-sm text-zinc-700 font-medium">
@@ -139,13 +144,13 @@ const CON_IMPUESTOCrud = () => {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
-                                            <Button variant="secondary" size="sm" icon={Pencil} onClick={() => handleEdit(item)}>Editar</Button>
-                                            <Button variant="danger" size="sm" icon={Trash2} onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</Button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.IMP_IMPUESTO)}>Eliminar</button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
-                            {data.length === 0 && (
+                            {filteredData.length === 0 && (
                                 <tr>
                                     <td colSpan={9} className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</td>
                                 </tr>

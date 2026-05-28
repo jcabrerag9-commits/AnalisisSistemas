@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Select from '../components/Select';
-import Input from '../components/Input';
-import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 // Mapeo de claves técnicas a nombres legibles
 const LABELS = {
@@ -120,14 +119,6 @@ const AccionBadge = ({ accion }) => {
 
 const CON_BITACORACrud = () => {
     const [data, setData] = useState([]);
-    const [formData, setFormData] = useState({
-        USU_USUARIO: '', BIT_TABLA_AFECTADA: '',
-        BIT_ACCION: '', BIT_FECHA_HORA: '', BIT_DATOS_PREVIOS: ''
-    });
-    const [editingId, setEditingId] = useState(null);
-    const [CON_USUARIOData, setCON_USUARIOData] = useState([]);
-    const [filtroUsuario, setFiltroUsuario] = useState('');
-
     // Catálogos para traducción de estados
     const [catalogos, setCatalogos] = useState({ asiento: [], periodo: [] });
 
@@ -135,7 +126,6 @@ const CON_BITACORACrud = () => {
 
     useEffect(() => {
         fetchData();
-        fetchCON_USUARIOData();
         fetchCatalogos();
     }, []);
 
@@ -156,91 +146,17 @@ const CON_BITACORACrud = () => {
         } catch (err) { console.error(err); }
     };
 
-    const fetchCON_USUARIOData = async () => {
-        try {
-            const res = await axios.get('http://localhost:5000/api/con-usuario');
-            setCON_USUARIOData(res.data);
-        } catch (err) { console.error(err); }
-    };
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingId) {
-                await axios.put(`${API_URL}/${editingId}`, formData);
-            } else {
-                await axios.post(API_URL, formData);
-            }
-            setFormData({ USU_USUARIO: '', BIT_TABLA_AFECTADA: '', BIT_ACCION: '', BIT_FECHA_HORA: '', BIT_DATOS_PREVIOS: '' });
-            setEditingId(null);
-            fetchData();
-        } catch (err) { console.error(err); }
-    };
-
-    const formatDateForInput = (isoString) => {
-        if (!isoString) return '';
-        const date = new Date(isoString);
-        return date.toISOString().split('T')[0];
-    };
-
-    const handleEdit = (item) => {
-        setFormData({
-            USU_USUARIO: item.USU_USUARIO,
-            BIT_TABLA_AFECTADA: item.BIT_TABLA_AFECTADA,
-            BIT_ACCION: item.BIT_ACCION,
-            BIT_FECHA_HORA: formatDateForInput(item.BIT_FECHA_HORA),
-            BIT_DATOS_PREVIOS: item.BIT_DATOS_PREVIOS
-        });
-        setEditingId(item.BIT_BITACORA);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const handleDelete = async (id) => {
-        if (window.confirm('¿Eliminar registro permamentemente de la bitácora?')) {
-            try {
-                await axios.delete(`${API_URL}/${id}`);
-                fetchData();
-            } catch (err) { console.error(err); }
-        }
-    };
-
-    const datosFiltrados = filtroUsuario
-        ? data.filter(item => item.USU_USUARIO && item.USU_USUARIO.toString() === filtroUsuario.toString())
-        : data;
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['BIT_BITACORA', 'USU_USER', 'USU_USUARIO', 'BIT_TABLA_AFECTADA', 'BIT_ACCION', 'BIT_FECHA_HORA', 'BIT_DATOS_PREVIOS']);
 
     return (
         <div className="min-h-screen bg-zinc-50 p-8">
             <h2 className="text-xl font-semibold text-zinc-900 mb-2">Bitácora de Eventos</h2>
             <p className="text-sm text-zinc-500 mb-6">Auditoría y control de cambios en el sistema.</p>
 
-            {/* Formulario (Opcional en Bitácora, pero mantenido por requerimiento) */}
-            <form onSubmit={handleSubmit} className="mb-10 p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-inner">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Select
-                        label="Usuario"
-                        name="USU_USUARIO"
-                        value={formData.USU_USUARIO || ''}
-                        onChange={handleChange}
-                        options={CON_USUARIOData.map(opt => ({
-                            value: opt.USU_USUARIO,
-                            label: `${opt.USU_USUARIO} - ${opt.USU_USER || 'ID: ' + opt.USU_USUARIO}`
-                        }))}
-                        required
-                    />
-                    <Input label="Tabla Afectada" helpText="Nombre de la tabla de la base de datos que fue modificada. Ej: CON_PERIODO, CON_ASIENTO." name="BIT_TABLA_AFECTADA" value={formData.BIT_TABLA_AFECTADA || ''} onChange={handleChange} type="text" required placeholder="Ej: CON_PERIODO" />
-                    <Input label="Acción" helpText="Tipo de operación realizada: INSERT (creación), UPDATE (modificación), DELETE (eliminación), REPROCESO (reapertura de período)." name="BIT_ACCION" value={formData.BIT_ACCION || ''} onChange={handleChange} type="text" required placeholder="INSERT, UPDATE, DELETE..." />
-                    <Input label="Fecha" name="BIT_FECHA_HORA" value={formData.BIT_FECHA_HORA || ''} onChange={handleChange} type="date" required />
-                    <div className="md:col-span-2">
-                        <Input label="Datos Previos (JSON)" helpText="Registro del estado anterior en formato JSON. Se usa para auditoría y poder revertir cambios si es necesario." name="BIT_DATOS_PREVIOS" value={formData.BIT_DATOS_PREVIOS || ''} onChange={handleChange} type="text" placeholder='{"ID": 1, "NOMBRE": "..."}' />
-                    </div>
-                </div>
-
+            <div className="bg-white border border-zinc-200 rounded-lg">
                 <div className="p-6">
                     <div className="overflow-x-auto">
+                        <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
                         <table className="w-full border-collapse text-sm">
                             <thead>
                                 <tr className="bg-zinc-50 border-b border-zinc-200">
@@ -252,7 +168,7 @@ const CON_BITACORACrud = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-100">
-                                {datosFiltrados.map((item) => (
+                                {filteredData.map((item) => (
                                     <tr key={item.BIT_BITACORA} className="bg-white hover:bg-zinc-50 transition-colors">
                                         <td className="px-4 py-3 text-xs font-mono text-zinc-600">#{item.BIT_BITACORA}</td>
                                         <td className="px-4 py-3 text-sm text-zinc-700">
@@ -285,13 +201,13 @@ const CON_BITACORACrud = () => {
                             </tbody>
                         </table>
                     </div>
-                    {datosFiltrados.length === 0 && (
+                    {filteredData.length === 0 && (
                         <div className="px-4 py-10 text-center text-zinc-400 text-sm">
                             No se encontraron registros en la bitácora. Prueba ajustando los filtros de búsqueda.
                         </div>
                     )}
                 </div>
-            </form>
+            </div>
         </div>
     );
 };

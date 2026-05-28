@@ -15,12 +15,6 @@ const CON_CUENTACrud = () => {
 
     const API_URL = 'http://localhost:5000/api/con-cuenta';
 
-    useEffect(() => {
-        fetchData();
-        fetchCON_CUENTAData();
-        fetchCON_TIPO_CUENTAData();
-    }, []);
-
     const fetchData = async () => {
         try {
             const res = await axios.get(API_URL);
@@ -48,6 +42,14 @@ const CON_CUENTACrud = () => {
             console.error(err);
         }
     };
+
+    /* eslint-disable react-hooks/set-state-in-effect */
+    useEffect(() => {
+        fetchData();
+        fetchCON_CUENTAData();
+        fetchCON_TIPO_CUENTAData();
+    }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
