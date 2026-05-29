@@ -3,17 +3,9 @@ const db = require('../db');
 // GET /api/reportes/flujo-efectivo?anio=2026&mes=1
 exports.getFlujoEfectivo = async (req, res) => {
     try {
-        const { anio, mes } = req.query;
+        const { anio, mes, fechaInicio, fechaFin, monedaId, estadoAsientoId } = req.query;
 
-        if (!anio || !mes) {
-            return res.status(400).json({ error: 'Debe proporcionar año y mes.' });
-        }
-
-        const binds = { anio: parseInt(anio), mes: parseInt(mes) };
-
-        // ── Movimientos en cuentas de Caja (1101x) y Bancos (1102x) ──
-        // La categoría se determina por el tipo de la cuenta contraparte principal del asiento.
-        const SQL = `
+        let sql = `
             SELECT
                 A.ASI_FECHA                         AS FECHA,
                 A.ASI_ASIENTO                       AS NO_POLIZA,
@@ -45,16 +37,49 @@ exports.getFlujoEfectivo = async (req, res) => {
             FROM CON_ASIENTO_DETALLE AD_EFE
             JOIN CON_ASIENTO         A      ON A.ASI_ASIENTO         = AD_EFE.ASI_ASIENTO
             JOIN CON_CUENTA          C_EFE  ON C_EFE.CUE_CUENTA      = AD_EFE.CUE_CUENTA
-            JOIN CON_PERIODO         P      ON P.PER_PERIODO          = A.PER_PERIODO
             JOIN CON_ESTADO_ASIENTO  EA     ON EA.ESA_ESTADO_ASIENTO  = A.ESA_ESTADO_ASIENTO
-            WHERE P.PER_AÑO = :anio
-              AND P.PER_MES = :mes
-              AND UPPER(EA.ESA_NOMBRE) = 'VALIDADO'
-              AND (C_EFE.CUE_CODIGO LIKE '1101%' OR C_EFE.CUE_CODIGO LIKE '1102%')
-            ORDER BY CATEGORIA, A.ASI_FECHA, A.ASI_ASIENTO
+            LEFT JOIN CON_PERIODO    P      ON P.PER_PERIODO          = A.PER_PERIODO
+            WHERE 1=1
         `;
 
-        const result = await db.executeQuery(SQL, binds);
+        const binds = {};
+
+        // 1. Filtrado por Fecha/Periodo
+        if (fechaInicio && fechaFin) {
+            sql += ` AND A.ASI_FECHA BETWEEN TO_DATE(:fechaInicio, 'YYYY-MM-DD') AND TO_DATE(:fechaFin, 'YYYY-MM-DD')`;
+            binds.fechaInicio = fechaInicio;
+            binds.fechaFin = fechaFin;
+        } else if (anio && mes) {
+            sql += ` AND P.PER_AÑO = :anio AND P.PER_MES = :mes`;
+            binds.anio = parseInt(anio);
+            binds.mes = parseInt(mes);
+        } else if (anio) {
+            sql += ` AND P.PER_AÑO = :anio`;
+            binds.anio = parseInt(anio);
+        } else {
+            return res.status(400).json({ error: 'Debe proporcionar año y mes, o un rango de fechas (fechaInicio y fechaFin).' });
+        }
+
+        // 2. Filtro de Moneda
+        if (monedaId) {
+            sql += ` AND AD_EFE.MON_MONEDA = :monedaId`;
+            binds.monedaId = Number(monedaId);
+        }
+
+        // 3. Filtro de Estado de Asiento
+        if (estadoAsientoId) {
+            if (estadoAsientoId !== 'TODOS') {
+                sql += ` AND A.ESA_ESTADO_ASIENTO = :estadoAsientoId`;
+                binds.estadoAsientoId = Number(estadoAsientoId);
+            }
+        } else {
+            sql += ` AND UPPER(EA.ESA_NOMBRE) = 'VALIDADO'`;
+        }
+
+        sql += ` AND (C_EFE.CUE_CODIGO LIKE '1101%' OR C_EFE.CUE_CODIGO LIKE '1102%')`;
+        sql += ` ORDER BY CATEGORIA, A.ASI_FECHA, A.ASI_ASIENTO`;
+
+        const result = await db.executeQuery(sql, binds);
         const rows   = result.rows;
 
         // ── Agrupar por categoría ──

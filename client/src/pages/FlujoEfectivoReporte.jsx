@@ -21,26 +21,62 @@ const CATEGORIAS = {
 const FlujoEfectivoReporte = () => {
     const [anio, setAnio]           = useState('');
     const [mes, setMes]             = useState('');
+    const [filtroModo, setFiltroModo] = useState('periodo'); // 'periodo' o 'fecha'
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFin, setFechaFin] = useState('');
+    const [monedaId, setMonedaId] = useState('');
+    const [estadoAsientoId, setEstadoAsientoId] = useState('');
+
+    // Catalogos
+    const [anios, setAnios]         = useState([]);
+    const [monedas, setMonedas] = useState([]);
+    const [estadosAsiento, setEstadosAsiento] = useState([]);
+
     const [data, setData]           = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError]         = useState(null);
-    const [anios, setAnios]         = useState([]);
+    const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/reportes/libro-diario/anios')
-            .then(res => setAnios(res.data))
-            .catch(err => console.error(err));
+        const fetchInitialData = async () => {
+            try {
+                const [resAnios, resMon, resEst] = await Promise.all([
+                    axios.get('http://localhost:5000/api/reportes/libro-diario/anios'),
+                    axios.get('http://localhost:5000/api/con-moneda'),
+                    axios.get('http://localhost:5000/api/con-estado-asiento'),
+                ]);
+                setAnios(resAnios.data);
+                setMonedas(resMon.data);
+                setEstadosAsiento(resEst.data);
+            } catch (err) {
+                console.error('Error al obtener catálogos:', err);
+            }
+        };
+        fetchInitialData();
     }, []);
 
     const handleGenerar = async () => {
-        if (!anio || !mes) { setError('Debe seleccionar un año y un mes.'); return; }
+        if (filtroModo === 'periodo' && !anio) { setError('Debe seleccionar un año.'); return; }
+        if (filtroModo === 'fecha' && (!fechaInicio || !fechaFin)) { setError('Debe ingresar un rango de fechas.'); return; }
         setIsLoading(true);
         setError(null);
         setData(null);
         try {
+            const params = {};
+            if (filtroModo === 'periodo') {
+                params.anio = anio;
+                if (mes) params.mes = mes;
+            } else {
+                params.fechaInicio = fechaInicio;
+                params.fechaFin = fechaFin;
+            }
+
+            if (monedaId) params.monedaId = monedaId;
+            if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
+
             const res = await axios.get(
                 'http://localhost:5000/api/reportes/flujo-efectivo',
-                { params: { anio, mes } }
+                { params }
             );
             setData(res.data);
         } catch (err) {
@@ -54,26 +90,109 @@ const FlujoEfectivoReporte = () => {
         'Q ' + (parseFloat(n) || 0).toLocaleString('en-US',
             { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const labelMes = MESES.find(m => m.value === mes)?.label || mes;
+    const labelPeriodo = filtroModo === 'periodo'
+        ? (mes ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}` : `Año ${anio}`)
+        : `Del ${fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-GT') : ''} al ${fechaFin ? new Date(fechaFin).toLocaleDateString('es-GT') : ''}`;
 
     return (
-        <div className="bg-white rounded-xl shadow-md print:shadow-none print:rounded-none">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 print:shadow-none print:rounded-none">
 
             <div className="px-8 pt-8 pb-4 border-b border-slate-100 print:hidden">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
-                    Estado de Flujo de Efectivo
-                </h2>
-                <p className="text-center text-sm text-slate-500 mt-1">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center md:text-left">
+                        Estado de Flujo de Efectivo
+                    </h2>
+                    {/* Botonera de Modo */}
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200 self-start">
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('periodo'); setFechaInicio(''); setFechaFin(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'periodo' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Período
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('fecha'); setAnio(''); setMes(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'fecha' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Rango de Fechas
+                        </button>
+                    </div>
+                </div>
+                <p className="text-center md:text-left text-sm text-slate-500 mt-1">
                     Movimientos en cuentas de Caja y Bancos clasificados por actividad — NIIF para PYMES
                 </p>
             </div>
 
             <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 print:hidden">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                    <Select label="Año *" value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
-                    <Select label="Mes *" value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
+                <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de consulta</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    {filtroModo === 'periodo' ? (
+                        <>
+                            <Select label="Año *" value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
+                            <Select label="Mes (opcional — acumulado)" value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Inicio</label>
+                                <input
+                                    type="date"
+                                    value={fechaInicio}
+                                    onChange={(e) => setFechaInicio(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Fin</label>
+                                <input
+                                    type="date"
+                                    value={fechaFin}
+                                    onChange={(e) => setFechaFin(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                        </>
+                    )}
+                    <Select
+                        label="Moneda"
+                        value={monedaId}
+                        onChange={(e) => setMonedaId(e.target.value)}
+                        options={[
+                            { value: '', label: 'Todas las monedas' },
+                            ...monedas.map(m => ({ value: String(m.MON_MONEDA), label: `${m.MON_CODIGO_ISO} - ${m.MON_NOMBRE}` }))
+                        ]}
+                    />
                 </div>
-                <div className="flex justify-end gap-3">
+
+                {/* Filtros Avanzados (Colapsable) */}
+                <div className="mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setMostrarAvanzados(!mostrarAvanzados)}
+                        className="text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center gap-1 outline-none"
+                    >
+                        {mostrarAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Mostrar filtros avanzados'}
+                    </button>
+
+                    {mostrarAvanzados && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
+                            <Select
+                                label="Estado del Asiento"
+                                value={estadoAsientoId}
+                                onChange={(e) => setEstadoAsientoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Solo Validados (Default)' },
+                                    { value: 'TODOS', label: 'Todos (Borrador y Validado)' },
+                                    ...estadosAsiento.map(e => ({ value: String(e.ESA_ESTADO_ASIENTO), label: e.ESA_NOMBRE }))
+                                ]}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex justify-end gap-3 border-t border-slate-150 pt-3">
                     <Button onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar'}
                     </Button>
@@ -102,7 +221,7 @@ const FlujoEfectivoReporte = () => {
                     {/* Encabezado impresión */}
                     <div className="hidden print:block text-center mb-8">
                         <h2 className="text-xl font-bold">Estado de Flujo de Efectivo</h2>
-                        <p className="text-sm text-slate-600">Período: {labelMes} {anio}</p>
+                        <p className="text-sm text-slate-600">Período: {labelPeriodo}</p>
                         <p className="text-xs italic text-slate-500">(Método Directo — NIIF para PYMES)</p>
                     </div>
 
@@ -175,7 +294,7 @@ const FlujoEfectivoReporte = () => {
                             <p className="text-lg font-bold uppercase">
                                 {data.resumen.flujoNeto >= 0 ? 'Incremento Neto de Efectivo' : 'Disminución Neta de Efectivo'}
                             </p>
-                            <p className="text-xs mt-0.5 opacity-70">{labelMes} {anio}</p>
+                            <p className="text-xs mt-0.5 opacity-70">{labelPeriodo}</p>
                         </div>
                         <span className="text-2xl font-bold font-mono underline decoration-double">
                             {fmt(Math.abs(data.resumen.flujoNeto))}
