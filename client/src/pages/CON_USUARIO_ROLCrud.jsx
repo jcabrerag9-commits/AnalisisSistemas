@@ -1,12 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import Select from '../components/Select';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 import Button from '../components/Button';
 const CON_USUARIO_ROLCrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ USU_USUARIO: '', ROL_ROL: '' });
     const [editingId, setEditingId] = useState(null);
+
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['USR_USUARIO_ROL', 'USU_USER', 'USU_USUARIO', 'ROL_NOMBRE', 'ROL_ROL']);
+
 
     const [CON_USUARIOData, setCON_USUARIOData] = useState([]);
     const [CON_ROLData, setCON_ROLData] = useState([]);
@@ -63,7 +68,9 @@ const CON_USUARIO_ROLCrud = () => {
             setEditingId(null);
             fetchData();
         } catch (err) {
-            console.error(err);
+            console.error('Error al crear/actualizar:', err);
+            const msg = err.response?.data?.error || err.message;
+            alert(`Error: ${msg}`);
         }
     };
 
@@ -91,68 +98,67 @@ const CON_USUARIO_ROLCrud = () => {
 
                     <div>
                         <Select
-                            label="Usuario"
+                            label="Usuario" helpText="Usuario al que se le asignará el rol. Un usuario puede tener múltiples roles."
                             name="USU_USUARIO"
                             value={formData.USU_USUARIO || ''}
                             onChange={handleChange}
-                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: `${opt.USU_USUARIO} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_USUARIOData.map(opt => ({ value: opt.USU_USUARIO, label: opt.USU_USER }))}
                             required
                         />
                     </div>
                     <div>
                         <Select
-                            label="Rol"
+                            label="Rol" helpText="Rol que se asignará al usuario seleccionado. Define sus permisos en el sistema."
                             name="ROL_ROL"
                             value={formData.ROL_ROL || ''}
                             onChange={handleChange}
-                            options={CON_ROLData.map(opt => ({ value: opt.ROL_ROL, label: `${opt.ROL_ROL} - ${opt[Object.keys(opt)[1]]}` }))}
+                            options={CON_ROLData.map(opt => ({ value: opt.ROL_ROL, label: opt.ROL_NOMBRE }))}
                             required
                         />
                     </div>
-                </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='md'>
-                        {editingId ? 'Actualizar' : 'Crear'}
-                    </Button>
-                    {editingId && (
-                        <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
-                            Cancelar
+                    <div className="flex items-center gap-2 pt-2">
+                        <Button type='submit' size='md'>
+                            {editingId ? 'Actualizar' : 'Crear'}
                         </Button>
-                    )}
+                        {editingId && (
+                            <Button type='button' size='md' variant='secondary' className='ml-2' onClick={() => { setEditingId(null); setFormData({ USU_USUARIO: '', ROL_ROL: '' }); }}>
+                                Cancelar
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ID</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Usuario</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Rol</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.USR_USUARIO_ROL} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.USR_USUARIO_ROL}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.USU_USUARIO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ROL_ROL}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>
-                                        Editar
-                                    </Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.USR_USUARIO_ROL)}>
-                                        Eliminar
-                                    </Button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
+                    <table className="w-full border-collapse text-sm">
+                        <thead className="bg-zinc-50 border-b border-zinc-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">ID</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Usuario</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Rol</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {filteredData.map(item => (
+                                <tr key={item.USR_USUARIO_ROL} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.USR_USUARIO_ROL}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.USU_USER || item.USU_USUARIO}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.ROL_NOMBRE || item.ROL_ROL}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.USR_USUARIO_ROL)}>Eliminar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {filteredData.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                </div>
             </div>
-        </div>
     );
 };
 

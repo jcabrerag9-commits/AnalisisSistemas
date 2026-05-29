@@ -1,14 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 
 const CON_TIPO_CUENTACrud = () => {
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' });
     const [editingId, setEditingId] = useState(null);
+
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['TCU_TIPO_CUENTA', 'TCU_NOMBRE', 'TCU_DESCRIPCION']);
 
     const API_URL = 'http://localhost:5000/api/con-tipo-cuenta';
 
@@ -60,13 +63,13 @@ const CON_TIPO_CUENTACrud = () => {
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Cuentas</h2>
             <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Input label="Nombre" name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
-                    <Input label="Descripción" name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
+                    <Input label="Nombre" helpText="Clasificación contable. Los valores estándar son: ACTIVO, PASIVO, CAPITAL, INGRESO, GASTO." name="TCU_NOMBRE" value={formData.TCU_NOMBRE || ''} onChange={handleChange} required />
+                    <Input label="Descripción" helpText="Explica qué tipo de cuentas pertenecen a esta clasificación y cómo afectan el balance." name="TCU_DESCRIPCION" value={formData.TCU_DESCRIPCION || ''} onChange={handleChange} required />
                 </div>
                 <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                        <Button type='button' size='md' variant='secondary' className='ml-2'
                             onClick={() => { setEditingId(null); setFormData({ TCU_NOMBRE: '', TCU_DESCRIPCION: '' }); }}>
                             Cancelar
                         </Button>
@@ -74,33 +77,36 @@ const CON_TIPO_CUENTACrud = () => {
                 </div>
             </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Nombre</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Descripción de Cuenta</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.TCU_TIPO_CUENTA} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_TIPO_CUENTA}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_NOMBRE}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.TCU_DESCRIPCION}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.TCU_TIPO_CUENTA)}>Eliminar</Button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
+                    <table className="w-full border-collapse text-sm">
+                        <thead className="bg-zinc-50 border-b border-zinc-200">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Cuenta</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Nombre</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Descripción de Cuenta</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100">
+                            {filteredData.map(item => (
+                                <tr key={item.TCU_TIPO_CUENTA} className="bg-white hover:bg-zinc-50 transition-colors">
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TCU_TIPO_CUENTA}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TCU_NOMBRE}</td>
+                                    <td className="px-4 py-3 text-sm text-zinc-700">{item.TCU_DESCRIPCION}</td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.TCU_TIPO_CUENTA)}>Eliminar</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {filteredData.length === 0 && <p className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</p>}
+                </div>
             </div>
-        </div>
     );
 };
 

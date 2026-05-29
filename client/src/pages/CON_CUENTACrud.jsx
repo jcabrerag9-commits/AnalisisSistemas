@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -15,12 +14,6 @@ const CON_CUENTACrud = () => {
     const [CON_TIPO_CUENTAData, setCON_TIPO_CUENTAData] = useState([]);
 
     const API_URL = 'http://localhost:5000/api/con-cuenta';
-
-    useEffect(() => {
-        fetchData();
-        fetchCON_CUENTAData();
-        fetchCON_TIPO_CUENTAData();
-    }, []);
 
     const fetchData = async () => {
         try {
@@ -49,6 +42,14 @@ const CON_CUENTACrud = () => {
             console.error(err);
         }
     };
+
+    /* eslint-disable react-hooks/set-state-in-effect */
+    useEffect(() => {
+        fetchData();
+        fetchCON_CUENTAData();
+        fetchCON_TIPO_CUENTAData();
+    }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -90,8 +91,8 @@ const CON_CUENTACrud = () => {
         <Card title="Gestión de cuentas" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CUE_CUENTA_PADRE: '', TCU_TIPO_CUENTA: '', CUE_CODIGO: '', CUE_NOMBRE: '', CUE_DESCRIPCION: '' }); }}
             columns={[
                 { header: 'Cuenta', accessor: 'CUE_CUENTA' },
-                { header: 'Cuenta padre', accessor: 'CUE_CUENTA_PADRE' },
-                { header: 'Tipo Cuenta', accessor: 'TCU_TIPO_CUENTA' },
+                { header: 'Cuenta padre', accessor: 'CUE_NOMBRE_PADRE' },
+                { header: 'Tipo Cuenta', accessor: 'TCU_NOMBRE' },
                 { header: 'Código', accessor: 'CUE_CODIGO' },
                 { header: 'Nombre', accessor: 'CUE_NOMBRE' },
                 { header: 'Descripción', accessor: 'CUE_DESCRIPCION' },
@@ -100,15 +101,15 @@ const CON_CUENTACrud = () => {
             rowKey="CUE_CUENTA"
             onEdit={handleEdit}
             onDelete={handleDelete}>
-            <Select label="Cuenta padre" name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
-                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Cuenta padre" helpText="Cuenta de nivel superior en el plan de cuentas. Déjala vacía si esta es una cuenta principal. Las subcuentas heredan el tipo de la cuenta padre." name="CUE_CUENTA_PADRE" value={formData.CUE_CUENTA_PADRE || ''} onChange={handleChange}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                 required />
 
-            <Select label="Tipo Cuenta" name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
-                options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: `${opt.TCU_TIPO_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Tipo Cuenta" helpText="Clasifica la cuenta: ACTIVO (bienes y derechos), PASIVO (deudas), CAPITAL/PATRIMONIO (recursos propios), INGRESO o GASTO." name="TCU_TIPO_CUENTA" value={formData.TCU_TIPO_CUENTA || ''} onChange={handleChange}
+                options={CON_TIPO_CUENTAData.map(opt => ({ value: opt.TCU_TIPO_CUENTA, label: opt.TCU_NOMBRE }))}
                 required />
 
-            <Input label="Código" name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
+            <Input label="Código" helpText="Código único del plan de cuentas. Ej: 1.1.01 para Caja, 2.1 para Cuentas por Pagar. Sigue la estructura numérica de tu catálogo." name="CUE_CODIGO" value={formData.CUE_CODIGO || ''} onChange={handleChange} required />
             <Input label="Nombre" name="CUE_NOMBRE" value={formData.CUE_NOMBRE || ''} onChange={handleChange} required />
             <Input label="Descripción" name="CUE_DESCRIPCION" value={formData.CUE_DESCRIPCION || ''} onChange={handleChange} required />
         </Card>

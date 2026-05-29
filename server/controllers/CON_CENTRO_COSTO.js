@@ -3,7 +3,12 @@ const db = require('../db');
 
 exports.getAll = async (req, res) => {
     try {
-        const result = await db.executeQuery('SELECT * FROM CON_CENTRO_COSTO');
+        const sql = `
+            SELECT c.*, p.CTC_NOMBRE AS CTC_NOMBRE_PADRE
+            FROM CON_CENTRO_COSTO c
+            LEFT JOIN CON_CENTRO_COSTO p ON c.CTC_CENTRO_COSTO_PADRE = p.CTC_CENTRO_COSTO
+        `;
+        const result = await db.executeQuery(sql);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });

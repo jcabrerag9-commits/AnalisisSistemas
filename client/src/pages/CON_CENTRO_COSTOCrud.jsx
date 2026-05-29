@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -79,7 +78,7 @@ const CON_CENTRO_COSTOCrud = () => {
         <Card title="Gestión de Centro Costo" onSubmit={handleSubmit} editingId={editingId} onCancel={() => { setEditingId(null); setFormData({ CTC_CENTRO_COSTO_PADRE: '', CTC_CODIGO_DEPARTAMENTO: '', CTC_NOMBRE: '' }); }}
             columns={[
                 { header: 'Centro Costo', accessor: 'CTC_CENTRO_COSTO' },
-                { header: 'Centro Costo Padre', accessor: 'CTC_CENTRO_COSTO_PADRE' },
+                { header: 'Centro Costo Padre', accessor: 'CTC_NOMBRE_PADRE' },
                 { header: 'Código Departamento', accessor: 'CTC_CODIGO_DEPARTAMENTO' },
                 { header: 'Nombre', accessor: 'CTC_NOMBRE' },
             ]}
@@ -87,12 +86,12 @@ const CON_CENTRO_COSTOCrud = () => {
             rowKey="CTC_CENTRO_COSTO"
             onEdit={handleEdit}
             onDelete={handleDelete}>
-            <Select label="Centro Costo Padre" name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
-                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Centro Costo Padre" helpText="Centro de costo del que depende este. Déjalo vacío si es un centro raíz o de nivel superior." name="CTC_CENTRO_COSTO_PADRE" value={formData.CTC_CENTRO_COSTO_PADRE || ''} onChange={handleChange}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: opt.CTC_NOMBRE }))}
                 required />
 
-            <Input label="Código Departamento" name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />
-            <Input label="Nombre" name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} required />
+            <Input label="Código Departamento" helpText="Código único que identifica al departamento. Ej: ADM-001, VENTAS-01. No se puede repetir." name="CTC_CODIGO_DEPARTAMENTO" value={formData.CTC_CODIGO_DEPARTAMENTO || ''} onChange={handleChange} required />
+            <Input label="Nombre" helpText="Nombre descriptivo del departamento o área. Ej: Administración, Ventas, Producción." name="CTC_NOMBRE" value={formData.CTC_NOMBRE || ''} onChange={handleChange} required />
         </Card>
 
     );

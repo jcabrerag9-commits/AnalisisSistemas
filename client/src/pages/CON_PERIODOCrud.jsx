@@ -1,9 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import Input from '../components/Input';
 import Select from '../components/Select';
 import Button from '../components/Button';
+import { useGlobalFilter } from '../hooks/useGlobalFilter';
+import GlobalSearchBar from '../components/GlobalSearchBar';
 
 const CON_PERIODOCrud = () => {
     const [data, setData] = useState([]);
@@ -65,21 +67,45 @@ const CON_PERIODOCrud = () => {
         }
     };
 
+    const { filterText, setFilterText, filteredData } = useGlobalFilter(data, ['PER_PERIODO', 'ESP_ESTADO_PERIODO', 'PER_AÑO', 'PER_MES']);
+
     return (
         <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
             <h2 style={{ color: '#0f172a', marginBottom: '20px' }}>Gestión de Periodos</h2>
-            <form onSubmit={handleSubmit} style={{ marginBottom: '30px', padding: '20px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-                    <Select label="Estado del Periodo" name="ESP_ESTADO_PERIODO" value={formData.ESP_ESTADO_PERIODO || ''} onChange={handleChange}
-                        options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: `${opt.ESP_ESTADO_PERIODO} - ${opt[Object.keys(opt)[1]]}` }))}
-                        required />
-                    <Input label="Año" name="PER_AÑO" value={formData.PER_AÑO || ''} onChange={handleChange} type="number" required />
-                    <Input label="Mes" name="PER_MES" value={formData.PER_MES || ''} onChange={handleChange} type="number" required />
+            <form onSubmit={handleSubmit} className="mb-10 p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-inner">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Select 
+                        label="Estado del Periodo" 
+                        helpText="ABIERTO: permite registrar asientos. CERRADO: no acepta modificaciones. BLOQUEADO: bloqueado por auditoría." 
+                        name="ESP_ESTADO_PERIODO" 
+                        value={formData.ESP_ESTADO_PERIODO || ''} 
+                        onChange={handleChange}
+                        options={CON_ESTADO_PERIODOData.map(opt => ({ value: opt.ESP_ESTADO_PERIODO, label: opt.ESP_NOMBRE }))}
+                        required 
+                    />
+                    <Input 
+                        label="Año" 
+                        helpText="Año fiscal del período contable. Ej: 2026." 
+                        name="PER_AÑO" 
+                        value={formData.PER_AÑO || ''} 
+                        onChange={handleChange} 
+                        type="number" 
+                        required 
+                    />
+                    <Input 
+                        label="Mes" 
+                        helpText="Número del mes: 1 = Enero, ... 12 = Diciembre." 
+                        name="PER_MES" 
+                        value={formData.PER_MES || ''} 
+                        onChange={handleChange} 
+                        type="number" 
+                        required 
+                    />
                 </div>
-                <div style={{ marginTop: '20px' }}>
-                    <Button type='submit' size='lg'>{editingId ? 'Actualizar' : 'Crear'}</Button>
+                <div className="mt-6 flex gap-3">
+                    <Button type='submit' size='md'>{editingId ? 'Actualizar' : 'Crear'}</Button>
                     {editingId && (
-                        <Button type='button' size='lg' variant='secondary' className='ml-2'
+                        <Button type='button' size='md' variant='secondary'
                             onClick={() => { setEditingId(null); setFormData({ ESP_ESTADO_PERIODO: '', PER_AÑO: '', PER_MES: '' }); }}>
                             Cancelar
                         </Button>
@@ -87,33 +113,46 @@ const CON_PERIODOCrud = () => {
                 </div>
             </form>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                    <thead>
-                        <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#334155' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>ID Periodo</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Estado del Periodo</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Año</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Mes</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid #cbd5e1' }}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map(item => (
-                            <tr key={item.PER_PERIODO} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.PER_PERIODO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.ESP_ESTADO_PERIODO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.PER_AÑO}</td>
-                                <td style={{ padding: '12px', color: '#64748b' }}>{item.PER_MES}</td>
-                                <td style={{ padding: '12px' }}>
-                                    <Button variant='warning' size='sm' className='mr-2 mb-2' onClick={() => handleEdit(item)}>Editar</Button>
-                                    <Button variant='danger' size='sm' onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</Button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {data.length === 0 && <p style={{ textAlign: 'center', padding: '20px', color: '#94a3b8' }}>No hay registros disponibles.</p>}
+            {/* Tabla */}
+            <div className="bg-white border border-zinc-200 rounded-lg">
+                <div className="px-6 py-4 border-b border-zinc-200">
+                    <span className="text-sm font-semibold text-zinc-700">Listado de Períodos</span>
+                </div>
+                <div className="p-6">
+                    <div className="overflow-x-auto">
+                        <GlobalSearchBar filterText={filterText} setFilterText={setFilterText} filteredCount={filteredData.length} totalCount={data.length} />
+                        <table className="w-full border-collapse text-sm">
+                            <thead>
+                                <tr className="bg-zinc-50 border-b border-zinc-200">
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">ID Periodo</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Estado del Periodo</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Año</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Mes</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-100">
+                                {filteredData.map(item => (
+                                    <tr key={item.PER_PERIODO} className="bg-white hover:bg-zinc-50 transition-colors">
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_PERIODO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.ESP_ESTADO_PERIODO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_AÑO}</td>
+                                        <td className="px-4 py-3 text-sm text-zinc-700">{item.PER_MES}</td>
+                                        <td className="px-4 py-3">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors" onClick={() => handleEdit(item)}>Editar</button>
+                                            <button className="inline-flex items-center px-2.5 py-1 rounded text-xs font-medium bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors" onClick={() => handleDelete(item.PER_PERIODO)}>Eliminar</button>
+                                        </div>
+                                    </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {filteredData.length === 0 && (
+                        <div className="px-4 py-10 text-center text-zinc-400 text-sm">No hay registros disponibles.</div>
+                    )}
+                </div>
             </div>
         </div>
     );

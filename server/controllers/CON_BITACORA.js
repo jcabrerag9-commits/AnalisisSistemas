@@ -4,14 +4,16 @@ exports.getAll = async (req, res) => {
     try {
         const sql = `
             SELECT 
-                BIT_BITACORA,
-                USU_USUARIO,
-                BIT_TABLA_AFECTADA,
-                BIT_ACCION,
-                BIT_FECHA_HORA,
-                DBMS_LOB.SUBSTR(BIT_DATOS_PREVIOS, 2000, 1) AS BIT_DATOS_PREVIOS
-            FROM CON_BITACORA
-            ORDER BY BIT_BITACORA DESC
+                b.BIT_BITACORA,
+                b.USU_USUARIO,
+                u.USU_USER,
+                b.BIT_TABLA_AFECTADA,
+                b.BIT_ACCION,
+                b.BIT_FECHA_HORA,
+                DBMS_LOB.SUBSTR(b.BIT_DATOS_PREVIOS, 2000, 1) AS BIT_DATOS_PREVIOS
+            FROM CON_BITACORA b
+            LEFT JOIN CON_USUARIO u ON b.USU_USUARIO = u.USU_USUARIO
+            ORDER BY b.BIT_BITACORA DESC
         `;
         const result = await db.executeQuery(sql);
         res.json(result.rows);

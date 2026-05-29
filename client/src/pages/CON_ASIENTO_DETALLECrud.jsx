@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Input from '../components/Input';
@@ -127,27 +126,27 @@ const CON_ASIENTO_DETALLECrud = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}
         >
-            <Select label="Asiento" name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
-                options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `${opt.ASI_ASIENTO} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Asiento" helpText="Número del asiento contable al que pertenece este detalle." name="ASI_ASIENTO" value={formData.ASI_ASIENTO || ''} onChange={handleChange}
+                options={CON_ASIENTOData.map(opt => ({ value: opt.ASI_ASIENTO, label: `#${opt.ASI_ASIENTO} — ${opt.ASI_GLOSA || ''}` }))}
                 required />
-            <Select label="Cuenta" name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
-                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CUENTA} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Cuenta" helpText="Cuenta contable del plan de cuentas que se ve afectada por este movimiento." name="CUE_CUENTA" value={formData.CUE_CUENTA || ''} onChange={handleChange}
+                options={CON_CUENTAData.map(opt => ({ value: opt.CUE_CUENTA, label: `${opt.CUE_CODIGO} - ${opt.CUE_NOMBRE}` }))}
                 required />
-            <Select label="Centro de Costo" name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
-                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: `${opt.CTC_CENTRO_COSTO} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Centro de Costo" helpText="Departamento al que se imputa el gasto. Es opcional para cuentas de balance (bancos, proveedores)." name="CTC_CENTRO_COSTO" value={formData.CTC_CENTRO_COSTO || ''} onChange={handleChange}
+                options={CON_CENTRO_COSTOData.map(opt => ({ value: opt.CTC_CENTRO_COSTO, label: opt.CTC_NOMBRE }))}
                 required />
-            <Select label="Moneda" name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
-                options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: `${opt.MON_MONEDA} - ${opt[Object.keys(opt)[1]]}` }))}
+            <Select label="Moneda" helpText="Moneda en la que se registra el monto de origen. Si es GTQ, la tasa de cambio debe ser 1." name="MON_MONEDA" value={formData.MON_MONEDA || ''} onChange={handleChange}
+                options={CON_MONEDAData.map(opt => ({ value: opt.MON_MONEDA, label: opt.MON_NOMBRE }))}
                 required />
-            <Input label="Tasa de Cambio" name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
+            <Input label="Tasa de Cambio" helpText="Factor de conversión a moneda local (GTQ). Ej: si usas USD, ingresa el tipo de cambio del día (7.75). Para GTQ usa 1." name="CTC_TASA_CAMBIO" value={formData.CTC_TASA_CAMBIO || ''} onChange={handleChange}
                 type="number" required />
-            <Input label="Debe Origen" name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange}
+            <Input label="Debe Origen" helpText="Monto en moneda de origen que se debita (carga) a esta cuenta. No puedes ingresar Debe y Haber al mismo tiempo." name="ASD_DEBE_ORIGEN" value={formData.ASD_DEBE_ORIGEN || ''} onChange={handleChange}
                 type="number" required />
-            <Input label="Haber Origen" name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange}
+            <Input label="Haber Origen" helpText="Monto en moneda de origen que se acredita (abona) a esta cuenta. No puedes ingresar Debe y Haber al mismo tiempo." name="ASD_HABER_ORIGEN" value={formData.ASD_HABER_ORIGEN || ''} onChange={handleChange}
                 type="number" required />
-            <Input label="Debe Local" name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange}
+            <Input label="Debe Local" helpText="Monto convertido a moneda local (GTQ). Se calcula como Debe Origen × Tasa de Cambio." name="ASD_DEBE_LOCAL" value={formData.ASD_DEBE_LOCAL || ''} onChange={handleChange}
                 type="number" required />
-            <Input label="Haber Local" name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange}
+            <Input label="Haber Local" helpText="Monto convertido a moneda local (GTQ). Se calcula como Haber Origen × Tasa de Cambio." name="ASD_HABER_LOCAL" value={formData.ASD_HABER_LOCAL || ''} onChange={handleChange}
                 type="number" required />
         </Card>
     );
