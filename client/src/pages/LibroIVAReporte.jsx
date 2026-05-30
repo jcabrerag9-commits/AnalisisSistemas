@@ -15,27 +15,68 @@ const MESES = [
 const LibroIVAReporte = () => {
     const [anio, setAnio]           = useState('');
     const [mes, setMes]             = useState('');
+    const [filtroModo, setFiltroModo] = useState('periodo'); // 'periodo' o 'fecha'
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFin, setFechaFin] = useState('');
+    const [impuestoId, setImpuestoId] = useState('');
+    const [monedaId, setMonedaId] = useState('');
+    const [estadoAsientoId, setEstadoAsientoId] = useState('');
     const [tab, setTab]             = useState('ventas'); // 'ventas' | 'compras'
+
+    // Catalogos
+    const [anios, setAnios]         = useState([]);
+    const [impuestos, setImpuestos] = useState([]);
+    const [monedas, setMonedas] = useState([]);
+    const [estadosAsiento, setEstadosAsiento] = useState([]);
+
     const [data, setData]           = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError]         = useState(null);
-    const [anios, setAnios]         = useState([]);
+    const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/reportes/libro-diario/anios')
-            .then(res => setAnios(res.data))
-            .catch(err => console.error(err));
+        const fetchInitialData = async () => {
+            try {
+                const [resAnios, resImp, resMon, resEst] = await Promise.all([
+                    axios.get('http://localhost:5000/api/reportes/libro-diario/anios'),
+                    axios.get('http://localhost:5000/api/con-impuesto'),
+                    axios.get('http://localhost:5000/api/con-moneda'),
+                    axios.get('http://localhost:5000/api/con-estado-asiento'),
+                ]);
+                setAnios(resAnios.data);
+                setImpuestos(resImp.data);
+                setMonedas(resMon.data);
+                setEstadosAsiento(resEst.data);
+            } catch (err) {
+                console.error('Error al obtener catálogos:', err);
+            }
+        };
+        fetchInitialData();
     }, []);
 
     const handleGenerar = async () => {
-        if (!anio || !mes) { setError('Debe seleccionar un año y un mes.'); return; }
+        if (filtroModo === 'periodo' && (!anio || !mes)) { setError('Debe seleccionar un año y un mes.'); return; }
+        if (filtroModo === 'fecha' && (!fechaInicio || !fechaFin)) { setError('Debe ingresar un rango de fechas.'); return; }
         setIsLoading(true);
         setError(null);
         setData(null);
         try {
+            const params = {};
+            if (filtroModo === 'periodo') {
+                params.anio = anio;
+                params.mes = mes;
+            } else {
+                params.fechaInicio = fechaInicio;
+                params.fechaFin = fechaFin;
+            }
+
+            if (impuestoId) params.impuestoId = impuestoId;
+            if (monedaId) params.monedaId = monedaId;
+            if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
+
             const res = await axios.get(
                 'http://localhost:5000/api/reportes/libro-iva',
-                { params: { anio, mes } }
+                { params }
             );
             setData(res.data);
         } catch (err) {
@@ -49,7 +90,17 @@ const LibroIVAReporte = () => {
         'Q ' + (parseFloat(n) || 0).toLocaleString('en-US',
             { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const labelMes  = MESES.find(m => m.value === mes)?.label || mes;
+    // Formatea una fecha 'YYYY-MM-DD' sin desfase de zona horaria
+    const formatFechaLocal = (str) => {
+        if (!str) return '';
+        const [y, m, d] = str.split('-');
+        return `${d}/${m}/${y}`;
+    };
+
+    const labelPeriodo = filtroModo === 'periodo'
+        ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}`
+        : `Del ${formatFechaLocal(fechaInicio)} al ${formatFechaLocal(fechaFin)}`;
+
     const filas     = data ? (tab === 'ventas' ? data.ventas : data.compras) : [];
     const totalBase = filas.reduce((s, r) => s + (parseFloat(r.BASE_IMPONIBLE) || 0), 0);
     const totalIVA  = filas.reduce((s, r) => s + (parseFloat(r.MONTO_IMPUESTO) || 0), 0);
@@ -60,21 +111,110 @@ const LibroIVAReporte = () => {
 
             {/* Header */}
             <div className="px-8 pt-8 pb-4 border-b border-slate-100 print:hidden">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
-                    Libro de Compras y Ventas — IVA
-                </h2>
-                <p className="text-center text-sm text-slate-500 mt-1">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center md:text-left">
+                        Libro de Compras y Ventas — IVA
+                    </h2>
+                    {/* Botonera de Modo */}
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200 self-start">
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('periodo'); setFechaInicio(''); setFechaFin(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'periodo' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Período
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('fecha'); setAnio(''); setMes(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'fecha' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Rango de Fechas
+                        </button>
+                    </div>
+                </div>
+                <p className="text-center md:text-left text-sm text-slate-500 mt-1">
                     Registro de IVA Débito Fiscal (ventas) e IVA Crédito Fiscal (compras) — Decreto 27-92 Guatemala
                 </p>
             </div>
 
             {/* Filtros */}
             <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 print:hidden">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                    <Select label="Año *"  value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
-                    <Select label="Mes *"  value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    {filtroModo === 'periodo' ? (
+                        <>
+                            <Select label="Año *"  value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
+                            <Select label="Mes *"  value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Inicio</label>
+                                <input
+                                    type="date"
+                                    value={fechaInicio}
+                                    onChange={(e) => setFechaInicio(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Fin</label>
+                                <input
+                                    type="date"
+                                    value={fechaFin}
+                                    onChange={(e) => setFechaFin(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                        </>
+                    )}
+                    <Select
+                        label="Moneda"
+                        value={monedaId}
+                        onChange={(e) => setMonedaId(e.target.value)}
+                        options={[
+                            { value: '', label: 'Todas las monedas' },
+                            ...monedas.map(m => ({ value: String(m.MON_MONEDA), label: `${m.MON_CODIGO_ISO} - ${m.MON_NOMBRE}` }))
+                        ]}
+                    />
                 </div>
-                <div className="flex justify-end gap-3">
+
+                {/* Filtros Avanzados (Colapsable) */}
+                <div className="mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setMostrarAvanzados(!mostrarAvanzados)}
+                        className="text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center gap-1 outline-none"
+                    >
+                        {mostrarAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Mostrar filtros avanzados'}
+                    </button>
+
+                    {mostrarAvanzados && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
+                            <Select
+                                label="Impuesto Específico"
+                                value={impuestoId}
+                                onChange={(e) => setImpuestoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Todos los impuestos' },
+                                    ...impuestos.map(i => ({ value: String(i.IMP_IMPUESTO), label: `${i.IMP_CODIGO} - ${i.IMP_NOMBRE}` }))
+                                ]}
+                            />
+                            <Select
+                                label="Estado del Asiento"
+                                value={estadoAsientoId}
+                                onChange={(e) => setEstadoAsientoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Solo Validados (Default)' },
+                                    { value: 'TODOS', label: 'Todos (Borrador y Validado)' },
+                                    ...estadosAsiento.map(e => ({ value: String(e.ESA_ESTADO_ASIENTO), label: e.ESA_NOMBRE }))
+                                ]}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex justify-end gap-3 border-t border-slate-200 pt-3">
                     <Button onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar'}
                     </Button>
@@ -133,7 +273,7 @@ const LibroIVAReporte = () => {
                         <h2 className="text-xl font-bold">
                             {tab === 'ventas' ? 'Libro de Ventas — Débito Fiscal' : 'Libro de Compras — Crédito Fiscal'}
                         </h2>
-                        <p className="text-sm text-slate-600">Período: {labelMes} {anio}</p>
+                        <p className="text-sm text-slate-600">Período: {labelPeriodo}</p>
                         <p className="text-xs italic text-slate-500">(Decreto 27-92 — Ley del IVA Guatemala)</p>
                     </div>
 

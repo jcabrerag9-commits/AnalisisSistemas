@@ -4,6 +4,8 @@ import Select from '../components/Select';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 
+const ISR_TASA = 0.25;
+
 const SECCIONES = [
     { tipo: 'ACTIVO', naturaleza: 'deudora', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
     { tipo: 'PASIVO', naturaleza: 'acreedora', color: '#991b1b', bg: '#fef2f2', border: '#fecaca' },
@@ -13,10 +15,24 @@ const SECCIONES = [
 const BalanceGeneralReporte = () => {
     const [anio, setAnio] = useState('');
     const [mes, setMes] = useState('');
+    const [filtroModo, setFiltroModo] = useState('periodo'); // 'periodo' o 'fecha'
+    const [fechaFin, setFechaFin] = useState('');
+    const [centroCostoId, setCentroCostoId] = useState('');
+    const [monedaId, setMonedaId] = useState('');
+    const [estadoAsientoId, setEstadoAsientoId] = useState('');
+
+    // Catalogos
+    const [anios, setAnios]         = useState([]);
+    const [centrosCosto, setCentrosCosto] = useState([]);
+    const [monedas, setMonedas] = useState([]);
+    const [estadosAsiento, setEstadosAsiento] = useState([]);
+
     const [data, setData] = useState(null);   // null = sin consulta
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [anios, setAnios] = useState([]);
+    const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
+    const [isrMonto, setIsrMonto] = useState(0);
+    const [utilidadNeta, setUtilidadNeta] = useState(0);
 
     const MESES = [
         { value: '1', label: 'Enero' }, { value: '2', label: 'Febrero' },
@@ -31,30 +47,91 @@ const BalanceGeneralReporte = () => {
     const handlePrint = () => window.print();
 
     useEffect(() => {
-        const fetchAnios = async () => {
+        const fetchInitialData = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/reportes/libro-diario/anios');
-                setAnios(res.data);
+                const [resAnios, resCC, resMon, resEst] = await Promise.all([
+                    axios.get('http://localhost:5000/api/reportes/libro-diario/anios'),
+                    axios.get('http://localhost:5000/api/con-centro-costo'),
+                    axios.get('http://localhost:5000/api/con-moneda'),
+                    axios.get('http://localhost:5000/api/con-estado-asiento'),
+                ]);
+                setAnios(resAnios.data);
+                setCentrosCosto(resCC.data);
+                setMonedas(resMon.data);
+                setEstadosAsiento(resEst.data);
             } catch (err) {
-                console.error('Error al obtener los años:', err);
+                console.error('Error al obtener catálogos:', err);
             }
         };
-        fetchAnios();
+        fetchInitialData();
     }, []);
 
     const handleGenerar = async () => {
-        if (!anio) {
+        if (filtroModo === 'periodo' && !anio) {
             setError('Debe seleccionar un año.');
+            return;
+        }
+        if (filtroModo === 'fecha' && !fechaFin) {
+            setError('Debe ingresar la fecha límite.');
             return;
         }
         setIsLoading(true);
         setError(null);
         setData(null);
+        setIsrMonto(0);
+        setUtilidadNeta(0);
         try {
-            const params = { anio };
-            if (mes) params.mes = mes;
-            const res = await axios.get('http://localhost:5000/api/reportes/balance-general', { params });
-            setData(res.data);
+            const params = {};
+            if (filtroModo === 'periodo') {
+                params.anio = anio;
+                if (mes) params.mes = mes;
+            } else {
+                params.fechaFin = fechaFin;
+            }
+            if (centroCostoId) params.centroCostoId = centroCostoId;
+            if (monedaId) params.monedaId = monedaId;
+            if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
+
+            // Params para Estado de Resultados: rango acumulado año-a-fecha
+            // Esto calcula el ISR acumulado correcto para ambos casos: mes individual y acumulado
+            const erParams = {};
+            if (filtroModo === 'periodo') {
+                if (mes) {
+                    const lastDay = new Date(parseInt(anio), parseInt(mes), 0).getDate();
+                    erParams.fechaInicio = `${anio}-01-01`;
+                    erParams.fechaFin = `${anio}-${String(mes).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+                } else {
+                    erParams.fechaInicio = `${anio}-01-01`;
+                    erParams.fechaFin = `${anio}-12-31`;
+                }
+            } else {
+                const fFin = new Date(fechaFin);
+                erParams.fechaInicio = `${fFin.getFullYear()}-01-01`;
+                erParams.fechaFin = fechaFin;
+            }
+            if (centroCostoId) erParams.centroCostoId = centroCostoId;
+            if (monedaId) erParams.monedaId = monedaId;
+            if (estadoAsientoId) erParams.estadoAsientoId = estadoAsientoId;
+
+            // Llamar ambas APIs en paralelo para evitar el problema de timing con setState
+            const [balanceRes, erRes] = await Promise.all([
+                axios.get('http://localhost:5000/api/reportes/balance-general', { params }),
+                axios.get('http://localhost:5000/api/reportes/estado-resultados', { params: erParams })
+                    .catch(() => ({ data: { cuentas: [] } })),
+            ]);
+
+            const erCuentas = erRes.data?.cuentas || [];
+            const totalIngresos = erCuentas.filter(r => String(r.TIPO) === '4')
+                .reduce((s, r) => s + (parseFloat(r.TOTAL_HABER) - parseFloat(r.TOTAL_DEBE)), 0);
+            const totalGastos = erCuentas.filter(r => String(r.TIPO) === '5')
+                .reduce((s, r) => s + (parseFloat(r.TOTAL_DEBE) - parseFloat(r.TOTAL_HABER)), 0);
+            const utilidadAntesISR = totalIngresos - totalGastos;
+            const isrCalc = utilidadAntesISR > 0 ? utilidadAntesISR * ISR_TASA : 0;
+
+            // Todos los setState en el mismo ciclo — React 18 los batchea en un solo render
+            setData(balanceRes.data);
+            setIsrMonto(isrCalc);
+            setUtilidadNeta(utilidadAntesISR - isrCalc);
         } catch (err) {
             const textoError = err.response?.data?.error || err.message;
             setError(`Error al consultar el reporte: ${textoError}`);
@@ -132,44 +209,179 @@ const BalanceGeneralReporte = () => {
         })
         : [];
 
+    // Detectar si el período ya fue cerrado (existe cuenta de Utilidades Retenidas en el Capital)
+    const capitalSec = secciones.find(s => s.tipo === 'CAPITAL');
+    const utilRetenidas = capitalSec
+        ? capitalSec.subgrupos.flatMap(sg => sg.cuentas).find(c => {
+            const nombre = (c.nombre || '').toUpperCase();
+            const codigo = (c.codigo || '');
+            return (nombre.includes('UTILID') && (nombre.includes('RETEN') || nombre.includes('ACUMUL')))
+                || codigo.startsWith('3102');
+        })
+        : null;
+    const periodoConCierre = !!utilRetenidas;
+
+    // Siempre inyectar ISR por Pagar en PASIVO CORRIENTE
+    if (data && isrMonto > 0) {
+        const pasivoSec = secciones.find(s => s.tipo === 'PASIVO');
+        if (pasivoSec) {
+            let corriente = pasivoSec.subgrupos.find(sg =>
+                sg.nombre.toUpperCase().includes('CORRIENTE') || sg.nombre.toUpperCase().includes('CIRCULANTE')
+            );
+            if (!corriente) {
+                corriente = { nombre: 'PASIVO CORRIENTE', cuentas: [], totalDebe: 0, totalHaber: 0, totalSaldo: 0 };
+                pasivoSec.subgrupos.unshift(corriente);
+            }
+            corriente.cuentas.push({ codigo: '', nombre: 'ISR POR PAGAR', subtipo: corriente.nombre, debe: 0, haber: 0, saldo: isrMonto });
+            corriente.totalSaldo += isrMonto;
+            pasivoSec.total += isrMonto;
+        }
+    }
+
+    if (data && isrMonto > 0 && periodoConCierre) {
+        // Período cerrado: Utilidades Retenidas ya está en el Capital (valor bruto).
+        // Reducir su saldo por el ISR para mostrar el valor neto real.
+        // Esto compensa el ISR agregado al Pasivo, manteniendo el total del balance intacto.
+        const sgConUR = capitalSec.subgrupos.find(sg => sg.cuentas.includes(utilRetenidas));
+        if (sgConUR) {
+            utilRetenidas.saldo -= isrMonto;
+            sgConUR.totalSaldo -= isrMonto;
+            capitalSec.total -= isrMonto;
+        }
+    } else if (data && utilidadNeta !== 0 && !periodoConCierre) {
+        // Período abierto: no hay asiento de cierre. Inyectar Utilidad Neta como fila virtual.
+        if (capitalSec) {
+            let capitalGroup = capitalSec.subgrupos[0];
+            if (!capitalGroup) {
+                capitalGroup = { nombre: 'CAPITAL', cuentas: [], totalDebe: 0, totalHaber: 0, totalSaldo: 0 };
+                capitalSec.subgrupos.push(capitalGroup);
+            }
+            capitalGroup.cuentas.push({ codigo: '', nombre: 'UTILIDAD NETA DEL EJERCICIO', subtipo: capitalGroup.nombre, debe: 0, haber: 0, saldo: utilidadNeta });
+            capitalGroup.totalSaldo += utilidadNeta;
+            capitalSec.total += utilidadNeta;
+        }
+    }
+
     const totalActivo = secciones.find(s => s.tipo === 'ACTIVO')?.total || 0;
     const totalPasivo = secciones.find(s => s.tipo === 'PASIVO')?.total || 0;
-    const totalCapital = secciones.find(s => s.tipo === 'CAPITAL')?.total || 0;
+    const totalCapital = capitalSec?.total || 0;
     const totalPasivoPatrimonio = totalPasivo + totalCapital;
     const cuadra = Math.abs(totalActivo - totalPasivoPatrimonio) < 0.01;
 
     const fmt = (n) =>
         n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const labelPeriodo = mes
-        ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}`
-        : `Año ${anio}`;
+    const labelPeriodo = filtroModo === 'periodo'
+        ? (mes ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}` : `Año ${anio}`)
+        : `al ${fechaFin ? new Date(fechaFin).toLocaleDateString('es-HN') : ''}`;
 
     return (
         <div className="bg-white border border-zinc-200 rounded-lg print:shadow-none print:rounded-none print:border-none">
 
             {/* ── Header / Filtros ── */}
             <div className="px-6 py-5 border-b border-zinc-200 print:hidden">
-                <h2 className="text-xl font-semibold text-zinc-900 mb-4 print:hidden">
-                    Reporte de Balance General
-                </h2>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <h2 className="text-xl font-semibold text-zinc-900">
+                        Reporte de Balance General
+                    </h2>
+                    {/* Botonera de Modo */}
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200 self-start">
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('periodo'); setFechaFin(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'periodo' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Período
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('fecha'); setAnio(''); setMes(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'fecha' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Rango de Fechas
+                        </button>
+                    </div>
+                </div>
+
+                {/* Filtros Principales */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    {filtroModo === 'periodo' ? (
+                        <>
+                            <Select
+                                label="Año *"
+                                name="anio"
+                                value={anio}
+                                onChange={(e) => setAnio(e.target.value)}
+                                options={anios}
+                            />
+                            <Select
+                                label="Mes (opcional — acumulado)"
+                                name="mes"
+                                value={mes}
+                                onChange={(e) => setMes(e.target.value)}
+                                options={MESES}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Límite (Al) *</label>
+                                <input
+                                    type="date"
+                                    value={fechaFin}
+                                    onChange={(e) => setFechaFin(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                        </>
+                    )}
                     <Select
-                        label="Año *"
-                        name="anio"
-                        value={anio}
-                        onChange={(e) => setAnio(e.target.value)}
-                        options={anios}
-                    />
-                    <Select
-                        label="Mes (opcional — acumulado hasta ese mes)"
-                        name="mes"
-                        value={mes}
-                        onChange={(e) => setMes(e.target.value)}
-                        options={MESES}
+                        label="Moneda"
+                        value={monedaId}
+                        onChange={(e) => setMonedaId(e.target.value)}
+                        options={[
+                            { value: '', label: 'Todas las monedas' },
+                            ...monedas.map(m => ({ value: String(m.MON_MONEDA), label: `${m.MON_CODIGO_ISO} - ${m.MON_NOMBRE}` }))
+                        ]}
                     />
                 </div>
-                <div className="flex items-center justify-end gap-3">
+
+                {/* Filtros Avanzados (Colapsable) */}
+                <div className="mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setMostrarAvanzados(!mostrarAvanzados)}
+                        className="text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center gap-1 outline-none"
+                    >
+                        {mostrarAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Mostrar filtros avanzados'}
+                    </button>
+
+                    {mostrarAvanzados && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
+                            <Select
+                                label="Centro de Costo"
+                                value={centroCostoId}
+                                onChange={(e) => setCentroCostoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Todos los centros' },
+                                    ...centrosCosto.map(cc => ({ value: String(cc.CTC_CENTRO_COSTO), label: cc.CTC_NOMBRE }))
+                                ]}
+                            />
+                            <Select
+                                label="Estado del Asiento"
+                                value={estadoAsientoId}
+                                onChange={(e) => setEstadoAsientoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Solo Validados (Default)' },
+                                    { value: 'TODOS', label: 'Todos (Borrador y Validado)' },
+                                    ...estadosAsiento.map(e => ({ value: String(e.ESA_ESTADO_ASIENTO), label: e.ESA_NOMBRE }))
+                                ]}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex items-center justify-end gap-3 border-t border-zinc-150 pt-3">
                     <Button onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar Balance General'}
                     </Button>

@@ -18,26 +18,67 @@ const ISR_TASA = 0.25;
 const EstadoResultadosReporte = () => {
     const [anio, setAnio]           = useState('');
     const [mes, setMes]             = useState('');
+    const [filtroModo, setFiltroModo] = useState('periodo'); // 'periodo' o 'fecha'
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFin, setFechaFin] = useState('');
+    const [centroCostoId, setCentroCostoId] = useState('');
+    const [monedaId, setMonedaId] = useState('');
+    const [estadoAsientoId, setEstadoAsientoId] = useState('');
+
+    // Catalogos
+    const [anios, setAnios]         = useState([]);
+    const [centrosCosto, setCentrosCosto] = useState([]);
+    const [monedas, setMonedas] = useState([]);
+    const [estadosAsiento, setEstadosAsiento] = useState([]);
+
     const [data, setData]           = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError]         = useState(null);
-    const [anios, setAnios]         = useState([]);
+    const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/reportes/libro-diario/anios')
-            .then(res => setAnios(res.data))
-            .catch(err => console.error(err));
+        const fetchInitialData = async () => {
+            try {
+                const [resAnios, resCC, resMon, resEst] = await Promise.all([
+                    axios.get('http://localhost:5000/api/reportes/libro-diario/anios'),
+                    axios.get('http://localhost:5000/api/con-centro-costo'),
+                    axios.get('http://localhost:5000/api/con-moneda'),
+                    axios.get('http://localhost:5000/api/con-estado-asiento'),
+                ]);
+                setAnios(resAnios.data);
+                setCentrosCosto(resCC.data);
+                setMonedas(resMon.data);
+                setEstadosAsiento(resEst.data);
+            } catch (err) {
+                console.error('Error al obtener catálogos:', err);
+            }
+        };
+        fetchInitialData();
     }, []);
 
     const handleGenerar = async () => {
-        if (!anio || !mes) { setError('Debe seleccionar un año y un mes.'); return; }
+        if (filtroModo === 'periodo' && (!anio || !mes)) { setError('Debe seleccionar un año y un mes.'); return; }
+        if (filtroModo === 'fecha' && (!fechaInicio || !fechaFin)) { setError('Debe ingresar un rango de fechas.'); return; }
         setIsLoading(true);
         setError(null);
         setData(null);
         try {
+            const params = {};
+            if (filtroModo === 'periodo') {
+                params.anio = anio;
+                params.mes = mes;
+            } else {
+                params.fechaInicio = fechaInicio;
+                params.fechaFin = fechaFin;
+            }
+
+            if (centroCostoId) params.centroCostoId = centroCostoId;
+            if (monedaId) params.monedaId = monedaId;
+            if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
+
             const res = await axios.get(
                 'http://localhost:5000/api/reportes/estado-resultados',
-                { params: { anio, mes } }
+                { params }
             );
             setData(res.data);
         } catch (err) {
@@ -63,31 +104,123 @@ const EstadoResultadosReporte = () => {
     const totalGastos        = gastosNormales.reduce((s, r) => s + (parseFloat(r.TOTAL_DEBE) - parseFloat(r.TOTAL_HABER)), 0);
     const totalDepreciacion  = depreciaciones.reduce((s, r) => s + (parseFloat(r.TOTAL_DEBE) - parseFloat(r.TOTAL_HABER)), 0);
 
-    // IVA generado (cobrado a clientes) vs soportado (pagado a proveedores)
     const ivaGenerado   = impMovtos.filter(r => r.TIPO_AFECTACION === 'GENERADO')
                                    .reduce((s, r) => s + (parseFloat(r.TOTAL_IMPUESTO) || 0), 0);
     const ivaSoportado  = impMovtos.filter(r => r.TIPO_AFECTACION === 'SOPORTADO')
                                    .reduce((s, r) => s + (parseFloat(r.TOTAL_IMPUESTO) || 0), 0);
-    const ivaLiquido    = ivaGenerado - ivaSoportado; // positivo = IVA a pagar
+    const ivaLiquido    = ivaGenerado - ivaSoportado; 
 
     const utilidadAntesISR = totalIngresos - totalGastos - totalDepreciacion;
-    // ISR Guatemala: 25% sobre la utilidad antes de impuesto (si es positiva)
     const isr              = utilidadAntesISR > 0 ? utilidadAntesISR * ISR_TASA : 0;
     const utilidadNeta     = utilidadAntesISR - isr;
 
-    const labelMes = MESES.find(m => m.value === mes)?.label || mes;
-    const diasMes  = mes && anio ? new Date(parseInt(anio), parseInt(mes), 0).getDate() : 30;
+    const labelMes = filtroModo === 'periodo' ? (MESES.find(m => m.value === mes)?.label || mes) : '';
+    const diasMes  = filtroModo === 'periodo' && mes && anio ? new Date(parseInt(anio), parseInt(mes), 0).getDate() : 30;
+
+    const formatFechaStr = (f) => f ? new Date(f).toLocaleDateString('es-HN') : '';
 
     return (
         <div className="bg-white rounded-xl shadow-md p-8 print:shadow-none print:p-0">
 
             {/* Filtros */}
             <div className="print:hidden">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Estado de Resultados</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-6 bg-slate-50 rounded-lg border border-slate-200">
-                    <Select label="Año" value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
-                    <Select label="Mes" value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
-                    <div className="md:col-span-2 flex justify-end gap-3 mt-2">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <h2 className="text-2xl font-bold text-slate-900">Estado de Resultados</h2>
+                    {/* Botonera de Modo */}
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200 self-start">
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('periodo'); setFechaInicio(''); setFechaFin(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'periodo' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Período
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('fecha'); setAnio(''); setMes(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'fecha' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Rango de Fechas
+                        </button>
+                    </div>
+                </div>
+
+                <div className="mx-0 my-4 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                        {filtroModo === 'periodo' ? (
+                            <>
+                                <Select label="Año" value={anio} onChange={e => setAnio(e.target.value)} options={anios} />
+                                <Select label="Mes" value={mes}  onChange={e => setMes(e.target.value)}  options={MESES} />
+                            </>
+                        ) : (
+                            <>
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Inicio</label>
+                                    <input
+                                        type="date"
+                                        value={fechaInicio}
+                                        onChange={(e) => setFechaInicio(e.target.value)}
+                                        className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Fin</label>
+                                    <input
+                                        type="date"
+                                        value={fechaFin}
+                                        onChange={(e) => setFechaFin(e.target.value)}
+                                        className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                    />
+                                </div>
+                            </>
+                        )}
+                        <Select
+                            label="Moneda"
+                            value={monedaId}
+                            onChange={(e) => setMonedaId(e.target.value)}
+                            options={[
+                                { value: '', label: 'Todas las monedas' },
+                                ...monedas.map(m => ({ value: String(m.MON_MONEDA), label: `${m.MON_CODIGO_ISO} - ${m.MON_NOMBRE}` }))
+                            ]}
+                        />
+                    </div>
+
+                    {/* Filtros Avanzados (Colapsable) */}
+                    <div className="mb-4">
+                        <button
+                            type="button"
+                            onClick={() => setMostrarAvanzados(!mostrarAvanzados)}
+                            className="text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center gap-1 outline-none"
+                        >
+                            {mostrarAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Mostrar filtros avanzados'}
+                        </button>
+
+                        {mostrarAvanzados && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
+                                <Select
+                                    label="Centro de Costo"
+                                    value={centroCostoId}
+                                    onChange={(e) => setCentroCostoId(e.target.value)}
+                                    options={[
+                                        { value: '', label: 'Todos los centros' },
+                                        ...centrosCosto.map(cc => ({ value: String(cc.CTC_CENTRO_COSTO), label: cc.CTC_NOMBRE }))
+                                    ]}
+                                />
+                                <Select
+                                    label="Estado del Asiento"
+                                    value={estadoAsientoId}
+                                    onChange={(e) => setEstadoAsientoId(e.target.value)}
+                                    options={[
+                                        { value: '', label: 'Solo Validados (Default)' },
+                                        { value: 'TODOS', label: 'Todos (Borrador y Validado)' },
+                                        ...estadosAsiento.map(e => ({ value: String(e.ESA_ESTADO_ASIENTO), label: e.ESA_NOMBRE }))
+                                    ]}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-end gap-3 border-t border-slate-200 pt-3">
                         <Button onClick={handleGenerar} disabled={isLoading}>
                             {isLoading ? 'Generando...' : 'Generar Reporte'}
                         </Button>
@@ -120,8 +253,8 @@ const EstadoResultadosReporte = () => {
                     <div className="text-center mb-10 border-b-2 border-slate-900 pb-6">
                         <h1 className="text-xl font-bold uppercase tracking-wide">Sistema de Contabilidad</h1>
                         <h2 className="text-2xl font-bold uppercase mt-1">Estado de Resultados</h2>
-                        <p className="text-slate-600 mt-1">
-                            Del 01 al {diasMes} de {labelMes} de {anio}
+                        <p className="text-sm text-slate-600 mt-1">
+                            {filtroModo === 'periodo' ? `Del 01 al ${diasMes} de ${labelMes} de ${anio}` : `Del ${formatFechaStr(fechaInicio)} al ${formatFechaStr(fechaFin)}`}
                         </p>
                         <p className="text-xs italic text-slate-400 mt-1">
                             (Cifras expresadas en Quetzales — ISR calculado al 25% según Decreto 10-2012 Guatemala)
@@ -177,33 +310,6 @@ const EstadoResultadosReporte = () => {
 
                     {/* ── IMPUESTOS ── */}
                     <Seccion titulo="IMPUESTOS">
-                        {/* IVA */}
-                        {impMovtos.length > 0 && (
-                            <>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
-                                    <span className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-slate-400">IVA</span>
-                                        IVA Generado (Débito Fiscal)
-                                    </span>
-                                    <span className="font-mono">{fmt(ivaGenerado)}</span>
-                                </div>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
-                                    <span className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-slate-400">IVA</span>
-                                        IVA Soportado (Crédito Fiscal)
-                                    </span>
-                                    <span className="font-mono text-red-600">({fmt(ivaSoportado)})</span>
-                                </div>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm font-medium text-slate-700 border-t border-dashed border-slate-300 mt-1">
-                                    <span>IVA Líquido a Pagar</span>
-                                    <span className={`font-mono ${ivaLiquido >= 0 ? 'text-red-700' : 'text-emerald-700'}`}>
-                                        {ivaLiquido >= 0 ? fmt(ivaLiquido) : `(${fmt(Math.abs(ivaLiquido))})`}
-                                    </span>
-                                </div>
-                                <div className="my-2 border-t border-slate-200" />
-                            </>
-                        )}
-
                         {/* ISR Guatemala — 25% Decreto 10-2012 */}
                         <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
                             <span className="flex items-center gap-2">
@@ -213,7 +319,7 @@ const EstadoResultadosReporte = () => {
                             <span className="font-mono text-red-600">{fmt(isr)}</span>
                         </div>
 
-                        <FilaTotal label="TOTAL IMPUESTOS" monto={ivaLiquido + isr} fmt={fmt} color="text-red-800" />
+                        <FilaTotal label="TOTAL IMPUESTOS" monto={isr} fmt={fmt} color="text-red-800" />
                     </Seccion>
 
                     {/* ── RESULTADO FINAL ── */}
@@ -227,7 +333,7 @@ const EstadoResultadosReporte = () => {
                                 {utilidadNeta >= 0 ? 'Utilidad Neta del Ejercicio' : 'Pérdida Neta del Ejercicio'}
                             </p>
                             <p className="text-xs mt-0.5 opacity-70">
-                                {utilidadNeta >= 0 ? 'Después de ISR e IVA' : 'Resultado negativo del período'}
+                                {utilidadNeta >= 0 ? 'Después de ISR' : 'Resultado negativo del período'}
                             </p>
                         </div>
                         <span className="text-2xl font-bold font-mono underline decoration-double">

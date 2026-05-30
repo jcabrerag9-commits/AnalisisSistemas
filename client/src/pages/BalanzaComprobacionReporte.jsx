@@ -15,34 +15,67 @@ const MESES = [
 const BalanzaComprobacionReporte = () => {
     const [anio, setAnio]           = useState('');
     const [mes, setMes]             = useState('');
+    const [filtroModo, setFiltroModo] = useState('periodo'); // 'periodo' o 'fecha'
+    const [fechaInicio, setFechaInicio] = useState('');
+    const [fechaFin, setFechaFin] = useState('');
+    const [centroCostoId, setCentroCostoId] = useState('');
+    const [monedaId, setMonedaId] = useState('');
+    const [estadoAsientoId, setEstadoAsientoId] = useState('');
+
+    // Catalogos
+    const [anios, setAnios]         = useState([]);
+    const [centrosCosto, setCentrosCosto] = useState([]);
+    const [monedas, setMonedas] = useState([]);
+    const [estadosAsiento, setEstadosAsiento] = useState([]);
+
     const [data, setData]           = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError]         = useState(null);
-    const [anios, setAnios]         = useState([]);
+    const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
 
     const contentRef = useRef(null);
     const handlePrint = () => window.print();
 
     useEffect(() => {
-        const fetchAnios = async () => {
+        const fetchInitialData = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/reportes/libro-diario/anios');
-                setAnios(res.data);
+                const [resAnios, resCC, resMon, resEst] = await Promise.all([
+                    axios.get('http://localhost:5000/api/reportes/libro-diario/anios'),
+                    axios.get('http://localhost:5000/api/con-centro-costo'),
+                    axios.get('http://localhost:5000/api/con-moneda'),
+                    axios.get('http://localhost:5000/api/con-estado-asiento'),
+                ]);
+                setAnios(resAnios.data);
+                setCentrosCosto(resCC.data);
+                setMonedas(resMon.data);
+                setEstadosAsiento(resEst.data);
             } catch (err) {
-                console.error('Error al obtener los años:', err);
+                console.error('Error al obtener catálogos:', err);
             }
         };
-        fetchAnios();
+        fetchInitialData();
     }, []);
 
     const handleGenerar = async () => {
-        if (!anio) { setError('Debe seleccionar un año.'); return; }
+        if (filtroModo === 'periodo' && !anio) { setError('Debe seleccionar un año.'); return; }
+        if (filtroModo === 'fecha' && (!fechaInicio || !fechaFin)) { setError('Debe ingresar un rango de fechas.'); return; }
         setIsLoading(true);
         setError(null);
         setData(null);
         try {
-            const params = { anio };
-            if (mes) params.mes = mes;
+            const params = {};
+            if (filtroModo === 'periodo') {
+                params.anio = anio;
+                if (mes) params.mes = mes;
+            } else {
+                params.fechaInicio = fechaInicio;
+                params.fechaFin = fechaFin;
+            }
+
+            if (centroCostoId) params.centroCostoId = centroCostoId;
+            if (monedaId) params.monedaId = monedaId;
+            if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
+
             const res = await axios.get(
                 'http://localhost:5000/api/reportes/balanza-comprobacion',
                 { params }
@@ -71,19 +104,38 @@ const BalanzaComprobacionReporte = () => {
           Math.abs(totales.deudor - totales.acreedor) < 0.01
         : false;
 
-    const labelPeriodo = mes
-        ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}`
-        : `Año ${anio}`;
+    const labelPeriodo = filtroModo === 'periodo'
+        ? (mes ? `${MESES.find(m => m.value === mes)?.label || mes} ${anio}` : `Año ${anio}`)
+        : `Del ${fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-HN') : ''} al ${fechaFin ? new Date(fechaFin).toLocaleDateString('es-HN') : ''}`;
 
     return (
         <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 print:shadow-none print:rounded-none">
 
             {/* Header */}
             <div className="px-8 pt-8 pb-4 border-b border-slate-100 print:hidden">
-                <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center">
-                    Balanza de Comprobación
-                </h2>
-                <p className="text-center text-sm text-slate-500 mt-1">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight text-center md:text-left">
+                        Balanza de Comprobación
+                    </h2>
+                    {/* Botonera de Modo */}
+                    <div className="flex bg-zinc-100 p-0.5 rounded-lg border border-zinc-200 self-start">
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('periodo'); setFechaInicio(''); setFechaFin(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'periodo' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Período
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setFiltroModo('fecha'); setAnio(''); setMes(''); }}
+                            className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filtroModo === 'fecha' ? 'bg-white text-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'}`}
+                        >
+                            Por Rango de Fechas
+                        </button>
+                    </div>
+                </div>
+                <p className="text-center md:text-left text-sm text-slate-500 mt-1">
                     Verifica que la suma del Debe sea igual a la suma del Haber en todos los asientos validados.
                 </p>
             </div>
@@ -91,13 +143,83 @@ const BalanzaComprobacionReporte = () => {
             {/* Filtros */}
             <div className="mx-8 my-6 p-6 bg-slate-50 rounded-lg border border-slate-200 print:hidden">
                 <h3 className="text-lg font-semibold text-slate-700 mb-4">Filtros de consulta</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                    <Select label="Año *" name="anio" value={anio}
-                        onChange={(e) => setAnio(e.target.value)} options={anios} />
-                    <Select label="Mes (opcional — acumulado hasta ese mes)" name="mes" value={mes}
-                        onChange={(e) => setMes(e.target.value)} options={MESES} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    {filtroModo === 'periodo' ? (
+                        <>
+                            <Select label="Año *" name="anio" value={anio}
+                                onChange={(e) => setAnio(e.target.value)} options={anios} />
+                            <Select label="Mes (opcional — acumulado)" name="mes" value={mes}
+                                onChange={(e) => setMes(e.target.value)} options={MESES} />
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Inicio</label>
+                                <input
+                                    type="date"
+                                    value={fechaInicio}
+                                    onChange={(e) => setFechaInicio(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-500 mb-1">Fecha Fin</label>
+                                <input
+                                    type="date"
+                                    value={fechaFin}
+                                    onChange={(e) => setFechaFin(e.target.value)}
+                                    className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md outline-none focus:border-sky-500 bg-white"
+                                />
+                            </div>
+                        </>
+                    )}
+                    <Select
+                        label="Moneda"
+                        value={monedaId}
+                        onChange={(e) => setMonedaId(e.target.value)}
+                        options={[
+                            { value: '', label: 'Todas las monedas' },
+                            ...monedas.map(m => ({ value: String(m.MON_MONEDA), label: `${m.MON_CODIGO_ISO} - ${m.MON_NOMBRE}` }))
+                        ]}
+                    />
                 </div>
-                <div className="flex justify-end gap-3">
+
+                {/* Filtros Avanzados (Colapsable) */}
+                <div className="mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setMostrarAvanzados(!mostrarAvanzados)}
+                        className="text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center gap-1 outline-none"
+                    >
+                        {mostrarAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Mostrar filtros avanzados'}
+                    </button>
+
+                    {mostrarAvanzados && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-3 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
+                            <Select
+                                label="Centro de Costo"
+                                value={centroCostoId}
+                                onChange={(e) => setCentroCostoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Todos los centros' },
+                                    ...centrosCosto.map(cc => ({ value: String(cc.CTC_CENTRO_COSTO), label: cc.CTC_NOMBRE }))
+                                ]}
+                            />
+                            <Select
+                                label="Estado del Asiento"
+                                value={estadoAsientoId}
+                                onChange={(e) => setEstadoAsientoId(e.target.value)}
+                                options={[
+                                    { value: '', label: 'Solo Validados (Default)' },
+                                    { value: 'TODOS', label: 'Todos (Borrador y Validado)' },
+                                    ...estadosAsiento.map(e => ({ value: String(e.ESA_ESTADO_ASIENTO), label: e.ESA_NOMBRE }))
+                                ]}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex justify-end gap-3 border-t border-slate-150 pt-3">
                     <Button onClick={handleGenerar} disabled={isLoading}>
                         {isLoading ? 'Consultando…' : 'Generar Balanza'}
                     </Button>
