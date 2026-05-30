@@ -27,6 +27,7 @@ const Select = ({
     const triggerRef = useRef(null);
     const searchRef = useRef(null);
     const listRef = useRef(null);
+    const dropdownRef = useRef(null);
 
     const selected = options.find((o) => String(o.value) === String(value));
     const filtered = options.filter((o) => norm(o.label).includes(norm(search)));
@@ -61,11 +62,15 @@ const Select = ({
         const onDown = (e) => {
             if (!triggerRef.current?.contains(e.target)) close();
         };
+        const onScroll = (e) => {
+            if (dropdownRef.current?.contains(e.target)) return;
+            close();
+        };
         document.addEventListener('mousedown', onDown);
-        document.addEventListener('scroll', close, true);
+        document.addEventListener('scroll', onScroll, true);
         return () => {
             document.removeEventListener('mousedown', onDown);
-            document.removeEventListener('scroll', close, true);
+            document.removeEventListener('scroll', onScroll, true);
         };
     }, [open]);
 
@@ -94,6 +99,7 @@ const Select = ({
         open &&
         createPortal(
             <div
+                ref={dropdownRef}
                 style={{
                     position: 'fixed',
                     top: pos.top,

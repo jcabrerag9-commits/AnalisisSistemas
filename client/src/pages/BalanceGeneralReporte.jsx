@@ -4,6 +4,8 @@ import Select from '../components/Select';
 import Button from '../components/Button';
 import { Link } from 'react-router-dom';
 
+const ISR_TASA = 0.25;
+
 const SECCIONES = [
     { tipo: 'ACTIVO', naturaleza: 'deudora', color: '#1e40af', bg: '#eff6ff', border: '#bfdbfe' },
     { tipo: 'PASIVO', naturaleza: 'acreedora', color: '#991b1b', bg: '#fef2f2', border: '#fecaca' },
@@ -29,6 +31,8 @@ const BalanceGeneralReporte = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [mostrarAvanzados, setMostrarAvanzados] = useState(false);
+    const [isrMonto, setIsrMonto] = useState(0);
+    const [utilidadNeta, setUtilidadNeta] = useState(0);
 
     const MESES = [
         { value: '1', label: 'Enero' }, { value: '2', label: 'Febrero' },
@@ -74,6 +78,8 @@ const BalanceGeneralReporte = () => {
         setIsLoading(true);
         setError(null);
         setData(null);
+        setIsrMonto(0);
+        setUtilidadNeta(0);
         try {
             const params = {};
             if (filtroModo === 'periodo') {
@@ -82,13 +88,50 @@ const BalanceGeneralReporte = () => {
             } else {
                 params.fechaFin = fechaFin;
             }
-
             if (centroCostoId) params.centroCostoId = centroCostoId;
             if (monedaId) params.monedaId = monedaId;
             if (estadoAsientoId) params.estadoAsientoId = estadoAsientoId;
 
-            const res = await axios.get('http://localhost:5000/api/reportes/balance-general', { params });
-            setData(res.data);
+            // Params para Estado de Resultados: rango acumulado año-a-fecha
+            // Esto calcula el ISR acumulado correcto para ambos casos: mes individual y acumulado
+            const erParams = {};
+            if (filtroModo === 'periodo') {
+                if (mes) {
+                    const lastDay = new Date(parseInt(anio), parseInt(mes), 0).getDate();
+                    erParams.fechaInicio = `${anio}-01-01`;
+                    erParams.fechaFin = `${anio}-${String(mes).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+                } else {
+                    erParams.fechaInicio = `${anio}-01-01`;
+                    erParams.fechaFin = `${anio}-12-31`;
+                }
+            } else {
+                const fFin = new Date(fechaFin);
+                erParams.fechaInicio = `${fFin.getFullYear()}-01-01`;
+                erParams.fechaFin = fechaFin;
+            }
+            if (centroCostoId) erParams.centroCostoId = centroCostoId;
+            if (monedaId) erParams.monedaId = monedaId;
+            if (estadoAsientoId) erParams.estadoAsientoId = estadoAsientoId;
+
+            // Llamar ambas APIs en paralelo para evitar el problema de timing con setState
+            const [balanceRes, erRes] = await Promise.all([
+                axios.get('http://localhost:5000/api/reportes/balance-general', { params }),
+                axios.get('http://localhost:5000/api/reportes/estado-resultados', { params: erParams })
+                    .catch(() => ({ data: { cuentas: [] } })),
+            ]);
+
+            const erCuentas = erRes.data?.cuentas || [];
+            const totalIngresos = erCuentas.filter(r => String(r.TIPO) === '4')
+                .reduce((s, r) => s + (parseFloat(r.TOTAL_HABER) - parseFloat(r.TOTAL_DEBE)), 0);
+            const totalGastos = erCuentas.filter(r => String(r.TIPO) === '5')
+                .reduce((s, r) => s + (parseFloat(r.TOTAL_DEBE) - parseFloat(r.TOTAL_HABER)), 0);
+            const utilidadAntesISR = totalIngresos - totalGastos;
+            const isrCalc = utilidadAntesISR > 0 ? utilidadAntesISR * ISR_TASA : 0;
+
+            // Todos los setState en el mismo ciclo — React 18 los batchea en un solo render
+            setData(balanceRes.data);
+            setIsrMonto(isrCalc);
+            setUtilidadNeta(utilidadAntesISR - isrCalc);
         } catch (err) {
             const textoError = err.response?.data?.error || err.message;
             setError(`Error al consultar el reporte: ${textoError}`);
@@ -166,9 +209,62 @@ const BalanceGeneralReporte = () => {
         })
         : [];
 
+    // Detectar si el período ya fue cerrado (existe cuenta de Utilidades Retenidas en el Capital)
+    const capitalSec = secciones.find(s => s.tipo === 'CAPITAL');
+    const utilRetenidas = capitalSec
+        ? capitalSec.subgrupos.flatMap(sg => sg.cuentas).find(c => {
+            const nombre = (c.nombre || '').toUpperCase();
+            const codigo = (c.codigo || '');
+            return (nombre.includes('UTILID') && (nombre.includes('RETEN') || nombre.includes('ACUMUL')))
+                || codigo.startsWith('3102');
+        })
+        : null;
+    const periodoConCierre = !!utilRetenidas;
+
+    // Siempre inyectar ISR por Pagar en PASIVO CORRIENTE
+    if (data && isrMonto > 0) {
+        const pasivoSec = secciones.find(s => s.tipo === 'PASIVO');
+        if (pasivoSec) {
+            let corriente = pasivoSec.subgrupos.find(sg =>
+                sg.nombre.toUpperCase().includes('CORRIENTE') || sg.nombre.toUpperCase().includes('CIRCULANTE')
+            );
+            if (!corriente) {
+                corriente = { nombre: 'PASIVO CORRIENTE', cuentas: [], totalDebe: 0, totalHaber: 0, totalSaldo: 0 };
+                pasivoSec.subgrupos.unshift(corriente);
+            }
+            corriente.cuentas.push({ codigo: '', nombre: 'ISR POR PAGAR', subtipo: corriente.nombre, debe: 0, haber: 0, saldo: isrMonto });
+            corriente.totalSaldo += isrMonto;
+            pasivoSec.total += isrMonto;
+        }
+    }
+
+    if (data && isrMonto > 0 && periodoConCierre) {
+        // Período cerrado: Utilidades Retenidas ya está en el Capital (valor bruto).
+        // Reducir su saldo por el ISR para mostrar el valor neto real.
+        // Esto compensa el ISR agregado al Pasivo, manteniendo el total del balance intacto.
+        const sgConUR = capitalSec.subgrupos.find(sg => sg.cuentas.includes(utilRetenidas));
+        if (sgConUR) {
+            utilRetenidas.saldo -= isrMonto;
+            sgConUR.totalSaldo -= isrMonto;
+            capitalSec.total -= isrMonto;
+        }
+    } else if (data && utilidadNeta !== 0 && !periodoConCierre) {
+        // Período abierto: no hay asiento de cierre. Inyectar Utilidad Neta como fila virtual.
+        if (capitalSec) {
+            let capitalGroup = capitalSec.subgrupos[0];
+            if (!capitalGroup) {
+                capitalGroup = { nombre: 'CAPITAL', cuentas: [], totalDebe: 0, totalHaber: 0, totalSaldo: 0 };
+                capitalSec.subgrupos.push(capitalGroup);
+            }
+            capitalGroup.cuentas.push({ codigo: '', nombre: 'UTILIDAD NETA DEL EJERCICIO', subtipo: capitalGroup.nombre, debe: 0, haber: 0, saldo: utilidadNeta });
+            capitalGroup.totalSaldo += utilidadNeta;
+            capitalSec.total += utilidadNeta;
+        }
+    }
+
     const totalActivo = secciones.find(s => s.tipo === 'ACTIVO')?.total || 0;
     const totalPasivo = secciones.find(s => s.tipo === 'PASIVO')?.total || 0;
-    const totalCapital = secciones.find(s => s.tipo === 'CAPITAL')?.total || 0;
+    const totalCapital = capitalSec?.total || 0;
     const totalPasivoPatrimonio = totalPasivo + totalCapital;
     const cuadra = Math.abs(totalActivo - totalPasivoPatrimonio) < 0.01;
 

@@ -310,33 +310,6 @@ const EstadoResultadosReporte = () => {
 
                     {/* ── IMPUESTOS ── */}
                     <Seccion titulo="IMPUESTOS">
-                        {/* IVA */}
-                        {impMovtos.length > 0 && (
-                            <>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
-                                    <span className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-slate-400">IVA</span>
-                                        IVA Generado (Débito Fiscal)
-                                    </span>
-                                    <span className="font-mono">{fmt(ivaGenerado)}</span>
-                                </div>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
-                                    <span className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-slate-400">IVA</span>
-                                        IVA Soportado (Crédito Fiscal)
-                                    </span>
-                                    <span className="font-mono text-red-600">({fmt(ivaSoportado)})</span>
-                                </div>
-                                <div className="flex justify-between items-center px-2 py-1 text-sm font-medium text-slate-700 border-t border-dashed border-slate-300 mt-1">
-                                    <span>IVA Líquido a Pagar</span>
-                                    <span className={`font-mono ${ivaLiquido >= 0 ? 'text-red-700' : 'text-emerald-700'}`}>
-                                        {ivaLiquido >= 0 ? fmt(ivaLiquido) : `(${fmt(Math.abs(ivaLiquido))})`}
-                                    </span>
-                                </div>
-                                <div className="my-2 border-t border-slate-200" />
-                            </>
-                        )}
-
                         {/* ISR Guatemala — 25% Decreto 10-2012 */}
                         <div className="flex justify-between items-center px-2 py-1 text-sm text-slate-600">
                             <span className="flex items-center gap-2">
@@ -346,7 +319,7 @@ const EstadoResultadosReporte = () => {
                             <span className="font-mono text-red-600">{fmt(isr)}</span>
                         </div>
 
-                        <FilaTotal label="TOTAL IMPUESTOS" monto={ivaLiquido + isr} fmt={fmt} color="text-red-800" />
+                        <FilaTotal label="TOTAL IMPUESTOS" monto={isr} fmt={fmt} color="text-red-800" />
                     </Seccion>
 
                     {/* ── RESULTADO FINAL ── */}
@@ -360,7 +333,7 @@ const EstadoResultadosReporte = () => {
                                 {utilidadNeta >= 0 ? 'Utilidad Neta del Ejercicio' : 'Pérdida Neta del Ejercicio'}
                             </p>
                             <p className="text-xs mt-0.5 opacity-70">
-                                {utilidadNeta >= 0 ? 'Después de ISR e IVA' : 'Resultado negativo del período'}
+                                {utilidadNeta >= 0 ? 'Después de ISR' : 'Resultado negativo del período'}
                             </p>
                         </div>
                         <span className="text-2xl font-bold font-mono underline decoration-double">
